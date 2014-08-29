@@ -216,7 +216,6 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	// /////////////////////////////////////
 	// Add/Remove vehicles methods
 	
-	int e = 5;
 	public void addVehicle(final DefaultTableModel model, final String targa,
 			final String tipo, final String marca, final String stato, final String peso) {
 		Runnable addV = new Runnable() {
@@ -228,7 +227,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		SwingUtilities.invokeLater(addV);
 		
 		//TODO mettere la comunicazione verso l'agente qui?
-		shipperAgent.newTruck(targa);
+		//shipperAgent.newTruck(targa);
 	}
 	
 	
@@ -237,6 +236,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		
 		if (row!=null){
 			String targa = row.elementAt(0).toString();
+			
 			Runnable removeV = new Runnable() {
 				@Override
 				public void run() {
@@ -246,7 +246,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 			SwingUtilities.invokeLater(removeV);
 			
 			//TODO mettere la comunicazione verso l'agente qui?
-			shipperAgent.removeTruck(targa);
+			//shipperAgent.removeTruck(targa);
 		}
 	}
 	
@@ -257,7 +257,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	TableModelListener dtmParcoMezziListener = new TableModelListener() {
 		//TODO pare non convenga centralizzare la comunicazione verso l'agente da qui a causa della DELETE
 		public void tableChanged(TableModelEvent e) {
-/*			switch (e.getType()) {
+			switch (e.getType()) {
 				case (TableModelEvent.INSERT): {
 					DefaultTableModel mdl = (DefaultTableModel) e.getSource();
 					int row = e.getLastRow();
@@ -268,10 +268,11 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 					
 				case (TableModelEvent.DELETE): {
 					DefaultTableModel mdl = ((DefaultTableModel) e.getSource());
-					//int row = e.getLastRow();
-					//int column = mdl.findColumn("Targa");
-					//System.out.println("una cancellazione in corso! Targa:"+mdl.getValueAt(row, column));
-					//shipperAgent.removeTruck((String) mdl.getValueAt(row, column));
+					int row = e.getLastRow();
+					int column = mdl.findColumn("Targa");
+					System.out.println("una cancellazione in corso! Targa:"+mdl.getValueAt(row, column));
+					
+					shipperAgent.removeTruck((String)mdl.getValueAt(row, column));
 				} break;
 					
 				case (TableModelEvent.UPDATE): {
@@ -279,9 +280,38 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 				} break;
 					
 			}
- 		*/			
+		
 		}
+	};
 	
+	
+	TableModelListener listener1 = new TableModelListener() {
+		public void tableChanged(TableModelEvent e) {
+			switch (e.getType()) {
+			
+				case (TableModelEvent.INSERT): {
+					DefaultTableModel m = (DefaultTableModel) e.getSource();
+					int row = e.getLastRow();
+					System.out.println("Insert! Key: "+m.getValueAt(row, 0));
+					
+					// My agent, the third-party software: 
+					shipperAgent.newTruck((String) m.getValueAt(row, 0));
+				} break;
+					
+				case (TableModelEvent.DELETE): {
+					DefaultTableModel m = ((DefaultTableModel) e.getSource());
+					int row = e.getLastRow();
+					System.out.println("Delete! Key:"+m.getValueAt(row, 0));
+					
+					shipperAgent.removeTruck((String)m.getValueAt(row, 0));
+				} break;
+					
+				case (TableModelEvent.UPDATE): {
+					// ...
+				} break;
+					
+			}
+		}
 	};
 	
 	
