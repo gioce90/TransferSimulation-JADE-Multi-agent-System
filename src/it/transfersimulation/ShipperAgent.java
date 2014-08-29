@@ -206,5 +206,15 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		System.out.println("Rimosso camion da ShipperAgent \""+getLocalName()+"\": "+targa);
 	}
 	
+	@Override
+	public void activateTruck(String targa) {
+		System.out.println("Il camion \""+targa+"\" è stato reso disponibile. ShipperAgent "+getLocalName());
+	}
+	
+	@Override
+	public void deactivateTruck(String targa) {
+		System.out.println("Il camion \""+targa+"\" non è più disponibile. ShipperAgent "+getLocalName());
+	}
+	
 	
 }

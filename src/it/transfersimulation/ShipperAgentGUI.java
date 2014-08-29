@@ -195,9 +195,15 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		
 		case "+disponibili": {
 			int selectedRow = parcoMezziTable.getSelectedRow();
-			if (selectedRow != -1)
-				dtModelMezziDisponibili.addRow(
-						(Vector) dtModelParcoMezzi.getDataVector().get(selectedRow));
+			if (selectedRow != -1){
+				addVehicle(dtModelMezziDisponibili,
+						String.valueOf(dtModelParcoMezzi.getValueAt(selectedRow, 0)),
+						String.valueOf(dtModelParcoMezzi.getValueAt(selectedRow, 1)),
+						String.valueOf(dtModelParcoMezzi.getValueAt(selectedRow, 2)),
+						String.valueOf(dtModelParcoMezzi.getValueAt(selectedRow, 3)),
+						String.valueOf(dtModelParcoMezzi.getValueAt(selectedRow, 4))
+				);
+			}
 		} break;
 		
 		case "-disponibili": {
@@ -230,7 +236,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		if (model.equals(dtModelParcoMezzi))
 			shipperAgent.newTruck(targa);
 		else if (model.equals(dtModelMezziDisponibili))
-			shipperAgent.newTruck(targa+"MEZZO RESO DISPONIBILE"); //TODO
+			shipperAgent.activateTruck(targa); //TODO
 	}
 	
 	
@@ -251,7 +257,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 			if (model.equals(dtModelParcoMezzi))
 				shipperAgent.removeTruck(targa);
 			else if (model.equals(dtModelMezziDisponibili))
-				shipperAgent.removeTruck(targa+"MEZZO NON PIU' DISPONIBILE"); //TODO
+				shipperAgent.deactivateTruck(targa); //TODO
 		}
 	}
 	
@@ -263,75 +269,23 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		//TODO pare non convenga centralizzare la comunicazione verso l'agente da qui a causa della DELETE
 		public void tableChanged(TableModelEvent e) {
 			switch (e.getType()) {
-				case (TableModelEvent.INSERT): {
-					DefaultTableModel mdl = (DefaultTableModel) e.getSource();
-					int row = e.getLastRow();
-					int column = mdl.findColumn("Targa");
-					System.out.println("un inserimento in corso! Targa: "+mdl.getValueAt(row, column));
-					shipperAgent.newTruck((String) mdl.getValueAt(row, column));
-				} break;
-					
+				case (TableModelEvent.INSERT): System.out.println("un inserimento in corso!"); break;
 				case (TableModelEvent.DELETE): {
-					DefaultTableModel mdl = ((DefaultTableModel) e.getSource());
-					int row = e.getLastRow();
-					int column = mdl.findColumn("Targa");
-					System.out.println("una cancellazione in corso! Targa:"+mdl.getValueAt(row, column));
-					
-					shipperAgent.removeTruck((String)mdl.getValueAt(row, column));
+					System.out.println("una cancellazione in corso!");
+					// TODO se una riga viene cancellata, ed era presente
+					// anche in MEZZI DISPONIBILI, cancellare anche da li quella riga
 				} break;
-					
-				case (TableModelEvent.UPDATE): {
-					System.out.println("un aggiornamento in corso! Targa: ...");
-				} break;
-					
-			}
-		
-		}
-	};
-	
-	
-	TableModelListener listener1 = new TableModelListener() {
-		public void tableChanged(TableModelEvent e) {
-			switch (e.getType()) {
-			
-				case (TableModelEvent.INSERT): {
-					DefaultTableModel m = (DefaultTableModel) e.getSource();
-					int row = e.getLastRow();
-					System.out.println("Insert! Key: "+m.getValueAt(row, 0));
-					
-					// My agent, the third-party software: 
-					shipperAgent.newTruck((String) m.getValueAt(row, 0));
-				} break;
-					
-				case (TableModelEvent.DELETE): {
-					DefaultTableModel m = ((DefaultTableModel) e.getSource());
-					int row = e.getLastRow();
-					System.out.println("Delete! Key:"+m.getValueAt(row, 0));
-					
-					shipperAgent.removeTruck((String)m.getValueAt(row, 0));
-				} break;
-					
-				case (TableModelEvent.UPDATE): {
-					// ...
-				} break;
-					
+				case (TableModelEvent.UPDATE): System.out.println("un aggiornamento in corso!"); break;
 			}
 		}
 	};
-	
 	
 	TableModelListener dtmMezziDisponibiliListener = new TableModelListener() {
 		public void tableChanged(TableModelEvent e) {
 			switch (e.getType()) {
-			case (TableModelEvent.INSERT):
-				System.out.println("un inserimento!");
-				break;
-			case (TableModelEvent.DELETE):
-				System.out.println("una cancellazione!");
-				break;
-			case (TableModelEvent.UPDATE):
-				System.out.println("un aggiornamento!");
-				break;
+				case (TableModelEvent.INSERT): System.out.println("un inserimento in corso!"); break;
+				case (TableModelEvent.DELETE): System.out.println("una cancellazione in corso!"); break;
+				case (TableModelEvent.UPDATE): System.out.println("un aggiornamento in corso!"); break;
 			}
 		}
 	};
