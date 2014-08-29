@@ -227,7 +227,10 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		SwingUtilities.invokeLater(addV);
 		
 		//TODO mettere la comunicazione verso l'agente qui?
-		//shipperAgent.newTruck(targa);
+		if (model.equals(dtModelParcoMezzi))
+			shipperAgent.newTruck(targa);
+		else if (model.equals(dtModelMezziDisponibili))
+			shipperAgent.newTruck(targa+"MEZZO RESO DISPONIBILE"); //TODO
 	}
 	
 	
@@ -245,8 +248,10 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 			};
 			SwingUtilities.invokeLater(removeV);
 			
-			//TODO mettere la comunicazione verso l'agente qui?
-			//shipperAgent.removeTruck(targa);
+			if (model.equals(dtModelParcoMezzi))
+				shipperAgent.removeTruck(targa);
+			else if (model.equals(dtModelMezziDisponibili))
+				shipperAgent.removeTruck(targa+"MEZZO NON PIU' DISPONIBILE"); //TODO
 		}
 	}
 	
