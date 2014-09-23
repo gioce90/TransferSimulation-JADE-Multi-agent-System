@@ -67,7 +67,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	
 	////////////////////////////////////////////////////
 	// COSTRUTTORE
-	
+	//
 	ShipperAgentGUI(ShipperAgent agent) {
 		shipperAgent = agent;
 		
