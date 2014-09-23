@@ -1,5 +1,8 @@
 package it.transfersimulation;
 
+import it.transfersimulation.Vehicle.Stato;
+import it.transfersimulation.Vehicle.TipoVeicolo;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -9,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.ComponentOrientation;
 
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -41,33 +45,62 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	private Button btnMD_meno;
 	private JTable mezziDisponibiliTable;
 	private JTable parcoMezziTable;
-
-	private String[] headerTable = { "Targa", "Tipo veicolo", "Marca", "Stato",
-			"Peso trasportabile" };
-	//TODO da aggiungere altri parametri all'header
-
-	private Object[][] veicoli = {
-			{ "AAA", "Autocarro", "SCANIA", null, 3.5 },
-			{ "BBB", "Autocarro", "SCANIA", null, 3.5 },
-			{ "CCC", "Autoarticolato", "SCANIA", null, 3.5 }
+	
+	
+	private DefaultTableModel dtModelParcoMezzi =
+			new DefaultTableModel(null, Vehicle.getHeader().toArray()){
+		
+		public Class<?> getColumnClass(int columnIndex) {
+			return getValueAt(0, columnIndex).getClass();
+		};
+		
+		
 	};
-	//TODO cambiare la classe. Da Object[][] a altro. Forse creare una classe apposita
- 
-	private DefaultTableModel dtModelParcoMezzi = new DefaultTableModel(
-			veicoli, headerTable); 
-	// TODO sostituire veicoli con null
-
-	private DefaultTableModel dtModelMezziDisponibili = new DefaultTableModel(
-			new Object[][] { veicoli[0] }, headerTable);
-	// TODO sostituire veicoli con null, come sopra
+	
+	private DefaultTableModel dtModelMezziDisponibili =
+			new DefaultTableModel(null, Vehicle.getHeader().toArray());
 	
 	protected ShipperAgent shipperAgent;
-	private ShipperInterface sInterface;
+	
+	//private ShipperInterface sInterface;
 	
 	
+	////////////////////////////////////////////////////
+	// COSTRUTTORE
 	
 	ShipperAgentGUI(ShipperAgent agent) {
 		shipperAgent = agent;
+		
+		/*
+		// Contatto con l'agente - Riempimento dati
+		Object[] veicoli = shipperAgent.getVehicles();
+		for (int i=0; i<veicoli.length;i++){
+			Object[] veicolo = (Object[]) veicoli[i];
+			dtModelParcoMezzi.addRow(veicolo);
+			if ( veicolo[3] == Stato.DISPONIBILE ) //TODO
+				dtModelMezziDisponibili.addRow((Object[]) veicoli[i]);
+		}
+		*/
+		
+		dtModelParcoMezzi.addRow(new Object[] {"dd", new JComboBox<Object>(), new Boolean(false),"",""  });
+		
+		/*
+		Object[] veicoli = shipperAgent.getVehicles();
+		for (int i=0; i<veicoli.length;i++){
+			Vehicle veicolo = (Vehicle) veicoli[i];
+			Object[] newRow = new Object[] {
+					veicolo.getTarga(),
+					veicolo.getTipoVeicolo(),
+					veicolo.getMarca(),
+					veicolo.getStato(),
+					veicolo.getPtt()
+			};
+			dtModelParcoMezzi.addRow(newRow);
+			
+			
+		}
+		*/
+		
 		
 		// Cambio di grafica
 		try {
@@ -123,8 +156,8 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 
 		mezziDisponibiliTable = new JTable();
 		mezziDisponibiliTable.setModel(dtModelMezziDisponibili);
-		mezziDisponibiliTable.setPreferredScrollableViewportSize(new Dimension(
-				500, 70));
+		mezziDisponibiliTable.setPreferredScrollableViewportSize(
+				new Dimension(500, 70));
 		mezziDisponibiliTable.setFillsViewportHeight(true);
 		panel_3.add(new JScrollPane(mezziDisponibiliTable));
 
@@ -149,7 +182,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		// TODO Inserisco i listener alle tabelle
 		dtModelParcoMezzi.addTableModelListener(dtmParcoMezziListener);
 		dtModelMezziDisponibili.addTableModelListener(dtmMezziDisponibiliListener);
-
+		
 		showGui();
 
 		/*

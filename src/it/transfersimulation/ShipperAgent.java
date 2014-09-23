@@ -1,5 +1,10 @@
 package it.transfersimulation;
 
+import it.transfersimulation.Vehicle.Stato;
+import it.transfersimulation.Vehicle.TipoVeicolo;
+
+import java.util.Vector;
+
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
@@ -23,28 +28,32 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 
 	private ShipperAgentGUI myGUI;
 	
+	private Vector<Object> veicoli = new Vector<Object>();
+	
 	@Override
 	protected void setup() {
+		
+		// TODO: li dovrà prendere da un database
+		/*
+		veicoli.add(new Object[] {"AAA2", "Autocarro", "SCANIA", null, 3.5});
+		veicoli.add(new Object[] {"BBB2", "Autocarro", "SCANIA", null, 3.5});
+		veicoli.add(new Object[] {"CCC2", "Autoarticolato", "SCANIA", Stato.DISPONIBILE, 3.5});
+		veicoli.add(new Object[] {"DDD2", "Autoarticolato", "SCANIA", null, 3.5});
+		*/
+		
+		veicoli.add(new Vehicle("eee3", TipoVeicolo.AUTO, "SCANIA", Stato.DISPONIBILE, (float) 3.5));
+		
+		// GRAFICA E PRESENTAZIONE
 		myGUI = new ShipperAgentGUI(this);
 		myGUI.showGui();
 		
 		// Printout a welcome message
 		System.out.println("Ciao! Shipper Agent "+getAID().getName()+" pronto!");
 		
-		/*
-		String[] headerTable = {
-				"Targa", "Tipo veicolo", "Marca", "Stato", "Peso trasportabile"};
-		
-		Object[][] primiMezzi = {
-				{"AAA", "Autocarro", "SCANIA", null, 3.5},
-				{"BBB", "Autocarro", "SCANIA", null, 3.5},
-				{"CCC", "Autoarticolato", "SCANIA", null, 3.5}
-		};
-		*/
-		
-		//newCiao("memt");
 		
 		
+		
+		// SVILUPPO FUTURO:
 		
 		// Determina la tipologia di automezzo
 		//whichVehicle();
@@ -57,9 +66,16 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		//addBehaviour(new HandlePropose());
 	}
 	
+	
+	
 	////////////////////
 	// METODI         //
 	////////////////////
+	
+	public Object[] getVehicles(){
+		return veicoli.toArray();
+	}
+	
 	
 	private void publishService() {
 		// Registra il servizio di Trasporto presso il servizio di Pagine Gialle
