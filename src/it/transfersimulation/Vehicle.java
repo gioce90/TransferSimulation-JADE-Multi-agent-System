@@ -1,15 +1,6 @@
 package it.transfersimulation;
 
-import it.transfersimulation.Vehicle.Stato;
-import jade.util.leap.Iterator;
-
-import java.util.Collection;
-import java.util.Date;
 import java.util.Vector;
-
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.text.StyledEditorKit.ForegroundAction;
 
 public class Vehicle {
 	
@@ -57,18 +48,19 @@ public class Vehicle {
 	//Date datImmatricolazione;
 	//String polizza;
 	
-	public Vehicle(String targa, TipoVeicolo tipoVeicolo, String marca,
-			Stato stato, float ptt) {
+	private static Vector<String> header;
+	private static Vector<Class> headerType;
+	
+	public Vehicle(String targa, TipoVeicolo tipoVeicolo, String marca,	Stato stato, float ptt) {
 		this.targa=targa;
 		this.tipoVeicolo=tipoVeicolo;
 		this.marca=marca;
 		this.stato=stato;
 		this.ptt=ptt;
 	}
-
-
+	
 	public static Vector<String> getHeader(){
-		Vector<String> header = new Vector<String>();
+		header = new Vector<String>();
 		header.add("TARGA");
 		header.add("TIPO VEICOLO");
 		header.add("MARCA");
@@ -76,22 +68,17 @@ public class Vehicle {
 		header.add("PTT");
 		return header;
 	}
-	
-	
-	//////////////////////////////////////////////
-	// toString and header methods
-	
-	@Override
-	public String toString() {
-		return super.toString();
+		
+	public static Vector<Class> getHeaderType(){
+		headerType = new Vector<Class>();
+		headerType.add(String.class);
+		headerType.add(TipoVeicolo.class);
+		headerType.add(String.class);
+		headerType.add(Stato.class);
+		headerType.add(Float.class);
+		return headerType;
 	}
 	
-	/*
-	public static void main(String[] args) {
-		Vehicle v = new Vehicle();
-		//v.stampaHeader();
-	}
-	*/
 	
 	//////////////////////////////////////////////
 	// GET and SET methods

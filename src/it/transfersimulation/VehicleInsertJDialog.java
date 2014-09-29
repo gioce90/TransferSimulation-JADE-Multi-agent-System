@@ -1,12 +1,13 @@
 package it.transfersimulation;
 
+import it.transfersimulation.ShipperAgentGUI.Coordinator;
+
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JLabel;
@@ -26,6 +27,11 @@ public class VehicleInsertJDialog extends JDialog {
 	private JTextField textFieldPesoTrasportabile;
 	private JButton okButton;
 
+	
+	ShipperAgentGUI gui;
+	DefaultTableModel tm;
+	
+	
 	/**
 	 * Launch the application.
 	 */
@@ -106,18 +112,17 @@ public class VehicleInsertJDialog extends JDialog {
 	}
 	
 	
-	ShipperAgentGUI gui;
-	DefaultTableModel tm;
-	
-	public VehicleInsertJDialog(final ShipperAgentGUI gui, final DefaultTableModel model) {
+	public VehicleInsertJDialog(final ShipperAgentGUI gui, final Coordinator coordinator) {
 		this();
 		
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				 
-				VehicleInsertJDialog.this.gui = gui;
+				// TODO probabilmente posso eliminare final ShipperAgentGUI gui dal costruttore...
+				//VehicleInsertJDialog.this.gui = gui;
+				
 				gui.addVehicle(
-						model,
+						coordinator,
 						textFieldTarga.getText(),
 						textFieldTipoVeicolo.getText(),
 						textFieldMarca.getText(),

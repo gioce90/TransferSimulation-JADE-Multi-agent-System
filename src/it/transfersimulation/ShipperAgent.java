@@ -34,14 +34,14 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	protected void setup() {
 		
 		// TODO: li dovrà prendere da un database
-		/*
-		veicoli.add(new Object[] {"AAA2", "Autocarro", "SCANIA", null, 3.5});
-		veicoli.add(new Object[] {"BBB2", "Autocarro", "SCANIA", null, 3.5});
-		veicoli.add(new Object[] {"CCC2", "Autoarticolato", "SCANIA", Stato.DISPONIBILE, 3.5});
-		veicoli.add(new Object[] {"DDD2", "Autoarticolato", "SCANIA", null, 3.5});
-		*/
 		
-		veicoli.add(new Vehicle("eee3", TipoVeicolo.AUTO, "SCANIA", Stato.DISPONIBILE, (float) 3.5));
+		veicoli.add(new Object[] {"AAA2", "Autocarro", "SCANIA", Stato.NON_DISPONIBILE, 3.5});
+		veicoli.add(new Object[] {"BBB2", "Autocarro", "SCANIA", Stato.NON_DISPONIBILE, 3.5});
+		veicoli.add(new Object[] {"CCC2", "Autoarticolato", "SCANIA", Stato.DISPONIBILE, 3.5});
+		veicoli.add(new Object[] {"DDD2", "Autoarticolato", "SCANIA", Stato.NON_DISPONIBILE, 3.5});
+		
+		
+		///veicoli.add(new Vehicle("eee3", TipoVeicolo.AUTO, "SCANIA", Stato.DISPONIBILE, (float) 3.5));
 		
 		// GRAFICA E PRESENTAZIONE
 		myGUI = new ShipperAgentGUI(this);
@@ -214,22 +214,22 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	
 	@Override
 	public void newTruck(String targa) {
-		System.out.println("Nuovo camion in ShipperAgent \""+getLocalName()+"\": "+targa);
+		System.out.println("ShipperAgent "+getLocalName()+": Nuovo camion targato \""+targa+"\"");
 	}
 
 	@Override
 	public void removeTruck(String targa) {
-		System.out.println("Rimosso camion da ShipperAgent \""+getLocalName()+"\": "+targa);
+		System.out.println("ShipperAgent "+getLocalName()+": Rimosso camion targato \""+targa+"\"");
 	}
 	
 	@Override
 	public void activateTruck(String targa) {
-		System.out.println("Il camion \""+targa+"\" è stato reso disponibile. ShipperAgent "+getLocalName());
+		System.out.println("ShipperAgent "+getLocalName()+": Il camion targato \""+targa+"\" è stato reso disponibile");
 	}
 	
 	@Override
 	public void deactivateTruck(String targa) {
-		System.out.println("Il camion \""+targa+"\" non è più disponibile. ShipperAgent "+getLocalName());
+		System.out.println("ShipperAgent "+getLocalName()+": Il camion targato \""+targa+"\" non è più disponibile");
 	}
 	
 	
