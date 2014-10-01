@@ -6,14 +6,13 @@ import it.transfersimulation.Vehicle.TipoVeicolo;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.Panel;
-import java.awt.Button;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.ComponentOrientation;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -30,98 +29,61 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.JButton;
 
+import java.awt.FlowLayout;
+
+import javax.swing.SwingConstants;
+
 
 @SuppressWarnings("serial")
 public class ShipperAgentGUI extends JFrame implements ActionListener {
 
-	private JPanel panel = new JPanel();
-	private Panel panel_1;
-	private Panel parcoPanel;
-	private Panel panel_2;
-	private Button btnPM_plus;
-	private Button btnPM_meno;
-	private Panel disponibiliPane;
-	private Panel panel_3;
-	private Panel panel_4;
-	private Button btnMD_plus;
-	private Button btnMD_meno;
-	private JTable mezziDisponibiliTable;
-	private JTable parcoTable;
+	// Variabili di classe
+	private JPanel masterPanel;
+	private JButton btnPM_plus;
+	private JButton btnPM_meno;
+	private JButton btnMD_plus;
+	private JButton btnMD_meno;
+	private JTable availablesTable;
+	private JTable parkTable;
+
+	private Object[] parkModelHeader = { "" , "TARGA", "TIPO VEICOLO", "MARCA", "STATO", "PTT" };
+	private Object[] availablesModelHeader = { "", "TARGA", "TIPO VEICOLO", "MARCA", "STATO", "PTT" };
 	
-	private DefaultTableModel parcoModel =
-			new DefaultTableModel(null, Vehicle.getHeader());/*
-	{
-		
+	private DefaultTableModel parkModel = new DefaultTableModel(null, parkModelHeader){
 		public Class<?> getColumnClass(int columnIndex) {
-			return Vehicle.getHeaderType().get(columnIndex);
+			return getValueAt(0, columnIndex).getClass();
 		};
-	};//TODO per aggiungere checkbox e altro  */
+	};// per aggiungere jCheckBox, jComboBox e ImageIcon
 	
+	private DefaultTableModel availablesModel =	new DefaultTableModel(null, availablesModelHeader){
+		public Class<?> getColumnClass(int columnIndex) {
+			return getValueAt(0, columnIndex).getClass();
+		}
+	};// per aggiungere jCheckBox, jComboBox e ImageIcon
 	
-	private DefaultTableModel mezziDisponibiliModel =
-			new DefaultTableModel(null, Vehicle.getHeader());
-	
+	// My third-part software: a JADE agent:
 	protected ShipperAgent shipperAgent;
-	private Coordinator parcoCoordinator;
-	private Coordinator mezziDisponibiliCoordinator;
-	//private ShipperInterface sInterface;
 	
+	private Coordinator parkCoordinator;
+	private Coordinator availablesCoordinator;
 	
+
 	////////////////////////////////////////////////////
 	// COSTRUTTORE
-	
+
 	ShipperAgentGUI(ShipperAgent agent) {
+		
+		// Valorizza l'agente corrispondente
 		shipperAgent = agent;
 		
-		// TODO
-		// Contatto con l'agente - Riempimento dati
-		Object[] veicoli = shipperAgent.getVehicles();
-		for (int i=0; i<veicoli.length;i++){
-			Object[] veicolo = (Object[]) veicoli[i];
-			parcoModel.addRow(veicolo);
-			if ( veicolo[3] == Stato.DISPONIBILE )
-				mezziDisponibiliModel.addRow((Object[]) veicoli[i]);
-		}
 		
+		///////////////////////////////////////////////////////////////////////
+		// Graphics:
+		//
 		
-		/*
-		dtModelParcoMezzi.addRow(new Object[] {"aa", "shhiiiish", true,"",""  });
-		dtModelParcoMezzi.addRow(new Object[] {"dd", "shhiiiish", false,"",""  });
-		*/
+		setTitle("Shipper Agent: "+agent.getLocalName());
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		//dtModelParcoMezzi = new DefaultTableModel(dtModelParcoMezzi.getDataVector(), Vehicle.getHeader())
-		
-		/*{
-			
-			public Class<?> getColumnClass(int columnIndex) {
-				return getValueAt(0, columnIndex).getClass();
-			};
-		};
-		
-		/*
-		Object[] veicoli = shipperAgent.getVehicles();
-		for (int i=0; i<veicoli.length;i++){
-			Vehicle veicolo = (Vehicle) veicoli[i];
-			Object[] newRow = new Object[] {
-					veicolo.getTarga(),
-					veicolo.getTipoVeicolo(),
-					veicolo.getMarca(),
-					veicolo.getStato(),
-					veicolo.getPtt()
-			};
-			dtModelParcoMezzi.addRow(newRow);
-		}
-		*/
-		
-		/*
-		 * // Ricevo un input da tastiera che inserisce una nuova riga try {
-		 * parcoModel.addRow( new Object[] { System.in.read() } ); }
-		 * catch (IOException e1) { e1.printStackTrace(); }
-		 */
-		
-		
-		
-		// Grafica:
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 			//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -130,163 +92,216 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 			e.printStackTrace();
 		}
 		
-		setTitle("Shipper Agent: "+agent.getLocalName());
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		panel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		// MasterPanel
+		masterPanel = new JPanel();
+		masterPanel.setLayout(new BoxLayout(masterPanel, BoxLayout.Y_AXIS));
+		masterPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		
+		
+		// Park Panel
+		JPanel parkPanel = new JPanel();
+		parkPanel.setLayout(new BoxLayout(parkPanel, BoxLayout.Y_AXIS));
+		masterPanel.add(parkPanel);
+		
+		JPanel pnlHeaderParkPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		JLabel parkLabel = new JLabel("Parco auto:");
+		pnlHeaderParkPanel.add(parkLabel);
+		parkPanel.add(pnlHeaderParkPanel);
+		
+		JPanel pnlTableParkPanel = new JPanel();
+		pnlTableParkPanel.setLayout(new BoxLayout(pnlTableParkPanel, BoxLayout.X_AXIS));
+		parkPanel.add(pnlTableParkPanel);
+		
+		// Park Table
+		parkTable = new JTable();
+		parkTable.setModel(parkModel);
+		parkTable.setPreferredScrollableViewportSize(new Dimension(500,100));
+		parkTable.setFillsViewportHeight(true);
+		JScrollPane parkScrollPane = new JScrollPane(parkTable);
+		pnlTableParkPanel.add(parkScrollPane);
 
-		parcoPanel = new Panel();
-		panel.add(parcoPanel);
+		JPanel pnlBtnParkPanel = new JPanel();
+		pnlTableParkPanel.add(pnlBtnParkPanel);
+		pnlBtnParkPanel.setLayout(new BoxLayout(pnlBtnParkPanel, BoxLayout.Y_AXIS));
 
-		panel_1 = new Panel();
-		parcoPanel.add(panel_1);
-		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.Y_AXIS));
-		JLabel label = new JLabel("Parco auto:");
-		panel_1.add(label);
-
-		parcoTable = new JTable();
-		parcoTable.setModel(parcoModel);
-		parcoTable.setPreferredScrollableViewportSize(new Dimension(500,100));
-		parcoTable.setFillsViewportHeight(true);
-		panel_1.add(new JScrollPane(parcoTable));
-
-		panel_2 = new Panel();
-		parcoPanel.add(panel_2);
-		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.Y_AXIS));
-
-		btnPM_plus = new Button("+");
+		// JButtons: add/remove vehicle in Park Table
+		btnPM_plus = new JButton();
+		btnPM_plus.setToolTipText("Aggiungi mezzo");
+		btnPM_plus.setIcon(new ImageIcon(ShipperAgentGUI.class.getResource("/images/lorry-add.png")));
 		btnPM_plus.setActionCommand("+parco");
 		btnPM_plus.addActionListener(this);
-		panel_2.add(btnPM_plus);
+		pnlBtnParkPanel.add(btnPM_plus);
 
-		btnPM_meno = new Button("-");
+		btnPM_meno = new JButton();
+		btnPM_meno.setToolTipText("Rimuovi mezzo");
+		btnPM_meno.setIcon(new ImageIcon(ShipperAgentGUI.class.getResource("/images/lorry-delete.png")));
 		btnPM_meno.setActionCommand("-parco");
 		btnPM_meno.addActionListener(this);
-		panel_2.add(btnPM_meno);
+		pnlBtnParkPanel.add(btnPM_meno);
 
-		disponibiliPane = new Panel();
-		panel.add(disponibiliPane);
+		
+		// Arrow Panel
+		JPanel arrowPanel = new JPanel();
+		masterPanel.add(arrowPanel);
 
-		panel_3 = new Panel();
-		disponibiliPane.add(panel_3);
-		panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.Y_AXIS));
-		JLabel label_1 = new JLabel("Disponibili:");
-		panel_3.add(label_1);
-
-		mezziDisponibiliTable = new JTable();
-		mezziDisponibiliTable.setModel(mezziDisponibiliModel);
-		mezziDisponibiliTable.setPreferredScrollableViewportSize(new Dimension(500, 100));
-		mezziDisponibiliTable.setFillsViewportHeight(true);
-		panel_3.add(new JScrollPane(mezziDisponibiliTable));
-
-		panel_4 = new Panel();
-		disponibiliPane.add(panel_4);
-		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.Y_AXIS));
-
-		btnMD_plus = new Button("+");
+		// JButtons: available or not vehicle
+		btnMD_plus = new JButton();
+		btnMD_plus.setToolTipText("Rendi disponibile il mezzo selezionato");
+		btnMD_plus.setIcon(new ImageIcon(ShipperAgentGUI.class.getResource("/images/arrow-green-down.png")));
+		arrowPanel.add(btnMD_plus);
 		btnMD_plus.setActionCommand("+disponibili");
 		btnMD_plus.addActionListener(this);
-		panel_4.add(btnMD_plus);
 
-		btnMD_meno = new Button("-");
+		btnMD_meno = new JButton();
+		btnMD_meno.setToolTipText("Rendi indisponibile il mezzo selezionato");
+		btnMD_meno.setIcon(new ImageIcon(ShipperAgentGUI.class.getResource("/images/arrow-red-up.png")));
+		arrowPanel.add(btnMD_meno);
 		btnMD_meno.setActionCommand("-disponibili");
 		btnMD_meno.addActionListener(this);
-		panel_4.add(btnMD_meno);
-		getContentPane().add(panel, BorderLayout.CENTER);
 
+		
+		// Availables Panel
+		JPanel availablesPanel = new JPanel();
+		masterPanel.add(availablesPanel);
+		availablesPanel.setLayout(new BoxLayout(availablesPanel, BoxLayout.Y_AXIS));
+		
+		JPanel pnlHeaderAvailablesPanel = new JPanel();
+		FlowLayout fl_pnlHeaderAvailablesPanel = (FlowLayout) pnlHeaderAvailablesPanel.getLayout();
+		fl_pnlHeaderAvailablesPanel.setAlignment(FlowLayout.LEFT);
+		availablesPanel.add(pnlHeaderAvailablesPanel);
+		JLabel label_1 = new JLabel("Disponibili:");
+		pnlHeaderAvailablesPanel.add(label_1);
+		label_1.setHorizontalAlignment(SwingConstants.LEFT);
+
+		// Available Table
+		availablesTable = new JTable();
+		availablesTable.setModel(availablesModel);
+		availablesTable.setPreferredScrollableViewportSize(new Dimension(500, 100));
+		availablesTable.setFillsViewportHeight(true);
+		JScrollPane availablesScrollPane = new JScrollPane(availablesTable);
+		availablesPanel.add(availablesScrollPane);
+		getContentPane().add(masterPanel, BorderLayout.CENTER);
+		
+		// Search Panel
+		JPanel searchPanel = new JPanel();
+		masterPanel.add(searchPanel);
 		JButton btnSearch = new JButton("Search");
-		panel.add(btnSearch);
+		searchPanel.add(btnSearch);
+
+		// End of graphics init
+		///////////////////////////////////
 		
 		
-		
-		// Coordinators (ispirati al Mediator pattern)
-		
-		parcoCoordinator = new Coordinator(shipperAgent, parcoModel) {
-		    @Override
-		    public void notifyAndAddRow(final Object[] rowData) {
-		    	shipperAgent.newTruck((String) rowData[0]);
-		    	
-		        SwingUtilities.invokeLater(new Runnable() {
-	        		@Override
-	    			public void run() {
-	        			tableModel.addRow(rowData);
-	    			}
-		        });
-		    }
-		    
-		    @Override
-		    public void notifyAndDeleteRow(final int rowIndex) {
-		        final String truck = (String)this.tableModel.getValueAt(rowIndex, 0);
-		        int flag=search(mezziDisponibiliCoordinator.tableModel, truck);
-		        if (flag!=-1)
-    				removeVehicle(mezziDisponibiliCoordinator, flag);
-    			shipperAgent.removeTruck(truck);
-    			
-		        SwingUtilities.invokeLater(new Runnable() {
-	        		@Override
-	    			public void run() {
-	        			tableModel.removeRow(rowIndex);
-	    			}
-		        });
-		    }
-		};
-		
-		
-		mezziDisponibiliCoordinator = new Coordinator(shipperAgent, mezziDisponibiliModel) {
-		    @Override
-		    public void notifyAndAddRow(final Object[] rowData) {
-		    	shipperAgent.activateTruck((String) rowData[0]);
-		        
-		        SwingUtilities.invokeLater(new Runnable() {
-	        		@Override
-	    			public void run() {
-	        			tableModel.addRow(rowData);
-	    			}
-		        });
-		    }
-		    
-		    @Override
-		    public void notifyAndDeleteRow(final int rowIndex) {
-		        String truck = (String)this.tableModel.getValueAt(rowIndex, 0);
-		        shipperAgent.deactivateTruck(truck);
-		        
-		        SwingUtilities.invokeLater(new Runnable() {
-		        		@Override
-		    			public void run() {
-		        			tableModel.removeRow(rowIndex);
-		    			}
-		        });
-		    }
-		};
-		
-		
-		
-		// Listeners:
-		parcoModel.addTableModelListener(parcoListener);
-		mezziDisponibiliModel.addTableModelListener(mezziDisponibiliListener);
-		
-		
-		
-		// TODO Editor delle colonne:
-		// dovrei generalizzare un metodo?
-		
-		TableColumn tipoVeicoloColumn = parcoTable.getColumnModel().getColumn(1);
+		//////////////////////////////////////
+		// Editor delle colonne delle tabelle
+		// TODO
 		JComboBox<TipoVeicolo> tipoVeicoloComboBox = new JComboBox<TipoVeicolo>();
 		tipoVeicoloComboBox.setModel(new DefaultComboBoxModel<TipoVeicolo>(TipoVeicolo.values()));
-		
-		
-		TableColumn statoColumn = parcoTable.getColumnModel().getColumn(3);
 		JComboBox<Stato> statoComboBox = new JComboBox<Stato>();
 		statoComboBox.setModel(new DefaultComboBoxModel<Stato>(Stato.values()));
 		
+		TableColumn tipoVeicoloColumn = parkTable.getColumnModel().getColumn(2);
+		TableColumn statoColumn = parkTable.getColumnModel().getColumn(4);
+
 		tipoVeicoloColumn.setCellEditor(new DefaultCellEditor(tipoVeicoloComboBox));
 		statoColumn.setCellEditor(new DefaultCellEditor(statoComboBox));
+
+		
+		/////////////////////////////////////////////////////////////////////
+		// Coordinators (ispirati al Mediator pattern)
+		
+		parkCoordinator = new Coordinator(shipperAgent, parkModel) {
+			@Override
+			public void notifyAndAddRow(final Object[] rowData) {
+				shipperAgent.newTruck((String) rowData[0]);
+
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						tableModel.addRow(rowData);
+					}
+				});
+			}
+
+			@Override
+			public void notifyAndDeleteRow(final int rowIndex) {
+				final String truck = (String)this.tableModel.getValueAt(rowIndex, 0);
+				int flag=search(availablesCoordinator.tableModel, truck);
+				if (flag!=-1)
+					removeVehicle(availablesCoordinator, flag);
+				shipperAgent.removeTruck(truck);
+
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						tableModel.removeRow(rowIndex);
+					}
+				});
+			}
+		};
+
+
+		availablesCoordinator = new Coordinator(shipperAgent, availablesModel) {
+			@Override
+			public void notifyAndAddRow(final Object[] rowData) {
+				shipperAgent.activateTruck((String) rowData[0]);
+
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						tableModel.addRow(rowData);
+					}
+				});
+			}
+
+			@Override
+			public void notifyAndDeleteRow(final int rowIndex) {
+				String truck = (String)this.tableModel.getValueAt(rowIndex, 1);
+				shipperAgent.deactivateTruck(truck);
+
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						tableModel.removeRow(rowIndex);
+					}
+				});
+			}
+		};
+
+
+		/////////////////////////////////////////////////////
+		// Listeners:
+		
+		parkModel.addTableModelListener(parcoListener);
+		availablesModel.addTableModelListener(mezziDisponibiliListener);
 		
 		
+		/////////////////////////////////////////////////////
+		// Contatto con l'agente - Riempimento dati
+		// TODO
+		Object[] veicoli = shipperAgent.getVehicles();
+		for (int i=0; i<veicoli.length;i++){
+			Object[] info = (Object[]) veicoli[i];
+			Object[] veicolo = new Object[info.length+1];
+			
+			veicolo[0] = new ImageIcon(ShipperAgentGUI.class.getResource("/images/lorry-icon.png"));
+			
+			for (int j=1;j<info.length+1;j++){
+				veicolo[j]=info[j-1];
+			}
+			
+			parkModel.addRow(veicolo);
+			
+			if ( veicolo[4] == Stato.DISPONIBILE )
+				availablesModel.addRow(veicolo);
+		}
+		
+		////////////////////////////
+		// Show GUI
 		showGui();
 	}
-	
-	
+
+
 	public void showGui() {
 		pack();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -295,98 +310,97 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		setLocation(centerX - getWidth() / 2, centerY - getHeight() / 2);
 		super.setVisible(true);
 	}
-	
+
 
 	//////////////////////////////////////////////
 	// actionPerformed
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
 		case "+parco": {
-			new VehicleInsertJDialog(this, parcoCoordinator);
+			new VehicleInsertJDialog(this, parkCoordinator);
 		} break;
-			
+
 		case "-parco": {
-			int selectedRow = parcoTable.getSelectedRow();
+			int selectedRow = parkTable.getSelectedRow();
 			if (selectedRow != -1)
-				removeVehicle(parcoCoordinator, selectedRow);
+				removeVehicle(parkCoordinator, selectedRow);
 		} break;
-		
+
 		case "+disponibili": {
-			int selectedRow = parcoTable.getSelectedRow();
+			int selectedRow = parkTable.getSelectedRow();
 			if (selectedRow != -1){
-				
 				//TODO controlla la consistenza
-				addVehicle(mezziDisponibiliCoordinator,
-						String.valueOf(parcoModel.getValueAt(selectedRow, 0)),
-						String.valueOf(parcoModel.getValueAt(selectedRow, 1)),
-						String.valueOf(parcoModel.getValueAt(selectedRow, 2)),
-						String.valueOf(parcoModel.getValueAt(selectedRow, 3)),
-						String.valueOf(parcoModel.getValueAt(selectedRow, 4))
-				);
-				
+				addVehicle(availablesCoordinator,
+						String.valueOf(parkModel.getValueAt(selectedRow, 0)),
+						String.valueOf(parkModel.getValueAt(selectedRow, 1)),
+						String.valueOf(parkModel.getValueAt(selectedRow, 2)),
+						String.valueOf(parkModel.getValueAt(selectedRow, 3)),
+						String.valueOf(parkModel.getValueAt(selectedRow, 4))
+						);
+
 			}
 		} break;
-		
+
 		case "-disponibili": {
-			int selectedRow = mezziDisponibiliTable.getSelectedRow();
+			int selectedRow = availablesTable.getSelectedRow();
 			if (selectedRow != -1)
-				removeVehicle(mezziDisponibiliCoordinator, selectedRow);
+				removeVehicle(availablesCoordinator, selectedRow);
 		} break;
-		
+
 		default:
 			System.out.println("Imprevisto in actionPerformed()");
 			break;
 		}
 	}
 
-	
-	
+
+
 	// /////////////////////////////////////
 	// Add/Remove vehicles methods
-	
+
 	public void addVehicle(Coordinator coordinator,
 			String targa, String tipo, String marca, String stato, String peso) {
-	    coordinator.notifyAndAddRow(new Object[]{targa, tipo, marca, stato, peso});
+		coordinator.notifyAndAddRow(new Object[]{targa, tipo, marca, stato, peso});
 	}
-	
+
 	public void removeVehicle(Coordinator coordinator, int index) {
-	    coordinator.notifyAndDeleteRow(index);
+		coordinator.notifyAndDeleteRow(index);
 	}
-	
-	
+
+
 	// //////////////////////////////////////////
 	// LISTENER:
-	
+
 	TableModelListener parcoListener = new TableModelListener() {
 		public void tableChanged(TableModelEvent e) {
 			switch (e.getType()) {
-				case (TableModelEvent.INSERT):
-					System.out.println("un inserimento in corso!"); break;
-				case (TableModelEvent.DELETE):
-					System.out.println("una cancellazione in corso!"); break;
-				case (TableModelEvent.UPDATE):
-					System.out.println("un aggiornamento in corso!"); break;
+			case (TableModelEvent.INSERT):
+				System.out.println("un inserimento in corso!"); break;
+			case (TableModelEvent.DELETE):
+				System.out.println("una cancellazione in corso!"); break;
+			case (TableModelEvent.UPDATE):
+				System.out.println("un aggiornamento in corso!"); break;
 			}
 		}
 	};
-	
+
 	TableModelListener mezziDisponibiliListener = new TableModelListener() {
 		public void tableChanged(TableModelEvent e) {
 			switch (e.getType()) {
-				case (TableModelEvent.INSERT):
-					System.out.println("un inserimento in corso!"); break;
-				case (TableModelEvent.DELETE):
-					System.out.println("una cancellazione in corso!"); break;
-				case (TableModelEvent.UPDATE):
-					System.out.println("un aggiornamento in corso!"); break;
+			case (TableModelEvent.INSERT):
+				System.out.println("un inserimento in corso!"); break;
+			case (TableModelEvent.DELETE):
+				System.out.println("una cancellazione in corso!"); break;
+			case (TableModelEvent.UPDATE):
+				System.out.println("un aggiornamento in corso!"); break;
 			}
 		}
 	};
-	
-	
-	
+
+
+
 	private int search(DefaultTableModel tableModel, String targa) {
 		int flag = -1;
 		for (int i=0; i<tableModel.getRowCount(); i++) 
@@ -394,41 +408,33 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 				flag=i;
 		return flag;
 	}
-	
-	
-	
-	
-	
-	 public void setUpColumn(JTable table, TableColumn column, int i) {
-		 
-		 
-		 
-		 
-		 
-	 }
-	
-	
+
+
+
+
+
+
 	///////////////////////////////////////
 	// INNER CLASS
 	///////////////////////////////////////
-	
+
 	protected abstract class Coordinator {
-		
-	    /*
-	     * protected class members so subclasses can access these directly
-	     */
 
-	    protected ShipperAgent shipperAgent;
-	    protected DefaultTableModel tableModel;
-	    
-	    public Coordinator(ShipperAgent sa, DefaultTableModel tm) {
-	        shipperAgent = sa;
-	        tableModel = tm;
-	    }
+		/*
+		 * protected class members so subclasses can access these directly
+		 */
 
-	    public abstract void notifyAndAddRow(Object[] rowData);
+		protected ShipperAgent shipperAgent;
+		protected DefaultTableModel tableModel;
 
-	    public abstract void notifyAndDeleteRow(int rowIndex);
+		public Coordinator(ShipperAgent sa, DefaultTableModel tm) {
+			shipperAgent = sa;
+			tableModel = tm;
+		}
+
+		public abstract void notifyAndAddRow(Object[] rowData);
+
+		public abstract void notifyAndDeleteRow(int rowIndex);
 	}
-	
+
 }

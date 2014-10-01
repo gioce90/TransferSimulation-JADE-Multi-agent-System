@@ -59,6 +59,7 @@ public class Vehicle {
 		this.ptt=ptt;
 	}
 	
+	/*
 	public static Vector<String> getHeader(){
 		header = new Vector<String>();
 		header.add("TARGA");
@@ -68,7 +69,8 @@ public class Vehicle {
 		header.add("PTT");
 		return header;
 	}
-		
+	
+	
 	public static Vector<Class> getHeaderType(){
 		headerType = new Vector<Class>();
 		headerType.add(String.class);
@@ -78,7 +80,7 @@ public class Vehicle {
 		headerType.add(Float.class);
 		return headerType;
 	}
-	
+	*/
 	
 	//////////////////////////////////////////////
 	// GET and SET methods
