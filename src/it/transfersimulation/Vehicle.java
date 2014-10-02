@@ -15,8 +15,9 @@ public class Vehicle {
 	
 	enum TipoVeicolo {
 		AUTO, MINIVAN, FURGONE,
-		AUTOCARRO
-		//, AUTOTRENO, AUTOARTICOLATO
+		AUTOCARRO,
+		AUTOARTICOLATO
+		//, AUTOTRENO
 		//, autosnodato?
 	};
 	

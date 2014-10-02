@@ -2,6 +2,7 @@ package it.transfersimulation;
 
 import it.transfersimulation.Vehicle.Stato;
 import it.transfersimulation.Vehicle.TipoVeicolo;
+import it.transfersimulation.VehiclesTableModel.COLUMNS;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -26,6 +27,7 @@ import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.JButton;
 
@@ -45,21 +47,16 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	private JButton btnMD_meno;
 	private JTable availablesTable;
 	private JTable parkTable;
-
-	private Object[] parkModelHeader = { "" , "TARGA", "TIPO VEICOLO", "MARCA", "STATO", "PTT" };
-	private Object[] availablesModelHeader = { "", "TARGA", "TIPO VEICOLO", "MARCA", "STATO", "PTT" };
 	
-	private DefaultTableModel parkModel = new DefaultTableModel(null, parkModelHeader){
-		public Class<?> getColumnClass(int columnIndex) {
-			return getValueAt(0, columnIndex).getClass();
-		};
-	};// per aggiungere jCheckBox, jComboBox e ImageIcon
+	private COLUMNS[] parkModelHeader = {COLUMNS.IMAGE_COLUMN, COLUMNS.TARGA_COLUMN,
+		COLUMNS.CAR_TYPE_COLUMN, COLUMNS.MARCA_COLUMN, COLUMNS.STATE_COLUMN, COLUMNS.PTT_COLUMN };
 	
-	private DefaultTableModel availablesModel =	new DefaultTableModel(null, availablesModelHeader){
-		public Class<?> getColumnClass(int columnIndex) {
-			return getValueAt(0, columnIndex).getClass();
-		}
-	};// per aggiungere jCheckBox, jComboBox e ImageIcon
+	private COLUMNS[] availablesModelHeader = {COLUMNS.IMAGE_COLUMN, COLUMNS.TARGA_COLUMN,
+		COLUMNS.CAR_TYPE_COLUMN, COLUMNS.MARCA_COLUMN };
+	
+	private DefaultTableModel parkModel = new VehiclesTableModel(parkModelHeader);
+	private DefaultTableModel availablesModel = new VehiclesTableModel(availablesModelHeader);
+	
 	
 	// My third-part software: a JADE agent:
 	protected ShipperAgent shipperAgent;
@@ -75,7 +72,6 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		
 		// Valorizza l'agente corrispondente
 		shipperAgent = agent;
-		
 		
 		///////////////////////////////////////////////////////////////////////
 		// Graphics:
@@ -96,7 +92,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		masterPanel = new JPanel();
 		masterPanel.setLayout(new BoxLayout(masterPanel, BoxLayout.Y_AXIS));
 		masterPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-		
+		getContentPane().add(masterPanel, BorderLayout.CENTER);
 		
 		// Park Panel
 		JPanel parkPanel = new JPanel();
@@ -138,7 +134,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		btnPM_meno.setActionCommand("-parco");
 		btnPM_meno.addActionListener(this);
 		pnlBtnParkPanel.add(btnPM_meno);
-
+		
 		
 		// Arrow Panel
 		JPanel arrowPanel = new JPanel();
@@ -180,7 +176,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		availablesTable.setFillsViewportHeight(true);
 		JScrollPane availablesScrollPane = new JScrollPane(availablesTable);
 		availablesPanel.add(availablesScrollPane);
-		getContentPane().add(masterPanel, BorderLayout.CENTER);
+		
 		
 		// Search Panel
 		JPanel searchPanel = new JPanel();
@@ -195,6 +191,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		//////////////////////////////////////
 		// Editor delle colonne delle tabelle
 		// TODO
+		
 		JComboBox<TipoVeicolo> tipoVeicoloComboBox = new JComboBox<TipoVeicolo>();
 		tipoVeicoloComboBox.setModel(new DefaultComboBoxModel<TipoVeicolo>(TipoVeicolo.values()));
 		JComboBox<Stato> statoComboBox = new JComboBox<Stato>();
