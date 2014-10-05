@@ -121,14 +121,17 @@ public class VehicleInsertJDialog extends JDialog {
 				// TODO probabilmente posso eliminare final ShipperAgentGUI gui dal costruttore...
 				//VehicleInsertJDialog.this.gui = gui;
 				
+				/* TODO
 				gui.addVehicle(
 						coordinator,
+						null,
 						textFieldTarga.getText(),
 						textFieldTipoVeicolo.getText(),
 						textFieldMarca.getText(),
 						textFieldStato.getText(),
 						textFieldPesoTrasportabile.getText()
 				);
+				*/
 			}
 		});
 	}

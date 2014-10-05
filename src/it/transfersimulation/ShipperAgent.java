@@ -28,20 +28,26 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 
 	private ShipperAgentGUI myGUI;
 	
-	private Vector<Object> veicoli = new Vector<Object>();
+	//private Vector<Object> veicoli = new Vector<Object>();
+	
+	private Vector<Vehicle> vehicles = new Vector<Vehicle>();
 	
 	@Override
 	protected void setup() {
 		
 		// TODO: li dovrà prendere da un database
 		
-		veicoli.add(new Object[] {"AAA2", "Autocarro", "SCANIA", Stato.NON_DISPONIBILE, 3.5});
-		veicoli.add(new Object[] {"BBB2", "Autocarro", "SCANIA", Stato.NON_DISPONIBILE, 3.5});
-		veicoli.add(new Object[] {"CCC2", "Autoarticolato", "SCANIA", Stato.DISPONIBILE, 3.5});
-		veicoli.add(new Object[] {"DDD2", "Autoarticolato", "SCANIA", Stato.NON_DISPONIBILE, 3.5});
+		/* old:
+		veicoli.add(new Object[] {"AAA2", TipoVeicolo.AUTO, "SCANIA", Stato.NON_DISPONIBILE, 3.5});
+		veicoli.add(new Object[] {"BBB2", TipoVeicolo.AUTOARTICOLATO, "SCANIA", Stato.IN_VIAGGIO, 3.5});
+		veicoli.add(new Object[] {"CCC2", TipoVeicolo.AUTOCARRO, "SCANIA", Stato.DISPONIBILE, 3.5});
+		veicoli.add(new Object[] {"DDD2", TipoVeicolo.FURGONE, "SCANIA", Stato.NON_DISPONIBILE, 3.5});
+		*/
 		
+		vehicles.add(new Vehicle("AAA1", TipoVeicolo.AUTO, "Peugeot", Stato.DISPONIBILE, (float) 1.5));
+		vehicles.add(new Vehicle("AAA2", TipoVeicolo.AUTOARTICOLATO, "SCANIA", Stato.IN_VIAGGIO, (float) 3.5));
+		vehicles.add(new Vehicle("AAA3", TipoVeicolo.AUTOCARRO, "SCANIA", Stato.NON_DISPONIBILE, (float) 3.5));
 		
-		///veicoli.add(new Vehicle("eee3", TipoVeicolo.AUTO, "SCANIA", Stato.DISPONIBILE, (float) 3.5));
 		
 		// GRAFICA E PRESENTAZIONE
 		myGUI = new ShipperAgentGUI(this);
@@ -72,8 +78,8 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	// METODI         //
 	////////////////////
 	
-	public Object[] getVehicles(){
-		return veicoli.toArray();
+	public Vector<Vehicle> getVehicles(){
+		return vehicles;
 	}
 	
 	

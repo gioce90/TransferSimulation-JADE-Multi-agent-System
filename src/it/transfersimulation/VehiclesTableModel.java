@@ -22,7 +22,7 @@ public class VehiclesTableModel extends DefaultTableModel {
 	public VehiclesTableModel(Object[] headerTable) {
 		super(null, headerTable);
 	}
-    
+	
     
     @Override
 	public Class<?> getColumnClass(int columnIndex) {
@@ -58,26 +58,29 @@ public class VehiclesTableModel extends DefaultTableModel {
     
     @Override
     public void setValueAt(Object value, int row, int col) {
-        /*if (col == 0) {
-            ImageIcon icon = findImageByColumnCarType(value);
-            super.setValueAt(icon, row, 0);
-        } else */
+    	System.out.println("Siamo in setValueAt("+value+") !!!");
+    	if (super.getColumnName(col).equals(COLUMNS.CAR_TYPE_COLUMN.toString())){
+    		ImageIcon icon = findImageByColumnCarType(value);
+    		super.setValueAt(icon, row, 0);
+    		/*
+    		((Vector) super.getDataVector().elementAt(row)).setElementAt(icon, 0);
+    		fireTableCellUpdated(row, 0);
+    		*/
+    	}
     	super.setValueAt(value, row, col);
     }
-	
     
-	private ImageIcon findImageByColumnCarType(Object value) {
+    
+	protected ImageIcon findImageByColumnCarType(Object value) {
 		ImageIcon i = null;
 		if (value.equals(TipoVeicolo.AUTO))
-			i = new ImageIcon(ShipperAgentGUI.class.getResource("/images/lorry-add.png"));
+			i = new ImageIcon(VehiclesTableModel.class.getResource("/images/Car-icon_32.png"));
 		else if (value.equals(TipoVeicolo.AUTOARTICOLATO))
-			i = new ImageIcon(ShipperAgentGUI.class.getResource("/images/lorry-delete.png"));
+			i = new ImageIcon(VehiclesTableModel.class.getResource("/images/City-Truck-blue-icon_32.png"));
 		else if (value.equals(TipoVeicolo.AUTOCARRO))
-			i = new ImageIcon(ShipperAgentGUI.class.getResource("/images/lorry-icon.png"));
+			i = new ImageIcon(VehiclesTableModel.class.getResource("/images/lorry-icon.png"));
 		else if (value.equals(TipoVeicolo.FURGONE))
-			i = new ImageIcon(ShipperAgentGUI.class.getResource("/images/lorry-icon.png"));
-		else if (value.equals(TipoVeicolo.MINIVAN))
-			i = new ImageIcon(ShipperAgentGUI.class.getResource("/images/lorry-icon.png"));
+			i = new ImageIcon(VehiclesTableModel.class.getResource("/images/truck-icon-autocarro_32.png"));
 		return i;
 	}
 	

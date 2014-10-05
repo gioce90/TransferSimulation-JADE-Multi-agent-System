@@ -14,7 +14,7 @@ public class Vehicle {
 	};
 	
 	enum TipoVeicolo {
-		AUTO, MINIVAN, FURGONE,
+		AUTO, FURGONE,
 		AUTOCARRO,
 		AUTOARTICOLATO
 		//, AUTOTRENO
