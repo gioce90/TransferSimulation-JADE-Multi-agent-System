@@ -1,13 +1,13 @@
-package it.transfersimulation;
+package oldstuff;
 
 
-import it.transfersimulation.Vehicle.TipoVeicolo;
+import it.transfersimulation.Vehicle;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.table.DefaultTableModel;
 
-public class VehiclesTableModel extends DefaultTableModel {
+public class OldVehiclesTableModel extends DefaultTableModel {
 	
 	Vehicle vehicle; 
 	
@@ -21,7 +21,7 @@ public class VehiclesTableModel extends DefaultTableModel {
 	};
 	
 
-	public VehiclesTableModel(Object[] headerTable) {
+	public OldVehiclesTableModel(Object[] headerTable) {
 		super(null, headerTable);
 	}
     
@@ -37,7 +37,7 @@ public class VehiclesTableModel extends DefaultTableModel {
     	else c = super.getColumnClass(columnIndex);
     	return c;
     }
-    
+    /*
     
     @Override
     public String getColumnName(int col) {
@@ -72,14 +72,14 @@ public class VehiclesTableModel extends DefaultTableModel {
 	protected static ImageIcon findImageByColumnCarType(Object value) {
 		ImageIcon i = null;
 		if (value.equals(TipoVeicolo.AUTO))
-			i = new ImageIcon(VehiclesTableModel.class.getResource("/images/Car-icon_32.png"));
+			i = new ImageIcon(OldVehiclesTableModel.class.getResource("/images/Car-icon_32.png"));
 		else if (value.equals(TipoVeicolo.AUTOARTICOLATO))
-			i = new ImageIcon(VehiclesTableModel.class.getResource("/images/City-Truck-blue-icon_32.png"));
+			i = new ImageIcon(OldVehiclesTableModel.class.getResource("/images/City-Truck-blue-icon_32.png"));
 		else if (value.equals(TipoVeicolo.AUTOCARRO))
-			i = new ImageIcon(VehiclesTableModel.class.getResource("/images/lorry-icon.png"));
+			i = new ImageIcon(OldVehiclesTableModel.class.getResource("/images/lorry-icon.png"));
 		else if (value.equals(TipoVeicolo.FURGONE))
-			i = new ImageIcon(VehiclesTableModel.class.getResource("/images/truck-icon-autocarro_32.png"));
+			i = new ImageIcon(OldVehiclesTableModel.class.getResource("/images/truck-icon-autocarro_32.png"));
 		return i;
 	}
-	
+	*/
 }

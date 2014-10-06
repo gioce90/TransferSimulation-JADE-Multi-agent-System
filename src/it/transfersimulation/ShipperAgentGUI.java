@@ -1,8 +1,7 @@
 package it.transfersimulation;
 
 import it.transfersimulation.Vehicle.Stato;
-import it.transfersimulation.Vehicle.TipoVeicolo;
-import it.transfersimulation.VehiclesTableModel.COLUMNS;
+import it.transfersimulation.VehicleTableModel.COLUMNS;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -46,10 +45,10 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	private COLUMNS[] availablesModelHeader = {COLUMNS.IMAGE_COLUMN, COLUMNS.TARGA_COLUMN,
 		COLUMNS.CAR_TYPE_COLUMN, COLUMNS.MARCA_COLUMN };
 	
-	private VehiclesTableModel parkModel = new VehiclesTableModel(parkModelHeader);
-	private VehiclesTableModel availablesModel = new VehiclesTableModel(availablesModelHeader);
+	private VehicleTableModel parkModel = new VehicleTableModel(parkModelHeader);
+	private VehicleTableModel availablesModel = new VehicleTableModel(availablesModelHeader);
 	
-	private VehicleTable parkTable;
+	private VehicleTable parkTable; 
 	private VehicleTable availablesTable;
 	
 	private Coordinator parkCoordinator;
@@ -105,8 +104,6 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		
 		// Park Table
 		parkTable = new VehicleTable(parkModel);
-		parkTable.setJComboBoxTipoVeicoloColumn(2);
-		parkTable.setJComboBoxStatoColumn(4);
 		JScrollPane parkScrollPane = new JScrollPane(parkTable);
 		pnlTableParkPanel.add(parkScrollPane);
 
@@ -184,54 +181,33 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		parkCoordinator = new Coordinator(shipperAgent, parkModel) {
 			
 			@Override
-			public void notifyAndAddRow(final Object[] rowData) {
-				shipperAgent.newTruck((String) rowData[1]); // TODO creazione dell'agente
+			public void notifyAndAddRow(final Vehicle vehicle) {
+				shipperAgent.newTruck(vehicle.getTarga()); // TODO creazione dell'agente
 				
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						parkModel.addRow(rowData);
+						parkModel.addRow(vehicle);
 					}
 				});
 			}
-			
-			/*
-			@Override			public void notifyAndAddRow(final Vehicle vehicle) {
-				// TODO creazione dell'agente
-				//shipperAgent.newTruck((String) rowData[1]);
-				
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						Object[] v = {
-								//tableModel.addRow(rowData);
-								parkModel.findImageByColumnCarType(vehicle.getTipoVeicolo()),
-								vehicle.getTarga(), vehicle.getTipoVeicolo(), vehicle.getMarca(),
-								vehicle.getStato(), vehicle.getPtt()
-						};
-						parkModel.addRow(v);
-					}
-				});
-			}
-			*/
 			
 			@Override
 			public void notifyAndDeleteRow(final int rowIndex) {
 				//Eliminazione dell'agente
-				final String truck = (String)this.tableModel.getValueAt(rowIndex, 1);
-				
+				final Vehicle v = this.tableModel.getVehicleAt(rowIndex);
+				/*
 				// Rimuove anche dai veicoli disponibili
 				int flag=search(availablesCoordinator.tableModel, truck);
 				if (flag!=-1)
 					removeVehicle(availablesCoordinator, flag);
-				
-				shipperAgent.removeTruck(truck);
+				*/
+				shipperAgent.removeTruck(v.getTarga());
 				
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						parkModel.getDataVector().elementAt(rowIndex);
-						parkModel.removeRow(rowIndex);
+						parkModel.removeRow(v);
 					}
 				});
 			}
@@ -241,18 +217,19 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		availablesCoordinator = new Coordinator(shipperAgent, availablesModel) {
 
 			@Override
-			public void notifyAndAddRow(final Object[] rowData) {
-				shipperAgent.activateTruck((String) rowData[1]);
+			public void notifyAndAddRow(final Vehicle vehicle) {
+				shipperAgent.activateTruck(vehicle.getTarga());
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						availablesModel.addRow(rowData);
+						availablesModel.addRow(vehicle);
 					}
 				});
 			}
 			
 			@Override
 			public void notifyAndDeleteRow(final int rowIndex) {
+				/*
 				String truck = (String)this.tableModel.getValueAt(rowIndex, 1);
 				shipperAgent.deactivateTruck(truck);
 
@@ -262,7 +239,9 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 						tableModel.removeRow(rowIndex);
 					}
 				});
+				*/
 			}
+			
 			
 		};
 		
@@ -272,7 +251,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		// Listeners:
 		
 		parkModel.addTableModelListener(parcoListener);
-		//availablesModel.addTableModelListener(mezziDisponibiliListener);
+		availablesModel.addTableModelListener(mezziDisponibiliListener);
 		
 		
 		/////////////////////////////////////////////////////
@@ -309,6 +288,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	}
 	
 	
+	/*
 	private int search(DefaultTableModel tableModel, String targa) {
 		int flag = -1;
 		for (int i=0; i<tableModel.getRowCount(); i++) 
@@ -316,7 +296,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 				flag=i;
 		return flag;
 	}
-	
+	*/
 	
 	//////////////////////////////////////////////
 	// actionPerformed method
@@ -337,6 +317,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		case "+disponibili": {
 			int selectedRow = parkTable.getSelectedRow();
 			if (selectedRow != -1){
+				/*
 				addVehicle(availablesCoordinator, 
 						(ImageIcon) (parkModel.getValueAt(selectedRow, 0)),
 						String.valueOf(parkModel.getValueAt(selectedRow, 1)),
@@ -345,6 +326,8 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 						(Stato)(parkModel.getValueAt(selectedRow, 4)),
 						(float) parkModel.getValueAt(selectedRow, 5)
 				);
+				*/
+				addVehicle(availablesCoordinator, ((VehicleTableModel)parkTable.getModel()).getVehicleAt(selectedRow));
 			}
 		} break;
 
@@ -364,17 +347,21 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	// /////////////////////////////////////
 	// Add/Remove vehicles methods
 	
+	/*
 	void addVehicle(Coordinator coordinator,
 			ImageIcon icon, String targa, TipoVeicolo tipoVeicolo,
 			String marca, Stato stato, float ptt) {
 		coordinator.notifyAndAddRow(new Object[]{icon, targa, tipoVeicolo, marca, stato, ptt});
 	}
+	*/
 	
 	private void addVehicle(Coordinator coordinator, Vehicle v) {
+		/*
 		addVehicle(coordinator,
 				coordinator.tableModel.findImageByColumnCarType(v.getTipoVeicolo()),
 				v.getTarga(), v.getTipoVeicolo(), v.getMarca(), v.getStato(), v.getPtt());
-		
+		*/
+		coordinator.notifyAndAddRow(v);
 	}
 	
 	public void removeVehicle(Coordinator coordinator, int index) {
@@ -429,14 +416,14 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		 */
 
 		protected ShipperAgent shipperAgent;
-		protected VehiclesTableModel tableModel;
+		protected VehicleTableModel tableModel;
 
-		public Coordinator(ShipperAgent sa, VehiclesTableModel tm) {
+		public Coordinator(ShipperAgent sa, VehicleTableModel tm) {
 			shipperAgent = sa;
 			tableModel = tm;
 		}
 
-		public abstract void notifyAndAddRow(Object[] rowData);
+		public abstract void notifyAndAddRow(Vehicle vehicle);
 		public abstract void notifyAndDeleteRow(int rowIndex);
 	}
 

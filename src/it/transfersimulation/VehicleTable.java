@@ -2,6 +2,7 @@ package it.transfersimulation;
 
 import it.transfersimulation.Vehicle.Stato;
 import it.transfersimulation.Vehicle.TipoVeicolo;
+import it.transfersimulation.VehicleTableModel.COLUMNS;
 
 import java.awt.Dimension;
 
@@ -16,26 +17,49 @@ import javax.swing.table.TableColumn;
 @SuppressWarnings("serial")
 public class VehicleTable extends JTable {
 	
-	public VehicleTable(VehiclesTableModel model) {
-		super(model); 
-		
+	public VehicleTable(VehicleTableModel vehicleModel) {
+		super(vehicleModel); 
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.setColumnSelectionAllowed(false);
 		this.setCellSelectionEnabled(false);
 		this.setShowHorizontalLines(true);
 		this.setRowHeight(25);
-		//this.setModel(model);
 		this.setPreferredScrollableViewportSize(new Dimension(700,150));
 		this.setFillsViewportHeight(true);
 		
 		
+		int flag=-1;
+		
 		// Icon Column:
-		TableColumn iconColumn = this.getColumnModel().getColumn(0);
-		iconColumn.setMinWidth(80);
-		iconColumn.setMaxWidth(80);
+		flag = vehicleModel.findColumn(COLUMNS.IMAGE_COLUMN);
+		if (flag!=-1){
+			TableColumn iconColumn = this.getColumnModel().getColumn(flag);
+			iconColumn.setMinWidth(80);
+			iconColumn.setMaxWidth(80);
+		}
+		
+		// Tipo veicolo Column
+		flag = vehicleModel.findColumn(COLUMNS.CAR_TYPE_COLUMN);
+		if (flag!=-1){
+			TableColumn tipoVeicoloColumn = this.getColumnModel().getColumn(flag);
+			tipoVeicoloColumn.setCellEditor(new DefaultCellEditor(
+					new JComboBox<TipoVeicolo>(TipoVeicolo.values())));
+		}
+		
+		// Stato veicolo Column
+		flag = vehicleModel.findColumn(COLUMNS.STATE_COLUMN);
+		if (flag!=-1){
+			TableColumn statoColumn = this.getColumnModel().getColumn(flag);
+			statoColumn.setCellEditor(new DefaultCellEditor(
+					new JComboBox<Stato>(Stato.values())));
+		}
+		
 	}
 	
 	
+	
+	
+	/*
 	public void setJComboBoxTipoVeicoloColumn(int i){
 		JComboBox<TipoVeicolo> tipoVeicoloComboBox = new JComboBox<TipoVeicolo>();
 		tipoVeicoloComboBox.setModel(new DefaultComboBoxModel<TipoVeicolo>(TipoVeicolo.values()));
@@ -50,6 +74,8 @@ public class VehicleTable extends JTable {
 		TableColumn statoColumn = this.getColumnModel().getColumn(i);
 		statoColumn.setCellEditor(new DefaultCellEditor(statoComboBox));
 	}
+	*/
+	
 	
 	
 	/*
