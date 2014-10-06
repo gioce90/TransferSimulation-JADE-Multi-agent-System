@@ -1,11 +1,14 @@
 package it.transfersimulation;
 
 import it.transfersimulation.ShipperAgentGUI.Coordinator;
+import it.transfersimulation.Vehicle.Stato;
+import it.transfersimulation.Vehicle.TipoVeicolo;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -21,9 +24,9 @@ public class VehicleInsertJDialog extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textFieldTarga;
-	private JTextField textFieldTipoVeicolo;
+	private JComboBox<TipoVeicolo> tipoVeicolo = new JComboBox<TipoVeicolo>(TipoVeicolo.values());
 	private JTextField textFieldMarca;
-	private JTextField textFieldStato;
+	private JComboBox<Stato> stato = new JComboBox<Stato>(Stato.values());
 	private JTextField textFieldPesoTrasportabile;
 	private JButton okButton;
 
@@ -64,25 +67,21 @@ public class VehicleInsertJDialog extends JDialog {
 			JLabel lblPesoTrasportabile = new JLabel("Peso trasportabile");
 			
 			textFieldTarga = new JTextField();
-			textFieldTipoVeicolo = new JTextField();
 			textFieldMarca = new JTextField();
-			textFieldStato = new JTextField();
 			textFieldPesoTrasportabile = new JTextField();
 			
 			textFieldTarga.setColumns(10);
-			textFieldTipoVeicolo.setColumns(10);
 			textFieldMarca.setColumns(10);
-			textFieldStato.setColumns(10);
 			textFieldPesoTrasportabile.setColumns(10);
 			
 			contentPanel.add(lblTarga);
 			contentPanel.add(textFieldTarga);
 			contentPanel.add(lblTipoVeicolo);
-			contentPanel.add(textFieldTipoVeicolo);
+			contentPanel.add(tipoVeicolo);
 			contentPanel.add(lblMarca);
 			contentPanel.add(textFieldMarca);
 			contentPanel.add(lblStato);
-			contentPanel.add(textFieldStato);
+			contentPanel.add(stato);
 			contentPanel.add(lblPesoTrasportabile);
 			contentPanel.add(textFieldPesoTrasportabile);
 		}
@@ -117,21 +116,28 @@ public class VehicleInsertJDialog extends JDialog {
 		
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				 
-				// TODO probabilmente posso eliminare final ShipperAgentGUI gui dal costruttore...
-				//VehicleInsertJDialog.this.gui = gui;
+				TipoVeicolo tipo = (TipoVeicolo)tipoVeicolo.getSelectedItem();
 				
-				/* TODO
-				gui.addVehicle(
-						coordinator,
-						null,
-						textFieldTarga.getText(),
-						textFieldTipoVeicolo.getText(),
-						textFieldMarca.getText(),
-						textFieldStato.getText(),
-						textFieldPesoTrasportabile.getText()
-				);
-				*/
+				try{
+					if (textFieldTarga.getText().equals(""))
+						throw new InsertVehicleException("Inserire targa");
+					
+					try{
+						gui.addVehicle(
+							coordinator,
+							VehiclesTableModel.findImageByColumnCarType(tipo),
+							textFieldTarga.getText(),
+							tipo,
+							textFieldMarca.getText(),
+							(Stato)stato.getSelectedItem(),
+							Float.valueOf(textFieldPesoTrasportabile.getText())
+						);	
+					} catch (NumberFormatException e1){
+						throw new InsertVehicleException("Inserire peso in formato numerico");
+					}
+				} catch (InsertVehicleException e1) {
+					System.out.println(e1.getMessage());
+				}
 			}
 		});
 	}

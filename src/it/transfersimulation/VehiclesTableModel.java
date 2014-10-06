@@ -9,6 +9,8 @@ import javax.swing.table.DefaultTableModel;
 
 public class VehiclesTableModel extends DefaultTableModel {
 	
+	Vehicle vehicle;
+	
 	public enum COLUMNS {
 			IMAGE_COLUMN,
 			TARGA_COLUMN,
@@ -18,11 +20,10 @@ public class VehiclesTableModel extends DefaultTableModel {
 			PTT_COLUMN,
 	};
 	
-	
+
 	public VehiclesTableModel(Object[] headerTable) {
 		super(null, headerTable);
 	}
-	
     
     @Override
 	public Class<?> getColumnClass(int columnIndex) {
@@ -54,7 +55,7 @@ public class VehiclesTableModel extends DefaultTableModel {
     		return "PTT";
     	return super.getColumnName(col);
     };
-	
+    
     
     @Override
     public void setValueAt(Object value, int row, int col) {
@@ -62,16 +63,13 @@ public class VehiclesTableModel extends DefaultTableModel {
     	if (super.getColumnName(col).equals(COLUMNS.CAR_TYPE_COLUMN.toString())){
     		ImageIcon icon = findImageByColumnCarType(value);
     		super.setValueAt(icon, row, 0);
-    		/*
-    		((Vector) super.getDataVector().elementAt(row)).setElementAt(icon, 0);
-    		fireTableCellUpdated(row, 0);
-    		*/
     	}
+    	// Object o = parkTable.getColumnModel().getColumn(2).getCellEditor().getCellEditorValue();
     	super.setValueAt(value, row, col);
     }
     
     
-	protected ImageIcon findImageByColumnCarType(Object value) {
+	protected static ImageIcon findImageByColumnCarType(Object value) {
 		ImageIcon i = null;
 		if (value.equals(TipoVeicolo.AUTO))
 			i = new ImageIcon(VehiclesTableModel.class.getResource("/images/Car-icon_32.png"));
@@ -83,6 +81,5 @@ public class VehiclesTableModel extends DefaultTableModel {
 			i = new ImageIcon(VehiclesTableModel.class.getResource("/images/truck-icon-autocarro_32.png"));
 		return i;
 	}
-	
 	
 }

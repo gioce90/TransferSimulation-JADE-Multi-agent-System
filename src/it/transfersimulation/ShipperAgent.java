@@ -28,21 +28,12 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 
 	private ShipperAgentGUI myGUI;
 	
-	//private Vector<Object> veicoli = new Vector<Object>();
-	
 	private Vector<Vehicle> vehicles = new Vector<Vehicle>();
 	
 	@Override
 	protected void setup() {
 		
 		// TODO: li dovrà prendere da un database
-		
-		/* old:
-		veicoli.add(new Object[] {"AAA2", TipoVeicolo.AUTO, "SCANIA", Stato.NON_DISPONIBILE, 3.5});
-		veicoli.add(new Object[] {"BBB2", TipoVeicolo.AUTOARTICOLATO, "SCANIA", Stato.IN_VIAGGIO, 3.5});
-		veicoli.add(new Object[] {"CCC2", TipoVeicolo.AUTOCARRO, "SCANIA", Stato.DISPONIBILE, 3.5});
-		veicoli.add(new Object[] {"DDD2", TipoVeicolo.FURGONE, "SCANIA", Stato.NON_DISPONIBILE, 3.5});
-		*/
 		
 		vehicles.add(new Vehicle("AAA1", TipoVeicolo.AUTO, "Peugeot", Stato.DISPONIBILE, (float) 1.5));
 		vehicles.add(new Vehicle("AAA2", TipoVeicolo.AUTOARTICOLATO, "SCANIA", Stato.IN_VIAGGIO, (float) 3.5));
@@ -57,15 +48,13 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		System.out.println("Ciao! Shipper Agent "+getAID().getName()+" pronto!");
 		
 		
-		
-		
 		// SVILUPPO FUTURO:
 		
 		// Determina la tipologia di automezzo
 		//whichVehicle();
 		
 		// Pubblica sulle Pagine Gialle il proprio servizio
-		//publishService();
+		publishService();
 		
 		// Trova le aziende che necessitano di un trasporto
 		//searchJob();
@@ -88,8 +77,8 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
-		sd.setType("trasporto-merci");
 		sd.setName("JADE-trasporto-merci");
+		sd.setType("trasporto-merci"); // cos'è?
 		dfd.addServices(sd);
 		try {
 			DFService.register(this, dfd);
@@ -238,5 +227,8 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		System.out.println("ShipperAgent "+getLocalName()+": Il camion targato \""+targa+"\" non è più disponibile");
 	}
 	
-	
+	@Override
+	public void doDelete() {
+		super.doDelete();
+	}
 }
