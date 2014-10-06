@@ -9,7 +9,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class VehiclesTableModel extends DefaultTableModel {
 	
-	Vehicle vehicle;
+	Vehicle vehicle; 
 	
 	public enum COLUMNS {
 			IMAGE_COLUMN,

@@ -17,7 +17,7 @@ import javax.swing.table.TableColumn;
 public class VehicleTable extends JTable {
 	
 	public VehicleTable(VehiclesTableModel model) {
-		super(model);
+		super(model); 
 		
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.setColumnSelectionAllowed(false);

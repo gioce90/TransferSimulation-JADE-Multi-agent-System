@@ -414,7 +414,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	// on dispose, delete the agent
 	public void dispose() {
 		super.dispose();
-		shipperAgent.doDelete();
+		shipperAgent.doDelete(); 
 	}
 
 

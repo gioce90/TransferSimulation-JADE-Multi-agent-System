@@ -3,7 +3,7 @@ package it.transfersimulation;
 import java.util.Vector;
 
 public class Vehicle {
-	
+	 
 	// PER QUESTA VERSIONE DO PER SCONTATO CHE SIANO TUTTI VEICOLI
 	// NON SCOMPONIBILI (niente autotreni o autoarticolati)
 	

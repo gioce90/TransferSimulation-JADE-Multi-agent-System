@@ -21,7 +21,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class VehicleInsertJDialog extends JDialog {
-
+ 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textFieldTarga;
 	private JComboBox<TipoVeicolo> tipoVeicolo = new JComboBox<TipoVeicolo>(TipoVeicolo.values());

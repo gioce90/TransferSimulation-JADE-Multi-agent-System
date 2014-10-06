@@ -216,7 +216,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	public void removeTruck(String targa) {
 		System.out.println("ShipperAgent "+getLocalName()+": Rimosso camion targato \""+targa+"\"");
 	}
-	
+	 
 	@Override
 	public void activateTruck(String targa) {
 		System.out.println("ShipperAgent "+getLocalName()+": Il camion targato \""+targa+"\" è stato reso disponibile");
