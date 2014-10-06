@@ -146,7 +146,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		}
 		
 		// Close the GUI
-		//myGui.dispose();
+		myGUI.dispose();
 		
 		// Printout a dismissal message
 		System.out.println("Shipper Agent "+getAID().getName()+" terminato.");
