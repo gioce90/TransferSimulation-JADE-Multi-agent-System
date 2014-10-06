@@ -227,8 +227,4 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		System.out.println("ShipperAgent "+getLocalName()+": Il camion targato \""+targa+"\" non è più disponibile");
 	}
 	
-	@Override
-	public void doDelete() {
-		super.doDelete();
-	}
 }
