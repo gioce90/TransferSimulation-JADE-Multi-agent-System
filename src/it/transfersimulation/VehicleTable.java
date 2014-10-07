@@ -22,59 +22,72 @@ public class VehicleTable extends JTable {
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.setColumnSelectionAllowed(false);
 		this.setCellSelectionEnabled(false);
+		this.setRowSelectionAllowed(true);
 		this.setShowHorizontalLines(true);
 		this.setRowHeight(25);
 		this.setPreferredScrollableViewportSize(new Dimension(700,150));
 		this.setFillsViewportHeight(true);
 		
-		
+		////////////////////////////////////
+		// Now I set the columns features:
 		int flag=-1;
+		TableColumn column;
 		
 		// Icon Column:
 		flag = vehicleModel.findColumn(COLUMNS.IMAGE_COLUMN);
 		if (flag!=-1){
-			TableColumn iconColumn = this.getColumnModel().getColumn(flag);
-			iconColumn.setMinWidth(80);
-			iconColumn.setMaxWidth(80);
+			column = this.getColumnModel().getColumn(flag);
+			column.setMinWidth(80);
+			column.setMaxWidth(80);
+		}
+		
+		// Targa Column:
+		flag = vehicleModel.findColumn(COLUMNS.TARGA_COLUMN);
+		if (flag!=-1){
+			column = this.getColumnModel().getColumn(flag);
+			column.setMinWidth(100);
+			column.setMaxWidth(100);
 		}
 		
 		// Tipo veicolo Column
 		flag = vehicleModel.findColumn(COLUMNS.CAR_TYPE_COLUMN);
 		if (flag!=-1){
-			TableColumn tipoVeicoloColumn = this.getColumnModel().getColumn(flag);
-			tipoVeicoloColumn.setCellEditor(new DefaultCellEditor(
+			column = this.getColumnModel().getColumn(flag);
+			column.setCellEditor(new DefaultCellEditor(
 					new JComboBox<TipoVeicolo>(TipoVeicolo.values())));
+			column.setMinWidth(150);
+			column.setMaxWidth(150);
 		}
+		
+		// MARCA Column:
+		/* Non necessaria
+		flag = vehicleModel.findColumn(COLUMNS.MARCA_COLUMN);
+		if (flag!=-1){
+			column = this.getColumnModel().getColumn(flag);
+			column.setMinWidth(150);
+			column.setMaxWidth(150);
+		}
+		*/
 		
 		// Stato veicolo Column
 		flag = vehicleModel.findColumn(COLUMNS.STATE_COLUMN);
 		if (flag!=-1){
-			TableColumn statoColumn = this.getColumnModel().getColumn(flag);
-			statoColumn.setCellEditor(new DefaultCellEditor(
+			column = this.getColumnModel().getColumn(flag);
+			column.setCellEditor(new DefaultCellEditor(
 					new JComboBox<Stato>(Stato.values())));
+			column.setMinWidth(150);
+			column.setMaxWidth(150);
+		}
+		
+		// PTT Column:
+		flag = vehicleModel.findColumn(COLUMNS.PTT_COLUMN);
+		if (flag!=-1){
+			column = this.getColumnModel().getColumn(flag);
+			column.setMinWidth(50);
+			column.setMaxWidth(50);
 		}
 		
 	}
-	
-	
-	
-	
-	/*
-	public void setJComboBoxTipoVeicoloColumn(int i){
-		JComboBox<TipoVeicolo> tipoVeicoloComboBox = new JComboBox<TipoVeicolo>();
-		tipoVeicoloComboBox.setModel(new DefaultComboBoxModel<TipoVeicolo>(TipoVeicolo.values()));
-		TableColumn tipoVeicoloColumn = this.getColumnModel().getColumn(i);
-		tipoVeicoloColumn.setCellEditor(new DefaultCellEditor(tipoVeicoloComboBox));
-	}
-	
-	
-	public void setJComboBoxStatoColumn(int i){
-		JComboBox<Stato> statoComboBox = new JComboBox<Stato>();
-		statoComboBox.setModel(new DefaultComboBoxModel<Stato>(Stato.values()));
-		TableColumn statoColumn = this.getColumnModel().getColumn(i);
-		statoColumn.setCellEditor(new DefaultCellEditor(statoComboBox));
-	}
-	*/
 	
 	
 	

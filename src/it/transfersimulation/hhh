@@ -1,50 +1,27 @@
-package it.transfersimulation;
-
-import it.transfersimulation.Vehicle.Stato;
-import it.transfersimulation.Vehicle.TipoVeicolo;
-
-import java.util.ArrayList;
-import java.util.EventListener;
-import java.util.List;
-
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.AbstractTableModel;
 
 public class VehicleTableModel extends AbstractTableModel {
 	
-	
 	// private objects
-	private ArrayList<Vehicle> vehicles ; //= new ArrayList<Vehicle>();
+	private ArrayList<Vehicle> vehicles;
 	private COLUMNS[] header;
-	
 	
 	// possible column names:
 	public enum COLUMNS {
 		IMAGE_COLUMN,
 		TARGA_COLUMN,
 		CAR_TYPE_COLUMN,
-		MARCA_COLUMN,		
-		STATE_COLUMN,			
-		PTT_COLUMN,
-	};
+		//...
+	}; // if I want I can add others...
 	
 	
 	
 	///////////////////////////////////////////////////////
-	// Constructors:
-	
-	public VehicleTableModel(List<Vehicle> vehicles, COLUMNS[] headerTable) {
-		this.vehicles = (ArrayList<Vehicle>) vehicles;
-		this.header = headerTable;
-	}
+	// Constructor:
 	
 	public VehicleTableModel(COLUMNS[] headerTable) {
-		this(new ArrayList<Vehicle>(), headerTable);
+		this.vehicles = new ArrayList<Vehicle>()
+		this.header = headerTable;
 	}
-	
 	
 	
 	///////////////////////////////////////////////////////
@@ -60,18 +37,18 @@ public class VehicleTableModel extends AbstractTableModel {
 		return vehicles.size();
 	}
 	
+	// this works! :D
 	@Override
 	public Object getValueAt(int row, int col) {
 		Object value = "?";
         Vehicle v = vehicles.get(row);
         if (v!=null) {
         	COLUMNS column = header[col];
-        	
 	        switch (column) {
 	            case IMAGE_COLUMN:
-	            	int i = findColumn(COLUMNS.CAR_TYPE_COLUMN);
+	            	int i = findColumn(COLUMNS.CAR_TYPE_COLUMN); // find the right column index
 	            	Object tipo = getValueAt(row, i); 
-	                value = (ImageIcon)findImageByColumnCarType(tipo);
+	                value = (ImageIcon)findImageByColumnCarType(tipo); // find the right icon for the type of vehicle.
 	                break;
 	            case TARGA_COLUMN:
 	                value = v.getTarga();
@@ -79,15 +56,7 @@ public class VehicleTableModel extends AbstractTableModel {
 	            case CAR_TYPE_COLUMN:
 	                value = v.getTipoVeicolo();
 	                break;
-	            case MARCA_COLUMN:
-	                value = v.getMarca();
-	                break;
-	            case STATE_COLUMN:
-	                value = v.getStato();
-	                break;
-	            case PTT_COLUMN:
-	                value = v.getPtt();
-	                break;
+				//...
 	        }
         }
         return value;
@@ -98,16 +67,16 @@ public class VehicleTableModel extends AbstractTableModel {
 	///////////////////////////////////////////////////////
 	// My methods:
 	
-	// forse da rinominare in addVehicle
 	public void addRow(Vehicle vehicle) {
-		vehicles.add(vehicle);
-		fireTableRowsInserted(0, getRowCount());
+		if (!vehicles.contains(vehicle)){
+			vehicles.add(vehicle);
+			fireTableRowsInserted(0, getRowCount()); // I'm not so sure of this..
 	}
 	
-	/*// forse da rinominare in removeVehicle
+	/* I'm not so sure of this..
 	public boolean removeRow(Vehicle vehicle) {
 		boolean flag = vehicles.remove(vehicle);
-		fireTableRowsDeleted(0, getRowCount()); //fireTableDataChanged();
+		fireTableRowsDeleted(0, getRowCount()); // or fireTableDataChanged(); ?
 		return flag;
 	}*/
 	
@@ -115,7 +84,8 @@ public class VehicleTableModel extends AbstractTableModel {
 		vehicles.remove(row);
 		fireTableRowsDeleted(row, row);
 	}
-
+	
+	
 	public Vehicle getVehicleAt(int row) {
         return vehicles.get(row);
     }
@@ -135,14 +105,11 @@ public class VehicleTableModel extends AbstractTableModel {
 			i = new ImageIcon(VehicleTableModel.class.getResource("/images/Car-icon_32.png"));
 		else if (value.equals(TipoVeicolo.AUTOARTICOLATO))
 			i = new ImageIcon(VehicleTableModel.class.getResource("/images/City-Truck-blue-icon_32.png"));
-		else if (value.equals(TipoVeicolo.AUTOCARRO))
-			i = new ImageIcon(VehicleTableModel.class.getResource("/images/lorry-icon.png"));
-		else if (value.equals(TipoVeicolo.FURGONE))
-			i = new ImageIcon(VehicleTableModel.class.getResource("/images/truck-icon-autocarro_32.png"));
+		//...
 		return i;
 	}
 	
-	// controlla se il campo già esiste in tutte le righe
+	// knows if exist a value (of a column) in all rows
 	private boolean controllIfExist(Object value, int col) {
 		boolean bool = false;
 		for (int i=0; i<getRowCount();i++){
@@ -154,23 +121,12 @@ public class VehicleTableModel extends AbstractTableModel {
 		return bool;
 	}
 	
-	public COLUMNS[] getHeader() {
-		return header;
-	}
 	
-	public int getIndexColumn(COLUMNS column){
-		for(int i=0;i<header.length;i++){
-			if (column.equals(header[i])){
-				return i;
-			}
-		}
-		return -1;
-	}
 	
 	///////////////////////////////////////////////////////
 	// other methods (from AbstractTableModel) to ovveride:
 	
-	
+	// this works! :D
     @Override
 	public Class<?> getColumnClass(int col) {
     	Class<?> c;
@@ -179,13 +135,12 @@ public class VehicleTableModel extends AbstractTableModel {
     		c = ImageIcon.class;
     	else if (column.equals(COLUMNS.CAR_TYPE_COLUMN))
     		c =  JComboBox.class;
-    	else if (column.equals(COLUMNS.STATE_COLUMN))
-    		c =  JComboBox.class;
+		// else if blabla....
     	else c = super.getColumnClass(col);
     	return c;
     }
     
-    
+    // this works! :D 
     @Override
     public String getColumnName(int col) {
     	COLUMNS column = header[col];
@@ -195,12 +150,7 @@ public class VehicleTableModel extends AbstractTableModel {
     		return "Targa";
     	else if (column.equals(COLUMNS.CAR_TYPE_COLUMN))
     		return "Tipo veicolo";
-    	else if (column.equals(COLUMNS.MARCA_COLUMN))
-    		return "Marca";
-    	else if (column.equals(COLUMNS.STATE_COLUMN))
-    		return "Stato";
-    	else if (column.equals(COLUMNS.PTT_COLUMN))
-    		return "PTT";
+    	// else if blabla...
     	return super.getColumnName(col);
     };
 	
@@ -213,7 +163,6 @@ public class VehicleTableModel extends AbstractTableModel {
 	
     @Override
     public void setValueAt(Object value, int row, int col) {
-    	System.out.println("Siamo in setValueAt("+value+") !!!");
     	Vehicle v = vehicles.get(row);
     	boolean flag = false;
     	if (v!=null) {
@@ -233,33 +182,12 @@ public class VehicleTableModel extends AbstractTableModel {
 	            		flag = true;
 	            	}
 	            	break;
-	            case MARCA_COLUMN:
-	            	if (!v.getMarca().equals(value)){
-	            		v.setMarca((String) value);
-	            		flag = true;
-	            	}
-	            	break;
-	            case STATE_COLUMN:
-	            	if (!v.getStato().equals(value)){
-	            		v.setStato((Stato) value);
-	            		flag = true;
-	            	}
-	            	break;
-	            case PTT_COLUMN:
-	            	if (v.getPtt()!=Float.valueOf((String) value)){
-	            		v.setPtt(Float.valueOf((String)value));
-	            		flag = true;
-	            	}
-	            	break;
+	            // other cases bla bla...
 	        }
-	        // Aggiorna solo se ci sono state modifiche
-	        if (flag)
-	        	fireTableRowsUpdated(row, row);
-	        	//fireTableRowsUpdated(0, getRowCount());
+	        
+	        if (flag) // update only if have found modify
+	        	fireTableRowsUpdated(0, getRowCount()); // or fireTableRowsUpdated(row, row); ?
         }
     }
-
-	
-	
 	
 }

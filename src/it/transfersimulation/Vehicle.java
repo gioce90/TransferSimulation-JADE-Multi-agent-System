@@ -27,30 +27,28 @@ public class Vehicle {
 		IN_VIAGGIO
 	}
 
-	String targa;		
+	private String targa;		
 	
-	float ptt; 			// massa a pieno carico, misurata in tonnellate
-	float portata;		// misurata in tonnellate
-	float volume; 		// misurata in meri cubi
+	private float ptt; 			// massa a pieno carico, misurata in tonnellate
+	private float portata;		// misurata in tonnellate
+	private float volume; 		// misurata in meri cubi
 	
-	float larghezza;	// misurata in metri
-	float lunghezza;	// misurata in metri
-	float altezza;		// misurata in metri
+	private float larghezza;	// misurata in metri
+	private float lunghezza;	// misurata in metri
+	private float altezza;		// misurata in metri
 	
-	short europallet;	// numero di Pedane Standard da Trasporto trasportabili
+	private short europallet;	// numero di Pedane Standard da Trasporto trasportabili
 	
-	String marca;
+	private String marca;
 	
-	Categoria categoria;
-	Stato stato;
-	TipoVeicolo tipoVeicolo;
+	private Categoria categoria;
+	private Stato stato;
+	private TipoVeicolo tipoVeicolo;
 	
 	
 	//Date datImmatricolazione;
 	//String polizza;
 	
-	private static Vector<String> header;
-	private static Vector<Class> headerType;
 	
 	public Vehicle(String targa, TipoVeicolo tipoVeicolo, String marca,	Stato stato, float ptt) {
 		this.targa=targa;

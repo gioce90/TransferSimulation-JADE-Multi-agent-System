@@ -123,17 +123,16 @@ public class VehicleInsertJDialog extends JDialog {
 						throw new InsertVehicleException("Inserire targa");
 					
 					try{
-						/*
-						gui.addVehicle(
-							coordinator,
-							OldVehiclesTableModel.findImageByColumnCarType(tipo),
-							textFieldTarga.getText(),
-							tipo,
-							textFieldMarca.getText(),
-							(Stato)stato.getSelectedItem(),
-							Float.valueOf(textFieldPesoTrasportabile.getText())
-						);	
-						*/
+						Vehicle v = new Vehicle(
+								textFieldTarga.getText(),
+								tipo,
+								textFieldMarca.getText(), (Stato)stato.getSelectedItem(),
+								Float.valueOf(textFieldPesoTrasportabile.getText())
+						);
+						
+						coordinator.notifyAndAddRow(v);
+						//VehicleTableModel.findImageByColumnCarType(tipo),
+						
 					} catch (NumberFormatException e1){
 						throw new InsertVehicleException("Inserire peso in formato numerico");
 					}
