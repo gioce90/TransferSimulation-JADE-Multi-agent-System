@@ -3,6 +3,7 @@ package it.transfersimulation;
 import it.transfersimulation.Vehicle.Stato;
 import it.transfersimulation.VehicleTableModel.COLUMNS;
 import jade.domain.introspection.GetValue;
+import jade.gui.AgentTree.SuperContainer;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -51,8 +52,8 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	private VehicleTable parkTable; 
 	private VehicleTable availablesTable;
 	
-	private Coordinator parkCoordinator;
-	private Coordinator availablesCoordinator;
+	//private Coordinator parkCoordinator;
+	//private Coordinator availablesCoordinator;
 	
 	// My third-part software, a JADE agent:
 	protected ShipperAgent shipperAgent;
@@ -178,80 +179,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		/////////////////////////////////////////////////////////////////////
 		// Coordinators (ispirati al Mediator pattern)
 		
-		parkCoordinator = new Coordinator(shipperAgent, parkModel) {
-			
-			@Override
-			public void notifyAndAddRow(final Vehicle vehicle) {
-				if (!vehicleExists(vehicle)){
-					// TODO comunica all'agente
-					shipperAgent.newTruck(vehicle.getTarga());
-					SwingUtilities.invokeLater(new Runnable() {
-						@Override
-						public void run() {
-							parkModel.addRow(vehicle);
-							if (vehicle.getStato().equals(Stato.DISPONIBILE))
-								availablesModel.addRow(vehicle);
-						}
-					});
-				}
-			}
-			
-			@Override
-			public void notifyAndDeleteRow(final int rowIndex) {
-				final Vehicle v = parkModel.getVehicleAt(rowIndex);
-				
-				// Rimuove anche dai veicoli disponibili
-				availablesCoordinator.notifyAndDeleteRow(rowIndex);
-				
-				// comunica all'agente
-				shipperAgent.removeTruck(v.getTarga());
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						parkModel.removeRow(rowIndex);
-					}
-				});
-			}
-		};
 		
-		
-		availablesCoordinator = new Coordinator(shipperAgent, availablesModel) {
-			
-			@Override
-			public void notifyAndAddRow(final Vehicle vehicle) {
-				if (!vehicleExists(vehicle)){
-					shipperAgent.activateTruck(vehicle.getTarga());
-					SwingUtilities.invokeLater(new Runnable() {
-						@Override
-						public void run() {
-							availablesModel.addRow(vehicle);
-						}
-					});
-				}
-			}
-			
-			@Override
-			public void notifyAndDeleteRow(final int rowIndex) {
-				final Vehicle v = availablesModel.getVehicleAt(rowIndex);
-				
-				v.setStato(Stato.NON_DISPONIBILE);
-				shipperAgent.deactivateTruck(v.getTarga());
-				
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						availablesModel.removeRow(rowIndex);
-					}
-				});
-			}
-		};
-		
-		
-		/////////////////////////////////////////////////////
-		// Listeners:
-		
-		parkModel.addTableModelListener(parcoListener);
-		availablesModel.addTableModelListener(mezziDisponibiliListener);
 		
 		
 		/////////////////////////////////////////////////////
@@ -334,45 +262,6 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	}
 	
 	
-	// //////////////////////////////////////////
-	// LISTENERS:
-	
-	TableModelListener parcoListener = new TableModelListener() {
-		public void tableChanged(TableModelEvent e) {
-			switch (e.getType()) {
-			case (TableModelEvent.INSERT):
-				System.out.println("un inserimento in corso!"); break;
-			case (TableModelEvent.DELETE):
-				System.out.println("una cancellazione in corso!"); break;
-			case (TableModelEvent.UPDATE):
-				VehicleTableModel vtm = (VehicleTableModel) e.getSource();
-				int row = e.getLastRow(); 
-				int col = vtm.getIndexColumn(COLUMNS.STATE_COLUMN);
-				if (vtm.getValueAt(row, col).equals(Stato.DISPONIBILE))
-					addVehicle(availablesCoordinator, vtm.getVehicleAt(row));
-				else 
-					availablesModel.removeRow(vtm.getVehicleAt(row));
-				availablesTable.repaint();
-				System.out.println("un aggiornamento in corso in parco!"); break;
-			}
-		}
-	};
-
-	TableModelListener mezziDisponibiliListener = new TableModelListener() {
-		public void tableChanged(TableModelEvent e) {
-			switch (e.getType()) {
-			case (TableModelEvent.INSERT):
-				System.out.println("un inserimento in corso!"); break;
-			case (TableModelEvent.DELETE):
-				parkTable.repaint();
-				System.out.println("una cancellazione in corso!"); break;
-			case (TableModelEvent.UPDATE):
-				parkTable.repaint();
-				System.out.println("un aggiornamento in corso in mezziDisponibili!"); break;
-			}
-		}
-	};
-	
 	// on dispose, delete the agent
 	public void dispose() {
 		super.dispose();
@@ -384,23 +273,21 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	///////////////////////////////////////
 	// INNER CLASS
 	///////////////////////////////////////
-
+	
 	protected abstract class Coordinator {
 		/*
 		 * protected class members so subclasses can access these directly
 		 */
-
-		protected ShipperAgent shipperAgent;
 		private VehicleTableModel tableModel;
 
-		public Coordinator(ShipperAgent sa, VehicleTableModel tm) {
-			shipperAgent = sa;
+		public Coordinator(VehicleTableModel tm) {
 			tableModel = tm;
+			setUpdates();
 		}
 
 		public abstract void notifyAndAddRow(Vehicle vehicle);
 		public abstract void notifyAndDeleteRow(int rowIndex);
-		
+		public abstract void setUpdates();
 		
 		// TODO attenzione forse c'è un dupplicato in un'altra classe
 		boolean vehicleExists(Vehicle vehicle){
@@ -412,11 +299,125 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 			return false;
 		}
 		
+	}
+	
+	
+	// Coordinatore della tabella park
+	Coordinator parkCoordinator = new Coordinator(parkModel) {
 		
-		public void notifyAndUpdateRow(final int rowIndex) {
-			
+		@Override
+		public void notifyAndAddRow(final Vehicle vehicle) {
+			if (!vehicleExists(vehicle)){
+				
+				// TODO comunica all'agente
+				shipperAgent.newTruck(vehicle.getTarga());
+				
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						parkModel.addRow(vehicle);
+						if (vehicle.getStato().equals(Stato.DISPONIBILE))
+							availablesModel.addRow(vehicle);
+					}
+				});
+			}
 		}
 		
-	}
+		@Override
+		public void notifyAndDeleteRow(final int rowIndex) {
+			final Vehicle v = parkModel.getVehicleAt(rowIndex);
+			
+			// Rimuove anche dai veicoli disponibili
+			availablesCoordinator.notifyAndDeleteRow(rowIndex);
+			
+			// comunica all'agente
+			shipperAgent.removeTruck(v.getTarga());
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					parkModel.removeRow(rowIndex);
+				}
+			});
+		}
+		
+		@Override
+		public void setUpdates() {
+			parkModel.addTableModelListener(new TableModelListener() {
+				public void tableChanged(TableModelEvent e) {
+					switch (e.getType()) {
+						case (TableModelEvent.INSERT):
+							System.out.println("un inserimento in corso! parkModel");
+							break;
+						case (TableModelEvent.DELETE):
+							parkTable.repaint();
+							System.out.println("una cancellazione in corso! parkModel");
+							break;
+						case (TableModelEvent.UPDATE):
+							int row = e.getLastRow();
+							int col = parkModel.getIndexColumn(COLUMNS.STATE_COLUMN);
+							if (parkModel.getValueAt(row, col).equals(Stato.DISPONIBILE))
+								addVehicle(availablesCoordinator, parkModel.getVehicleAt(row));
+							else
+								//removeVehicle(availablesCoordinator, row); errori.. da sistemare!
+								availablesModel.removeRow(parkModel.getVehicleAt(row));
+							repaint();
+							break;
+					}
+				}
+			});
+		}
+	};
+	
+	
+	// Coordinatore della tabella availables
+	Coordinator availablesCoordinator = new Coordinator(availablesModel) {
+		
+		@Override
+		public void notifyAndAddRow(final Vehicle vehicle) {
+			if (!vehicleExists(vehicle)){
+				shipperAgent.activateTruck(vehicle.getTarga());
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						availablesModel.addRow(vehicle);
+					}
+				});
+			}
+		}
+		
+		@Override
+		public void notifyAndDeleteRow(final int rowIndex) {
+			final Vehicle v = availablesModel.getVehicleAt(rowIndex);
+			if (v!=null){
+				v.setStato(Stato.NON_DISPONIBILE); // TODO attenzione
+				shipperAgent.deactivateTruck(v.getTarga());
+				
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						availablesModel.removeRow(rowIndex);
+					}
+				});
+			}
+		}
 
+		@Override
+		public void setUpdates() {
+			availablesModel.addTableModelListener(new TableModelListener() {
+				public void tableChanged(TableModelEvent e) {
+					switch (e.getType()) {
+					case (TableModelEvent.INSERT):
+						System.out.println("un inserimento in corso! availablesModel"); break;
+					case (TableModelEvent.DELETE):
+						parkTable.repaint();
+						System.out.println("una cancellazione in corso! availablesModel"); break;
+					case (TableModelEvent.UPDATE):
+						parkTable.repaint();
+						System.out.println("un aggiornamento in corso in mezziDisponibili! availablesModel"); break;
+					}
+				}
+			});
+		}
+	};
+	
 }
