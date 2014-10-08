@@ -199,14 +199,16 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 			@Override
 			public void notifyAndDeleteRow(final int rowIndex) {
 				final Vehicle v = parkModel.getVehicleAt(rowIndex);
+				
 				// Rimuove anche dai veicoli disponibili
 				availablesCoordinator.notifyAndDeleteRow(rowIndex);
+				
 				// comunica all'agente
 				shipperAgent.removeTruck(v.getTarga());
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						parkModel.removeRow(rowIndex);//parkModel.removeRow(v);
+						parkModel.removeRow(rowIndex);
 					}
 				});
 			}
@@ -231,13 +233,14 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 			@Override
 			public void notifyAndDeleteRow(final int rowIndex) {
 				final Vehicle v = availablesModel.getVehicleAt(rowIndex);
+				
+				v.setStato(Stato.NON_DISPONIBILE);
 				shipperAgent.deactivateTruck(v.getTarga());
 				
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
 						availablesModel.removeRow(rowIndex);
-						//tableModel.removeRow(v);
 					}
 				});
 			}
@@ -258,12 +261,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		
 		Iterator<Vehicle> I = veicoli.iterator();
 		while (I.hasNext()){
-			Vehicle v = I.next();
-			addVehicle(parkCoordinator, v);
-			/* per adesso il controllo lo faccio in notifyAndAddRow di parkCoord...
-			if ( v.getStato().equals(Stato.DISPONIBILE))
-				addVehicle(availablesCoordinator, v);
-			*/
+			addVehicle(parkCoordinator, I.next());
 		}
 		
 		
@@ -366,6 +364,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 			case (TableModelEvent.INSERT):
 				System.out.println("un inserimento in corso!"); break;
 			case (TableModelEvent.DELETE):
+				parkTable.repaint();
 				System.out.println("una cancellazione in corso!"); break;
 			case (TableModelEvent.UPDATE):
 				parkTable.repaint();
@@ -403,6 +402,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		public abstract void notifyAndDeleteRow(int rowIndex);
 		
 		
+		// TODO attenzione forse c'è un dupplicato in un'altra classe
 		boolean vehicleExists(Vehicle vehicle){
 			int col = tableModel.getIndexColumn(COLUMNS.TARGA_COLUMN);
 			String targa = vehicle.getTarga();
@@ -410,6 +410,11 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 				if (tableModel.getValueAt(i, col).equals(targa))
 					return true;
 			return false;
+		}
+		
+		
+		public void notifyAndUpdateRow(final int rowIndex) {
+			
 		}
 		
 	}
