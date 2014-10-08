@@ -347,6 +347,13 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 			case (TableModelEvent.DELETE):
 				System.out.println("una cancellazione in corso!"); break;
 			case (TableModelEvent.UPDATE):
+				VehicleTableModel vtm = (VehicleTableModel) e.getSource();
+				int row = e.getLastRow();
+				int col = vtm.getIndexColumn(COLUMNS.STATE_COLUMN);
+				if (vtm.getValueAt(row, col).equals(Stato.DISPONIBILE))
+					addVehicle(availablesCoordinator, vtm.getVehicleAt(row));
+				else 
+					availablesModel.removeRow(vtm.getVehicleAt(row));
 				availablesTable.repaint();
 				System.out.println("un aggiornamento in corso in parco!"); break;
 			}

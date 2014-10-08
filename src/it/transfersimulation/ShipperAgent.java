@@ -9,7 +9,6 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -48,10 +47,8 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		System.out.println("Ciao! Shipper Agent "+getAID().getName()+" pronto!");
 		
 		
-		// SVILUPPO FUTURO:
 		
-		// Determina la tipologia di automezzo
-		//whichVehicle();
+		// SVILUPPO FUTURO:
 		
 		// Pubblica sulle Pagine Gialle il proprio servizio
 		publishService();
@@ -66,10 +63,6 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	////////////////////
 	// METODI         //
 	////////////////////
-	
-	public Vector<Vehicle> getVehicles(){
-		return vehicles;
-	}
 	
 	
 	private void publishService() {
@@ -88,7 +81,35 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		}
 	}
 	
+
 	
+
+	
+	
+	// Put agent clean-up operations here
+	protected void takeDown() {
+		// Deregister from the yellow pages
+		try {
+			DFService.deregister(this);
+		} catch (FIPAException fe) {
+			fe.printStackTrace();
+		}
+		
+		// Close the GUI
+		myGUI.dispose();
+		
+		// Printout a dismissal message
+		System.out.println("Shipper Agent "+getAID().getName()+" terminato.");
+	}
+	
+	///////////////////////////////////////////
+	// Comunication with agent methods
+	
+	public Vector<Vehicle> getVehicles(){
+		return vehicles;
+	}
+	
+	///////////////////////////////////////////
 	
 	private void searchJob() {
 		addBehaviour(new Behaviour() {
@@ -122,6 +143,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	
 	
 	
+	
 	private void whichVehicle() {
 		Object[] args = getArguments();
 		if (args!=null && args.length==2){
@@ -136,21 +158,8 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	
 	
 	
-	// Put agent clean-up operations here
-	protected void takeDown() {
-		// Deregister from the yellow pages
-		try {
-			DFService.deregister(this);
-		} catch (FIPAException fe) {
-			fe.printStackTrace();
-		}
-		
-		// Close the GUI
-		myGUI.dispose();
-		
-		// Printout a dismissal message
-		System.out.println("Shipper Agent "+getAID().getName()+" terminato.");
-	}
+	
+	
 	
 	
 	

@@ -104,12 +104,12 @@ public class VehicleTableModel extends AbstractTableModel {
 		fireTableRowsInserted(0, getRowCount());
 	}
 	
-	/*// forse da rinominare in removeVehicle
+	// forse da rinominare in removeVehicle
 	public boolean removeRow(Vehicle vehicle) {
 		boolean flag = vehicles.remove(vehicle);
 		fireTableRowsDeleted(0, getRowCount()); //fireTableDataChanged();
 		return flag;
-	}*/
+	}
 	
 	public void removeRow(int row) {
 		vehicles.remove(row);
@@ -213,7 +213,7 @@ public class VehicleTableModel extends AbstractTableModel {
 	
     @Override
     public void setValueAt(Object value, int row, int col) {
-    	System.out.println("Siamo in setValueAt("+value+") !!!");
+    	//System.out.println("Siamo in setValueAt("+value+") !!!");
     	Vehicle v = vehicles.get(row);
     	boolean flag = false;
     	if (v!=null) {

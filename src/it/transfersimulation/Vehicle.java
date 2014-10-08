@@ -1,7 +1,5 @@
 package it.transfersimulation;
 
-import java.util.Vector;
-
 public class Vehicle {
 	 
 	// PER QUESTA VERSIONE DO PER SCONTATO CHE SIANO TUTTI VEICOLI
@@ -16,7 +14,7 @@ public class Vehicle {
 	enum TipoVeicolo {
 		AUTO, FURGONE,
 		AUTOCARRO,
-		AUTOARTICOLATO
+		AUTOARTICOLATO // da rimuovere o no?
 		//, AUTOTRENO
 		//, autosnodato?
 	};
@@ -25,26 +23,24 @@ public class Vehicle {
 		DISPONIBILE,
 		NON_DISPONIBILE,
 		IN_VIAGGIO
+		// ... ?
 	}
 
-	private String targa;		
+	private String targa;
+	private float ptt;			// massa a pieno carico, misurata in tonnellate
+	private String marca;
+	private Stato stato;
+	private TipoVeicolo tipoVeicolo;
 	
-	private float ptt; 			// massa a pieno carico, misurata in tonnellate
+	private Categoria categoria;
 	private float portata;		// misurata in tonnellate
-	private float volume; 		// misurata in meri cubi
+	private float volume; 		// misurata in metri cubi
 	
 	private float larghezza;	// misurata in metri
 	private float lunghezza;	// misurata in metri
 	private float altezza;		// misurata in metri
 	
 	private short europallet;	// numero di Pedane Standard da Trasporto trasportabili
-	
-	private String marca;
-	
-	private Categoria categoria;
-	private Stato stato;
-	private TipoVeicolo tipoVeicolo;
-	
 	
 	//Date datImmatricolazione;
 	//String polizza;
@@ -58,28 +54,6 @@ public class Vehicle {
 		this.ptt=ptt;
 	}
 	
-	/*
-	public static Vector<String> getHeader(){
-		header = new Vector<String>();
-		header.add("TARGA");
-		header.add("TIPO VEICOLO");
-		header.add("MARCA");
-		header.add("STATO");
-		header.add("PTT");
-		return header;
-	}
-	
-	
-	public static Vector<Class> getHeaderType(){
-		headerType = new Vector<Class>();
-		headerType.add(String.class);
-		headerType.add(TipoVeicolo.class);
-		headerType.add(String.class);
-		headerType.add(Stato.class);
-		headerType.add(Float.class);
-		return headerType;
-	}
-	*/
 	
 	//////////////////////////////////////////////
 	// GET and SET methods
