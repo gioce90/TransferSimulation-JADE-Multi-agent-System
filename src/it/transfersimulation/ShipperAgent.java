@@ -206,17 +206,6 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	
 	
 	@Override
-	public void newCiao(String prima) {
-		System.out.println(prima + " e ciaooo!");
-	}
-	
-	@Override
-	public void newBye(String dopo) {
-		System.out.println("ciao e " + dopo);
-	}
-	
-	
-	@Override
 	public void newTruck(String targa) {
 		System.out.println("ShipperAgent "+getLocalName()+": Nuovo camion targato \""+targa+"\"");
 	}

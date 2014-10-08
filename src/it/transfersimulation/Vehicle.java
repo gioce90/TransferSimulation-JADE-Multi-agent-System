@@ -9,7 +9,7 @@ public class Vehicle {
 		// privato?
 		COMMERCIALE,
 		INDUSTRIALE
-	};
+	}; 
 	
 	enum TipoVeicolo {
 		AUTO, FURGONE,
