@@ -81,9 +81,6 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		}
 	}
 	
-
-	
-
 	
 	
 	// Put agent clean-up operations here

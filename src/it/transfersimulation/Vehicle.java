@@ -1,7 +1,7 @@
 package it.transfersimulation;
 
 public class Vehicle {
-	 
+	
 	// PER QUESTA VERSIONE DO PER SCONTATO CHE SIANO TUTTI VEICOLI
 	// NON SCOMPONIBILI (niente autotreni o autoarticolati)
 	
@@ -12,7 +12,7 @@ public class Vehicle {
 	}; 
 	
 	enum TipoVeicolo {
-		AUTO, FURGONE,
+		AUTO, FURGONE, // MINIVAN
 		AUTOCARRO,
 		AUTOARTICOLATO // da rimuovere o no?
 		//, AUTOTRENO
@@ -46,6 +46,7 @@ public class Vehicle {
 	//String polizza;
 	
 	
+	
 	public Vehicle(String targa, TipoVeicolo tipoVeicolo, String marca,	Stato stato, float ptt) {
 		this.targa=targa;
 		this.tipoVeicolo=tipoVeicolo;
@@ -53,6 +54,8 @@ public class Vehicle {
 		this.stato=stato;
 		this.ptt=ptt;
 	}
+	
+	
 	
 	
 	//////////////////////////////////////////////

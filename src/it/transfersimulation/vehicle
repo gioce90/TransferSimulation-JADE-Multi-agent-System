@@ -1,0 +1,58 @@
+
+public class Vehicle {
+	
+	// kind of
+	enum TipoVeicolo {
+		AUTO, 			// car
+		FURGONE, 		// van
+		AUTOCARRO,		// truck
+		
+		/* 
+		
+		// for semi-trailer truck:
+		TRATTORE_STRADALE	// road tractor
+		SEMIRIMORCHIO		// semi-trailer
+		AUTOARTICOLATO 		// semi-trailer truck
+		
+		// for trailer truck:
+		RIMORCHIO			// trailer
+		AUTOTRENO			// trailer truck
+		...
+		*/ 
+	};
+	
+	enum Stato {
+		DISPONIBILE,	// Available
+		NON_DISPONIBILE,// not available
+		IN_VIAGGIO		// on road...
+		// ... ?
+	}
+
+	private String targa;	// plate
+	private String mark;
+	private Stato stato;
+	private TipoVeicolo tipoVeicolo;
+	
+	private float portata;
+	private float volume; 
+	
+	private short europallet;
+	
+	//Date immatricolationDate;
+	//String assurance;
+	
+	
+	public Vehicle(String targa, TipoVeicolo tipoVeicolo, String mark,	Stato stato, float ptt) {
+		this.targa=targa;
+		this.tipoVeicolo=tipoVeicolo;
+		this.mark=mark;
+		this.stato=stato;
+		this.ptt=ptt;
+	}
+	
+	
+	//////////////////////////////////////////////
+	// GET and SET methods
+	
+	// ...
+}

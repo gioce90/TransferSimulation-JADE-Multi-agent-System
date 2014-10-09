@@ -49,7 +49,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	private VehicleTableModel parkModel = new VehicleTableModel(parkModelHeader);
 	private VehicleTableModel availablesModel = new VehicleTableModel(availablesModelHeader);
 	
-	private VehicleTable parkTable; 
+	private VehicleTable parkTable;
 	private VehicleTable availablesTable;
 	
 	//private Coordinator parkCoordinator;
@@ -282,12 +282,12 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 
 		public Coordinator(VehicleTableModel tm) {
 			tableModel = tm;
-			setUpdates();
+			notifyRowUpdated();
 		}
 
 		public abstract void notifyAndAddRow(Vehicle vehicle);
 		public abstract void notifyAndDeleteRow(int rowIndex);
-		public abstract void setUpdates();
+		public abstract void notifyRowUpdated();
 		
 		// TODO attenzione forse c'è un dupplicato in un'altra classe
 		boolean vehicleExists(Vehicle vehicle){
@@ -341,7 +341,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		}
 		
 		@Override
-		public void setUpdates() {
+		public void notifyRowUpdated() {
 			parkModel.addTableModelListener(new TableModelListener() {
 				public void tableChanged(TableModelEvent e) {
 					switch (e.getType()) {
@@ -402,7 +402,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		}
 
 		@Override
-		public void setUpdates() {
+		public void notifyRowUpdated() {
 			availablesModel.addTableModelListener(new TableModelListener() {
 				public void tableChanged(TableModelEvent e) {
 					switch (e.getType()) {
