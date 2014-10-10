@@ -1,8 +1,7 @@
 package it.transfersimulation;
 
 import it.transfersimulation.ShipperAgentGUI.Coordinator;
-import it.transfersimulation.Vehicle.Stato;
-import it.transfersimulation.Vehicle.TipoVeicolo;
+import it.transfersimulation.model.Vehicle;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -24,12 +23,12 @@ public class VehicleInsertJDialog extends JDialog {
  
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textFieldTarga;
-	private JComboBox<TipoVeicolo> tipoVeicolo = new JComboBox<TipoVeicolo>(TipoVeicolo.values());
 	private JTextField textFieldMarca;
 	private JComboBox<Stato> stato = new JComboBox<Stato>(Stato.values());
 	private JTextField textFieldPesoTrasportabile;
 	private JButton okButton;
 
+	//private JComboBox<TypeVehicle> tipoVeicolo = new JComboBox<TypeVehicle>(TypeVehicle.values());
 	
 	ShipperAgentGUI gui;
 	DefaultTableModel tm;
@@ -77,7 +76,7 @@ public class VehicleInsertJDialog extends JDialog {
 			contentPanel.add(lblTarga);
 			contentPanel.add(textFieldTarga);
 			contentPanel.add(lblTipoVeicolo);
-			contentPanel.add(tipoVeicolo);
+			//contentPanel.add(tipoVeicolo);
 			contentPanel.add(lblMarca);
 			contentPanel.add(textFieldMarca);
 			contentPanel.add(lblStato);
@@ -116,21 +115,24 @@ public class VehicleInsertJDialog extends JDialog {
 		
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				TipoVeicolo tipo = (TipoVeicolo)tipoVeicolo.getSelectedItem();
+				
+				//TypeVehicle tipo = (TypeVehicle)tipoVeicolo.getSelectedItem();
 				
 				try{
 					if (textFieldTarga.getText().equals(""))
 						throw new InsertVehicleException("Inserire targa");
 					
 					try{
+						/*
 						Vehicle v = new Vehicle(
 								textFieldTarga.getText(),
 								tipo,
 								textFieldMarca.getText(), (Stato)stato.getSelectedItem(),
 								Float.valueOf(textFieldPesoTrasportabile.getText())
 						);
+						*/
 						
-						coordinator.notifyAndAddRow(v);
+						//coordinator.notifyAndAddRow(v);
 						//VehicleTableModel.findImageByColumnCarType(tipo),
 						
 					} catch (NumberFormatException e1){

@@ -1,11 +1,11 @@
 package it.transfersimulation;
 
-import it.transfersimulation.Vehicle.Stato;
-import it.transfersimulation.Vehicle.TipoVeicolo;
+import it.transfersimulation.model.*;
 import it.transfersimulation.VehicleTableModel.COLUMNS;
 
 import java.awt.Dimension;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -24,7 +24,7 @@ public class VehicleTable extends JTable {
 		this.setCellSelectionEnabled(false);
 		this.setRowSelectionAllowed(true);
 		this.setShowHorizontalLines(true);
-		this.setRowHeight(25);
+		this.setRowHeight(28);
 		this.setPreferredScrollableViewportSize(new Dimension(700,150));
 		this.setFillsViewportHeight(true);
 		
@@ -53,8 +53,11 @@ public class VehicleTable extends JTable {
 		flag = vehicleModel.findColumn(COLUMNS.CAR_TYPE_COLUMN);
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
+			/* TODO se si volesse cambiare tipo?
 			column.setCellEditor(new DefaultCellEditor(
-					new JComboBox<TipoVeicolo>(TipoVeicolo.values())));
+					...
+			));
+			*/
 			column.setMinWidth(150);
 			column.setMaxWidth(150);
 		}
@@ -92,7 +95,9 @@ public class VehicleTable extends JTable {
 	
 	
 	/*
+	
 	TODO: se in futuro si volesse fare l'ordinamento da colonna
+	
 	tableHeader = parkTable.getTableHeader();
 	tableHeader.addMouseListener( new MouseAdapter() {
 		   public void mouseClicked(MouseEvent e) {
@@ -107,7 +112,3 @@ public class VehicleTable extends JTable {
 	*/
 	
 }
-
-
-
-

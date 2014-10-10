@@ -1,22 +1,21 @@
 package it.transfersimulation;
 
-import it.transfersimulation.Vehicle.Stato;
-import it.transfersimulation.Vehicle.TipoVeicolo;
+import it.transfersimulation.model.*;
 
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
 public class VehicleTableModel extends AbstractTableModel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	
-	// private objects
 	private ArrayList<Vehicle> vehicles ; //= new ArrayList<Vehicle>();
 	private COLUMNS[] header;
 	
@@ -66,24 +65,21 @@ public class VehicleTableModel extends AbstractTableModel {
         Vehicle v = vehicles.get(row);
         if (v!=null) {
         	COLUMNS column = header[col];
-        	
 	        switch (column) {
 	            case IMAGE_COLUMN:
-	            	int i = findColumn(COLUMNS.CAR_TYPE_COLUMN);
-	            	Object tipo = getValueAt(row, i); 
-	                value = (ImageIcon)findImageByColumnCarType(tipo);
+	                value = findImageByColumnCarType(v.getType());
 	                break;
 	            case TARGA_COLUMN:
-	                value = v.getTarga();
+	                value = v.getPlate();
 	                break;
 	            case CAR_TYPE_COLUMN:
-	                value = v.getTipoVeicolo();
+	                value = findStringByColumnCarType(v.getType());
 	                break;
 	            case MARCA_COLUMN:
-	                value = v.getMarca();
+	                value = v.getMark();
 	                break;
 	            case STATE_COLUMN:
-	                value = v.getStato();
+	                value = v.getState();
 	                break;
 	            case PTT_COLUMN:
 	                value = v.getPtt();
@@ -101,13 +97,13 @@ public class VehicleTableModel extends AbstractTableModel {
 	// forse da rinominare in addVehicle
 	public void addRow(Vehicle vehicle) {
 		vehicles.add(vehicle);
-		fireTableRowsInserted(0, getRowCount());
+		fireTableRowsInserted(0, getRowCount()); // TODO attenzione
 	}
 	
 	// forse da rinominare in removeVehicle
 	public boolean removeRow(Vehicle vehicle) {
 		boolean flag = vehicles.remove(vehicle);
-		fireTableRowsDeleted(0, getRowCount()); //fireTableDataChanged();
+		fireTableRowsDeleted(0, getRowCount()); // TODO attenzione
 		return flag;
 	}
 	
@@ -115,10 +111,14 @@ public class VehicleTableModel extends AbstractTableModel {
 		vehicles.remove(row);
 		fireTableRowsDeleted(row, row);
 	}
-
+	
 	public Vehicle getVehicleAt(int row) {
         return vehicles.get(row);
     }
+	
+	public int indexOf(Vehicle v){
+		return vehicles.indexOf(v);
+	}
 	
 	// found the corresponding column index
 	public int findColumn(COLUMNS columnName) {
@@ -129,20 +129,54 @@ public class VehicleTableModel extends AbstractTableModel {
 	}
 	
 	// found the right image
-	protected static ImageIcon findImageByColumnCarType(Object value) {
+	protected static ImageIcon findImageByColumnCarType(Class<? extends Vehicle> type) {
 		ImageIcon i = null;
-		if (value.equals(TipoVeicolo.AUTO))
-			i = new ImageIcon(VehicleTableModel.class.getResource("/images/Car-icon_32.png"));
-		else if (value.equals(TipoVeicolo.AUTOARTICOLATO))
-			i = new ImageIcon(VehicleTableModel.class.getResource("/images/City-Truck-blue-icon_32.png"));
-		else if (value.equals(TipoVeicolo.AUTOCARRO))
-			i = new ImageIcon(VehicleTableModel.class.getResource("/images/lorry-icon.png"));
-		else if (value.equals(TipoVeicolo.FURGONE))
-			i = new ImageIcon(VehicleTableModel.class.getResource("/images/truck-icon-autocarro_32.png"));
+		if (type.equals(Car.class))						// auto
+			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/car_32.png"));
+		else if (type.equals(Van.class))				// furgone
+			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/van_32.png"));
+		else if (type.equals(Truck.class))				// autocarro
+			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/truck_32.png"));
+		else if (type.equals(TrailerTruck.class))		// autotreno
+			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/trailertruck_32.png"));
+		else if (type.equals(SemiTrailer.class))		// semirimorchio
+			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/semitrailer_32.png"));
+		else if (type.equals(RoadTractor.class))		// trattore stradale
+			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/roadtractor_32.png"));
+		
+		
+		else if (type.equals(SemiTrailerTruck.class))	// autoarticolato
+			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/semitrailertruck_32.png"));
+		else if (type.equals(Trailer.class))			// rimorchio
+			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/semitrailer_32.png"));
+		
 		return i;
 	}
 	
-	// controlla se il campo già esiste in tutte le righe
+	
+	private String findStringByColumnCarType(Class<? extends Vehicle> type) {
+		String i = "?";
+		if (type.equals(Car.class))
+			i = "Automobile";
+		else if (type.equals(Van.class))
+			i = "Furgone";
+		else if (type.equals(Truck.class))
+			i = "Autocarro";
+		else if (type.equals(TrailerTruck.class))
+			i = "Autotreno"; 
+		else if (type.equals(SemiTrailerTruck.class))
+			i = "Autoarticolato";
+		else if (type.equals(RoadTractor.class))
+			i = "Trattore stradale";
+		else if (type.equals(Trailer.class))
+			i = "Rimorchio";
+		else if (type.equals(SemiTrailer.class))
+			i = "Semirimorchio";
+		return i;
+	}
+
+	
+	// controlla se un valore in un campo già esiste in tutte le righe
 	private boolean controllIfExist(Object value, int col) {
 		boolean bool = false;
 		for (int i=0; i<getRowCount();i++){
@@ -154,9 +188,11 @@ public class VehicleTableModel extends AbstractTableModel {
 		return bool;
 	}
 	
+	/*
 	public COLUMNS[] getHeader() {
 		return header;
 	}
+	*/
 	
 	public int getIndexColumn(COLUMNS column){
 		for(int i=0;i<header.length;i++){
@@ -166,6 +202,8 @@ public class VehicleTableModel extends AbstractTableModel {
 		}
 		return -1;
 	}
+	
+	
 	
 	///////////////////////////////////////////////////////
 	// other methods (from AbstractTableModel) to ovveride:
@@ -177,8 +215,8 @@ public class VehicleTableModel extends AbstractTableModel {
     	COLUMNS column = header[col];
     	if (column.equals(COLUMNS.IMAGE_COLUMN))
     		c = ImageIcon.class;
-    	else if (column.equals(COLUMNS.CAR_TYPE_COLUMN))
-    		c =  JComboBox.class;
+    	//else if (column.equals(COLUMNS.CAR_TYPE_COLUMN))
+    	//	c =  JComboBox.class;
     	else if (column.equals(COLUMNS.STATE_COLUMN))
     		c =  JComboBox.class;
     	else c = super.getColumnClass(col);
@@ -213,34 +251,36 @@ public class VehicleTableModel extends AbstractTableModel {
 	
     @Override
     public void setValueAt(Object value, int row, int col) {
-    	//System.out.println("Siamo in setValueAt("+value+") !!!");
     	Vehicle v = vehicles.get(row);
     	boolean flag = false;
     	if (v!=null) {
         	COLUMNS column = header[col];
 	        switch (column) {
 	            case TARGA_COLUMN:
-	            	if (!v.getTarga().equals(value)){
+	            	if (!v.getPlate().equals(value)){
 	            		if (!controllIfExist(value, col)){
-	            			v.setTarga((String) value);
+	            			v.setPlate((String) value);
 	            			flag = true;
 	            		}
 	            	}
 	            	break;
+	            /*
 	            case CAR_TYPE_COLUMN:
-	            	if (!v.getTipoVeicolo().equals(value)){
-	            		v.setTipoVeicolo((TipoVeicolo) value);
+	            	if (!v.getType().equals(value)){
+	            			// se in futuro si volesse modificare il tipo di veicolo
+	            			 * bisognerebbe cambiare il tipo di classe.
 	            		flag = true;
 	            	}
 	            	break;
+	            */
 	            case MARCA_COLUMN:
-	            	if (!v.getMarca().equals(value)){
-	            		v.setMarca((String) value);
+	            	if (!v.getMark().equals(value)){
+	            		v.setMark((String) value);
 	            		flag = true;
 	            	}
 	            	break;
 	            case STATE_COLUMN:
-	            	if (!v.getStato().equals(value)){
+	            	if (!v.getState().equals(value)){
 	            		v.setStato((Stato) value);
 	            		flag = true;
 	            	}
@@ -255,7 +295,6 @@ public class VehicleTableModel extends AbstractTableModel {
 	        // Aggiorna solo se ci sono state modifiche
 	        if (flag)
 	        	fireTableRowsUpdated(row, row);
-	        	//fireTableRowsUpdated(0, getRowCount());
         }
     }
 

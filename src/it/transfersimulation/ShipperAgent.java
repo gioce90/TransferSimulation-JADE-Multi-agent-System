@@ -1,7 +1,6 @@
 package it.transfersimulation;
 
-import it.transfersimulation.Vehicle.Stato;
-import it.transfersimulation.Vehicle.TipoVeicolo;
+import it.transfersimulation.model.*;
 
 import java.util.Vector;
 
@@ -33,11 +32,67 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	protected void setup() {
 		
 		// TODO: li dovrà prendere da un database
-		
+		/*
 		vehicles.add(new Vehicle("AAA1", TipoVeicolo.AUTO, "Peugeot", Stato.DISPONIBILE, (float) 1.5));
 		vehicles.add(new Vehicle("AAA2", TipoVeicolo.AUTOARTICOLATO, "SCANIA", Stato.IN_VIAGGIO, (float) 3.5));
 		vehicles.add(new Vehicle("AAA3", TipoVeicolo.AUTOCARRO, "SCANIA", Stato.NON_DISPONIBILE, (float) 3.5));
+		*/
+		Vehicle c1 = new Car("AAA1");
+		c1.setMark("Peugeot");
+		c1.setModel("206");
+		c1.setPtt(2);
+		c1.setStato(Stato.DISPONIBILE);
 		
+		Vehicle c2 = new Van("AAA2");
+		c2.setMark("Volvo");
+		c2.setModel("xxx");
+		c2.setPtt(3);
+		c2.setStato(Stato.DISPONIBILE);
+		
+		Vehicle c3 = new Truck("AAA3");
+		c3.setMark("Scania");
+		c3.setModel("xxx");
+		c3.setPtt(3);
+		c3.setStato(Stato.DISPONIBILE);
+		
+		Vehicle c4 = new TrailerTruck("AAA4"); // TODO
+		c4.setMark("Scania");
+		c4.setModel("yyy");
+		c4.setPtt(15);
+		c4.setStato(Stato.DISPONIBILE);
+		
+		Vehicle c5 = new SemiTrailerTruck("AAA5");
+		c5.setMark("DAF");
+		c5.setModel("yyy");
+		c5.setPtt(15);
+		c5.setStato(Stato.DISPONIBILE);
+		
+		Vehicle c6 = new SemiTrailer("AAA6");
+		c6.setMark("Menci");
+		c6.setModel("yyy");
+		c6.setPtt(15);
+		c6.setStato(Stato.DISPONIBILE);
+		
+		Vehicle c7 = new RoadTractor("AAA7");
+		c7.setMark("DAF");
+		c7.setModel("yyy");
+		c7.setPtt(15);
+		c7.setStato(Stato.DISPONIBILE);
+		
+		Vehicle c8 = new Trailer("AAA8");
+		c8.setMark("Menci");
+		c8.setModel("yyy");
+		c8.setPtt(15);
+		c8.setStato(Stato.DISPONIBILE);
+		
+		vehicles.add(c1);
+		vehicles.add(c2);
+		vehicles.add(c3);
+		vehicles.add(c4);
+		vehicles.add(c5);
+		vehicles.add(c6);
+		vehicles.add(c7);
+		vehicles.add(c8);
 		
 		// GRAFICA E PRESENTAZIONE
 		myGUI = new ShipperAgentGUI(this);
@@ -82,7 +137,6 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	}
 	
 	
-	
 	// Put agent clean-up operations here
 	protected void takeDown() {
 		// Deregister from the yellow pages
@@ -99,12 +153,16 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		System.out.println("Shipper Agent "+getAID().getName()+" terminato.");
 	}
 	
+	
 	///////////////////////////////////////////
 	// Comunication with agent methods
 	
 	public Vector<Vehicle> getVehicles(){
 		return vehicles;
 	}
+	
+	
+	
 	
 	///////////////////////////////////////////
 	
