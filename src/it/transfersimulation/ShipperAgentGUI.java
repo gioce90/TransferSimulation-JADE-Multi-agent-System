@@ -220,7 +220,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
 		case "+parco": {
-			new VehicleInsertJDialog(this, parkCoordinator);
+			new InsertVehicleJDialog(this, parkCoordinator);
 		} break;
 
 		case "-parco": {
@@ -252,17 +252,17 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	// /////////////////////////////////////
 	// Add/Remove vehicles methods
 	
-	private void addVehicle(Coordinator coordinator, Vehicle v) {
+	void addVehicle(Coordinator coordinator, Vehicle v) {
 		coordinator.notifyAndAddRow(v);
 	}
 	
-	public void removeVehicle(Coordinator coordinator, Vehicle v) {
+	void removeVehicle(Coordinator coordinator, Vehicle v) {
 		int row = coordinator.indexOf(v);
 		if (row!=-1)
 			coordinator.notifyAndDeleteRow(row);
 	}
 	
-	public void removeVehicle(Coordinator coordinator, int index) {
+	void removeVehicle(Coordinator coordinator, int index) {
 		coordinator.notifyAndDeleteRow(index);
 	}
 	

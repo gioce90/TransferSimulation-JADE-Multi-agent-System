@@ -7,6 +7,8 @@ public class Car extends Vehicle {
 		//setTipoVeicolo(Car.class);
 	}
 	
-	
-	
+	@Override
+	public String toString() {
+	  return "CAR"; // assumes nombre is a string
+	}
 }

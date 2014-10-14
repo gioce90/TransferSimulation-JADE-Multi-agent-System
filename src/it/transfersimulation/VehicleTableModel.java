@@ -67,13 +67,13 @@ public class VehicleTableModel extends AbstractTableModel {
         	COLUMNS column = header[col];
 	        switch (column) {
 	            case IMAGE_COLUMN:
-	                value = findImageByColumnCarType(v.getType());
+	                value = VehicleUtils.findImageByColumnCarType(v.getType());
 	                break;
 	            case TARGA_COLUMN:
 	                value = v.getPlate();
 	                break;
 	            case CAR_TYPE_COLUMN:
-	                value = findStringByColumnCarType(v.getType());
+	                value = VehicleUtils.findStringByColumnCarType(v.getType());
 	                break;
 	            case MARCA_COLUMN:
 	                value = v.getMark();
@@ -126,53 +126,6 @@ public class VehicleTableModel extends AbstractTableModel {
 			if (columnName.equals(header[i])) 
 		        return i;
 		return -1;
-	}
-	
-	// found the right image
-	protected static ImageIcon findImageByColumnCarType(Class<? extends Vehicle> type) {
-		ImageIcon i = null;
-		if (type.equals(Car.class))						// auto
-			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/car_32.png"));
-		else if (type.equals(Van.class))				// furgone
-			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/van_32.png"));
-		else if (type.equals(Truck.class))				// autocarro
-			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/truck_32.png"));
-		else if (type.equals(TrailerTruck.class))		// autotreno
-			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/trailertruck_32.png"));
-		else if (type.equals(SemiTrailer.class))		// semirimorchio
-			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/semitrailer_32.png"));
-		else if (type.equals(RoadTractor.class))		// trattore stradale
-			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/roadtractor_32.png"));
-		
-		
-		else if (type.equals(SemiTrailerTruck.class))	// autoarticolato
-			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/semitrailertruck_32.png"));
-		else if (type.equals(Trailer.class))			// rimorchio
-			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/semitrailer_32.png"));
-		
-		return i;
-	}
-	
-	
-	private String findStringByColumnCarType(Class<? extends Vehicle> type) {
-		String i = "?";
-		if (type.equals(Car.class))
-			i = "Automobile";
-		else if (type.equals(Van.class))
-			i = "Furgone";
-		else if (type.equals(Truck.class))
-			i = "Autocarro";
-		else if (type.equals(TrailerTruck.class))
-			i = "Autotreno"; 
-		else if (type.equals(SemiTrailerTruck.class))
-			i = "Autoarticolato";
-		else if (type.equals(RoadTractor.class))
-			i = "Trattore stradale";
-		else if (type.equals(Trailer.class))
-			i = "Rimorchio";
-		else if (type.equals(SemiTrailer.class))
-			i = "Semirimorchio";
-		return i;
 	}
 
 	
