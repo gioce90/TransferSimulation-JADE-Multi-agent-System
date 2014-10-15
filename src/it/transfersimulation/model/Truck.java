@@ -1,12 +1,13 @@
 package it.transfersimulation.model;
 
-public class Truck extends Vehicle {
-
+public class Truck extends Vehicle implements DrivingPart {
+	
 	public Truck(String plate) {
 		super(plate);
-		//setTipoVeicolo(TypeVehicle.Truck);
 	}
 	
-	
-	
+	@Override
+	public String getPlate() {
+		return super.getPlate();
+	}
 }

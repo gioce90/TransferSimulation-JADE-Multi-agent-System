@@ -1,0 +1,275 @@
+public class ShipperAgentGUI extends JFrame implements ActionListener {
+
+	// Graphics variables..
+	// bla bla...
+	
+	// Headers, TableModels, JTables for the tables
+	private COLUMNS[] parkModelHeader = {COLUMNS.IMAGE_COLUMN, COLUMNS.TARGA_COLUMN,
+		COLUMNS.CAR_TYPE_COLUMN, COLUMNS.MARCA_COLUMN, COLUMNS.STATE_COLUMN, COLUMNS.PTT_COLUMN };
+	private COLUMNS[] availablesModelHeader = {COLUMNS.IMAGE_COLUMN, COLUMNS.TARGA_COLUMN,
+		COLUMNS.CAR_TYPE_COLUMN, COLUMNS.MARCA_COLUMN };
+	
+	private VehicleTableModel parkModel = new VehicleTableModel(parkModelHeader);
+	private VehicleTableModel availablesModel = new VehicleTableModel(availablesModelHeader);
+	
+	private VehicleTable parkTable;
+	private VehicleTable availablesTable;
+	
+	// My third-part software, a JADE agent:
+	protected ShipperAgent shipperAgent;
+	
+	
+	// --------------------------------------------------------------------------
+	
+	// CONSTRUCTOR
+	
+	ShipperAgentGUI(ShipperAgent agent) {
+	
+		shipperAgent = agent; // valorizes the agent
+		
+		setTitle("Shipper Agent: "+agent.getLocalName()+" GUI");
+		
+		// graphic bla bla...
+		
+		// Park Table and Available Table:
+		parkTable = new VehicleTable(parkModel);
+			// bla bla...
+		availablesTable = new VehicleTable(availablesModel);
+			// bla bla...
+		
+		// JButtons: add/remove vehicle in Park Table and Available Table
+		btnPM_plus = new JButton();
+			btnPM_plus.setToolTipText("Add vehicle");
+			btnPM_plus.setIcon(...);
+			btnPM_plus.setActionCommand("+park");
+			btnPM_plus.addActionListener(this);
+		
+		// similar things for other three buttons:
+		// remove from parkTable, add and remove from availablesTable
+		
+		//bla bla...
+
+		// Data from agent:
+		Vector<Vehicle> veicoli = shipperAgent.getVehicles();
+		Iterator<Vehicle> I = veicoli.iterator();
+		while (I.hasNext()){
+			addVehicle(parkCoordinator, I.next());
+		}
+		
+		showGui();
+	}
+	
+	
+	
+	///////////////////////////////////////////////////////////////////////
+	// Methods:
+	
+	public void showGui() {
+		// bla bla
+	}
+	
+	
+	//////////////////////////////////////////////
+	// actionPerformed method
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		switch (e.getActionCommand()) {
+		case "+park": {
+			new InsertVehicleJDialog(this, parkCoordinator);
+		} break;
+
+		case "-park": {
+			int selectedRow = parkTable.getSelectedRow();
+			if (selectedRow != -1)
+				removeVehicle(parkCoordinator, selectedRow);
+		} break;
+
+		case "+available": {
+			int selectedRow = parkTable.getSelectedRow();
+			if (selectedRow != -1){
+				addVehicle(availablesCoordinator, parkModel.getVehicleAt(selectedRow));	
+			}
+		} break;
+
+		case "-available": {
+			int selectedRow = availablesTable.getSelectedRow();
+			if (selectedRow != -1)
+				removeVehicle(availablesCoordinator, selectedRow);
+		} break;
+		}
+	}
+	
+	
+	///////////////////////////////////////
+	// Add/Remove vehicle methods:
+	
+	void addVehicle(Coordinator coordinator, Vehicle v) {
+		coordinator.notifyAndAddRow(v);
+	}
+	
+	// mhm...
+	void removeVehicle(Coordinator coordinator, Vehicle v) {
+		int row = coordinator.indexOf(v);
+		if (row!=-1)
+			coordinator.notifyAndDeleteRow(row);
+	}
+	
+	void removeVehicle(Coordinator coordinator, int index) {
+		coordinator.notifyAndDeleteRow(index);
+	}
+	
+	
+	// on dispose, delete the agent
+	public void dispose() {
+		super.dispose();
+		shipperAgent.doDelete(); 
+	}
+	
+	
+	
+	
+	///////////////////////////////////////
+	// INNER CLASS COORDINATOR:
+	
+	protected abstract class Coordinator {
+		private VehicleTableModel tableModel;
+
+		public Coordinator(VehicleTableModel tm) {
+			tableModel = tm;
+			notifyRowUpdated();
+		}
+
+		public abstract void notifyAndAddRow(Vehicle vehicle);
+		public abstract void notifyAndDeleteRow(int rowIndex);
+		public abstract void notifyRowUpdated();
+		
+		public int indexOf(Vehicle v) {
+			return tableModel.indexOf(v);
+		}
+		
+		boolean vehicleExists(Vehicle vehicle){
+			int bool = indexOf(vehicle);
+			if (bool==-1) return false;
+			else return true;
+		}
+	}
+	
+	
+	// Coordinator for parkTable
+	Coordinator parkCoordinator = new Coordinator(parkModel) {
+		
+		@Override
+		public void notifyAndAddRow(final Vehicle vehicle) {
+			if (!vehicleExists(vehicle)){ // is this the right control? Or in VehicleTableModel ?
+				shipperAgent.newTruck(vehicle.getPlate());
+				
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						parkModel.addRow(vehicle);
+						if (vehicle.getState().equals(Stato.DISPONIBILE))
+							availablesModel.addRow(vehicle); 
+							// or with availablesCoordinator.notifyAndAddRow(vehicle) ?
+							// or with addVehicle(availablesCoordinator, vehicle) ?
+							// or with a kind of listener on vehicle's state ?
+					}
+				});
+			}
+		}
+		
+		@Override
+		public void notifyAndDeleteRow(final int rowIndex) {
+			final Vehicle v = parkModel.getVehicleAt(rowIndex);
+			
+			removeVehicle(availablesCoordinator, v); // Remove also from the "availables"
+			
+			shipperAgent.removeTruck(v.getPlate());
+			
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					parkModel.removeRow(rowIndex);
+				}
+			});
+		}
+		
+		@Override
+		public void notifyRowUpdated() {
+			parkModel.addTableModelListener(new TableModelListener() {
+				public void tableChanged(TableModelEvent e) {
+					switch (e.getType()) {
+						case (TableModelEvent.DELETE):
+							parkTable.repaint();
+							break;
+						case (TableModelEvent.UPDATE):
+							int row = e.getLastRow();
+							Vehicle v = parkModel.getVehicleAt(row);
+							if (v.getState().equals(Stato.DISPONIBILE)){
+								addVehicle(availablesCoordinator, v);
+								availablesTable.repaint();
+							} else
+								removeVehicle(availablesCoordinator, v);
+							parkTable.repaint();
+							break;
+					}
+				}
+			});
+		}
+	};
+	
+	
+	
+	// Coordinator for availablesTable
+	Coordinator availablesCoordinator = new Coordinator(availablesModel) {
+		
+		@Override
+		public void notifyAndAddRow(final Vehicle vehicle) {
+			if (!vehicleExists(vehicle)){ // is this the right control? Or in VehicleTableModel ?
+				vehicle.setStato(Stato.DISPONIBILE);
+				parkTable.repaint();
+				
+				shipperAgent.activateTruck(vehicle.getPlate());
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						availablesModel.addRow(vehicle);
+					}
+				});
+			}
+		}
+		
+		@Override
+		public void notifyAndDeleteRow(final int rowIndex) {
+			Vehicle v = availablesModel.getVehicleAt(rowIndex);
+			if (v!=null){
+				v.setStato(Stato.NON_DISPONIBILE); // mhm
+				shipperAgent.deactivateTruck(v.getPlate());
+				
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						availablesModel.removeRow(rowIndex);
+					}
+				});
+			}
+		}
+
+		@Override
+		public void notifyRowUpdated() {
+			availablesModel.addTableModelListener(new TableModelListener() {
+				public void tableChanged(TableModelEvent e) {
+					switch (e.getType()) {
+					case (TableModelEvent.DELETE):
+						parkTable.repaint();
+						break;
+					case (TableModelEvent.UPDATE):
+						parkTable.repaint();
+						break;
+					}
+				}
+			});
+		}
+	};
+	
+}

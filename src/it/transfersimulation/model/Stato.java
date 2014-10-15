@@ -1,4 +1,4 @@
-package it.transfersimulation;
+package it.transfersimulation.model;
 
 // TODO da spostare di package
 public enum Stato {

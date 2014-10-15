@@ -32,11 +32,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	protected void setup() {
 		
 		// TODO: li dovrà prendere da un database
-		/*
-		vehicles.add(new Vehicle("AAA1", TipoVeicolo.AUTO, "Peugeot", Stato.DISPONIBILE, (float) 1.5));
-		vehicles.add(new Vehicle("AAA2", TipoVeicolo.AUTOARTICOLATO, "SCANIA", Stato.IN_VIAGGIO, (float) 3.5));
-		vehicles.add(new Vehicle("AAA3", TipoVeicolo.AUTOCARRO, "SCANIA", Stato.NON_DISPONIBILE, (float) 3.5));
-		*/
+		
 		Vehicle c1 = new Car("AAA1");
 		c1.setMark("Peugeot");
 		c1.setModel("206");
@@ -55,12 +51,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		c3.setPtt(3);
 		c3.setStato(Stato.DISPONIBILE);
 		
-		Vehicle c4 = new TrailerTruck("AAA4"); // TODO
-		c4.setMark("Scania");
-		c4.setModel("yyy");
-		c4.setPtt(15);
-		c4.setStato(Stato.DISPONIBILE);
-		
+		/*
 		Vehicle c5 = new SemiTrailerTruck("AAA5");
 		c5.setMark("DAF");
 		c5.setModel("yyy");
@@ -78,21 +69,51 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		c7.setModel("yyy");
 		c7.setPtt(15);
 		c7.setStato(Stato.DISPONIBILE);
+		*/
 		
-		Vehicle c8 = new Trailer("AAA8");
-		c8.setMark("Menci");
-		c8.setModel("yyy");
-		c8.setPtt(15);
-		c8.setStato(Stato.DISPONIBILE);
+		////////////////////////////////////////////////
+		// Autotreno: car + trailer/
+			Vehicle t1 = new Trailer("TTT1");
+			t1.setMark("Menci");
+			t1.setModel("yyy");
+			t1.setPtt(15);
+			t1.setStato(Stato.DISPONIBILE);
+			
+			Vehicle tt1 = new TrailerTruck((Car) c1, (Trailer) t1);
+			tt1.setMark("Scania");
+			tt1.setModel("yyy");
+			tt1.setPtt(15);
+			tt1.setStato(Stato.DISPONIBILE);
+		
+		////////////////////////////////////////////////
+		// Autotreno: van + trailer/
+			Vehicle tt2 = new TrailerTruck((Van) c2, (Trailer) t1);
+			tt2.setMark("Scania");
+			tt2.setModel("yyy");
+			tt2.setPtt(15);
+			tt2.setStato(Stato.DISPONIBILE);
+			
+		////////////////////////////////////////////////
+		// Autotreno: truck + trailer/
+			Vehicle tt3 = new TrailerTruck((Truck) c3, (Trailer) t1);
+			tt3.setMark("Scania");
+			tt3.setModel("yyy");
+			tt3.setPtt(15);
+			tt3.setStato(Stato.DISPONIBILE);
+		
 		
 		vehicles.add(c1);
 		vehicles.add(c2);
 		vehicles.add(c3);
-		vehicles.add(c4);
-		vehicles.add(c5);
-		vehicles.add(c6);
-		vehicles.add(c7);
-		vehicles.add(c8);
+		
+		vehicles.add(t1);
+		
+		//vehicles.add(tt1);
+		//vehicles.add(tt2);
+		vehicles.add(tt3);
+		
+		
+		///////////////////////////////////////////////////
 		
 		// GRAFICA E PRESENTAZIONE
 		myGUI = new ShipperAgentGUI(this);
@@ -148,6 +169,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		
 		// Close the GUI
 		myGUI.dispose();
+		myGUI.setEnabled(false);
 		
 		// Printout a dismissal message
 		System.out.println("Shipper Agent "+getAID().getName()+" terminato.");
@@ -262,22 +284,22 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	
 	@Override
 	public void newTruck(String targa) {
-		System.out.println("ShipperAgent "+getLocalName()+": Nuovo camion targato \""+targa+"\"");
+		System.out.println("ShipperAgent "+getLocalName()+": Nuovo veicolo targato \""+targa+"\"");
 	}
 
 	@Override
 	public void removeTruck(String targa) {
-		System.out.println("ShipperAgent "+getLocalName()+": Rimosso camion targato \""+targa+"\"");
+		System.out.println("ShipperAgent "+getLocalName()+": Rimosso veicolo targato \""+targa+"\"");
 	}
 	 
 	@Override
 	public void activateTruck(String targa) {
-		System.out.println("ShipperAgent "+getLocalName()+": Il camion targato \""+targa+"\" è stato reso disponibile");
+		System.out.println("ShipperAgent "+getLocalName()+": Il veicolo targato \""+targa+"\" è stato reso disponibile");
 	}
 	
 	@Override
 	public void deactivateTruck(String targa) {
-		System.out.println("ShipperAgent "+getLocalName()+": Il camion targato \""+targa+"\" non è più disponibile");
+		System.out.println("ShipperAgent "+getLocalName()+": Il veicolo targato \""+targa+"\" non è più disponibile");
 	}
 	
 }

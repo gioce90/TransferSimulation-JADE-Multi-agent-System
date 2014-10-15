@@ -46,11 +46,11 @@ public class VehicleTable extends JTable {
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
 			column.setMinWidth(100);
-			column.setMaxWidth(100);
+			column.setMaxWidth(150);
 		}
 		
 		// Tipo veicolo Column
-		flag = vehicleModel.findColumn(COLUMNS.CAR_TYPE_COLUMN);
+		flag = vehicleModel.findColumn(COLUMNS.TYPE_COLUMN);
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
 			/* TODO se si volesse cambiare tipo?

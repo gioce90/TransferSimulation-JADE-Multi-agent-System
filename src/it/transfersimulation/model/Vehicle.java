@@ -1,6 +1,5 @@
 package it.transfersimulation.model;
 
-import it.transfersimulation.Stato;
 
 
 public abstract class Vehicle {
@@ -25,6 +24,10 @@ public abstract class Vehicle {
 	
 	// forse in futuro
 	//private Class tipo = this.getClass();
+	
+	public Vehicle(){
+		
+	}
 	
 	public Vehicle(String plate) {
 		this.plate=plate;

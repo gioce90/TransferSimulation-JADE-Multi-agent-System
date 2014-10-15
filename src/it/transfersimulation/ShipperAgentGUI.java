@@ -1,6 +1,7 @@
 package it.transfersimulation;
 
 import it.transfersimulation.VehicleTableModel.COLUMNS;
+import it.transfersimulation.model.Stato;
 import it.transfersimulation.model.Vehicle;
 
 import javax.swing.ImageIcon;
@@ -12,10 +13,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.BoxLayout;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 import java.util.Iterator;
 import java.util.Vector;
@@ -37,21 +38,18 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	private JButton btnPM_meno;
 	private JButton btnMD_plus;
 	private JButton btnMD_meno;
-	 
+	
 	// Headers, TableModels, JTables and Coordinators for the tables
 	private COLUMNS[] parkModelHeader = {COLUMNS.IMAGE_COLUMN, COLUMNS.TARGA_COLUMN,
-		COLUMNS.CAR_TYPE_COLUMN, COLUMNS.MARCA_COLUMN, COLUMNS.STATE_COLUMN, COLUMNS.PTT_COLUMN };
+		COLUMNS.TYPE_COLUMN, COLUMNS.MARK_COLUMN, COLUMNS.STATE_COLUMN, COLUMNS.PTT_COLUMN };
 	private COLUMNS[] availablesModelHeader = {COLUMNS.IMAGE_COLUMN, COLUMNS.TARGA_COLUMN,
-		COLUMNS.CAR_TYPE_COLUMN, COLUMNS.MARCA_COLUMN };
+		COLUMNS.TYPE_COLUMN, COLUMNS.MARK_COLUMN };
 	
 	private VehicleTableModel parkModel = new VehicleTableModel(parkModelHeader);
 	private VehicleTableModel availablesModel = new VehicleTableModel(availablesModelHeader);
 	
 	private VehicleTable parkTable;
 	private VehicleTable availablesTable;
-	
-	//private Coordinator parkCoordinator;
-	//private Coordinator availablesCoordinator;
 	
 	// My third-part software, a JADE agent:
 	protected ShipperAgent shipperAgent;
@@ -60,7 +58,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	// --------------------------------------------------------------------------
 	
 	////////////////////////////////////////////////////
-	// COSTRUTTORE
+	// CONSTRUCTOR
 	
 	ShipperAgentGUI(ShipperAgent agent) {
 		
@@ -174,12 +172,6 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		///////////////////////////////////
 		
 		
-		/////////////////////////////////////////////////////////////////////
-		// Coordinators (ispirati al Mediator pattern)
-		
-		
-		
-		
 		/////////////////////////////////////////////////////
 		// Contatto con l'agente - Riempimento dati
 		
@@ -250,12 +242,13 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	
 	
 	// /////////////////////////////////////
-	// Add/Remove vehicles methods
+	// Add/Remove vehicle methods
 	
 	void addVehicle(Coordinator coordinator, Vehicle v) {
 		coordinator.notifyAndAddRow(v);
 	}
 	
+	// mhm...
 	void removeVehicle(Coordinator coordinator, Vehicle v) {
 		int row = coordinator.indexOf(v);
 		if (row!=-1)
@@ -285,7 +278,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 
 		public Coordinator(VehicleTableModel tm) {
 			tableModel = tm;
-			notifyRowUpdated();
+			//notifyRowUpdated();
 		}
 
 		public abstract void notifyAndAddRow(Vehicle vehicle);
@@ -294,6 +287,11 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		
 		// TODO attenzione forse c'è un dupplicato in un'altra classe
 
+		public void notifyVehicleUpdated(Vehicle vehicle) {
+	        tableModel.notifyVehicleUpdated(vehicle);
+	    }
+		
+		
 		public int indexOf(Vehicle v) {
 			return tableModel.indexOf(v);
 		}
@@ -316,6 +314,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 			if (!vehicleExists(vehicle)){
 				// TODO comunica all'agente
 				shipperAgent.newTruck(vehicle.getPlate());
+				
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -367,6 +366,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 					}
 				}
 			});
+			
 		}
 	};
 	
@@ -407,12 +407,15 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 
 		@Override
 		public void notifyRowUpdated() {
+			
+			
+			
 			availablesModel.addTableModelListener(new TableModelListener() {
 				public void tableChanged(TableModelEvent e) {
 					switch (e.getType()) {
-					case (TableModelEvent.INSERT): System.out.println("un inserimento in availablesModel");
+					case (TableModelEvent.INSERT): //System.out.println("un inserimento in availablesModel");
 						break;
-					case (TableModelEvent.DELETE): System.out.println("una cancellazione in availablesModel");
+					case (TableModelEvent.DELETE): //System.out.println("una cancellazione in availablesModel");
 						parkTable.repaint();
 						break;
 					case (TableModelEvent.UPDATE): System.out.println("un aggiornamento in availablesModel");
@@ -421,6 +424,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 					}
 				}
 			});
+			
 		}
 	};
 	

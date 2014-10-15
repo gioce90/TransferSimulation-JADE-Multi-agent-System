@@ -44,7 +44,6 @@ public class InsertVehicleJDialog extends JDialog {
 	ImageIcon icon;
 	
 	ShipperAgentGUI gui;
-	DefaultTableModel tm;
 	
 	
 	/**
@@ -64,6 +63,7 @@ public class InsertVehicleJDialog extends JDialog {
 	 * Create the dialog.
 	 */
 	private InsertVehicleJDialog() {
+		this.setTitle("Insert Vehicle");
 		setBounds(100, 100, 400, 230);
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(contentPanel, BorderLayout.NORTH);
@@ -126,7 +126,6 @@ public class InsertVehicleJDialog extends JDialog {
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			
 			okButton = new JButton("OK");
-			okButton.setActionCommand("OK");
 			buttonPane.add(okButton);
 			getRootPane().setDefaultButton(okButton);
 
@@ -136,7 +135,6 @@ public class InsertVehicleJDialog extends JDialog {
 					dispose();
 				}
 			});
-			cancelButton.setActionCommand("Cancel");
 			buttonPane.add(cancelButton);
 			
 		}

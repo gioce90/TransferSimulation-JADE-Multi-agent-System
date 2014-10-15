@@ -1,39 +1,20 @@
-package it.transfersimulation;
-
-import it.transfersimulation.model.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import javax.swing.table.AbstractTableModel;
-
 public class VehicleTableModel extends AbstractTableModel {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	private ArrayList<Vehicle> vehicles;
+	private ArrayList<Vehicle> vehicles ;
 	private COLUMNS[] header;
-	
 	
 	// possible column names:
 	public enum COLUMNS {
 		IMAGE_COLUMN,
 		TARGA_COLUMN,
-		TYPE_COLUMN,
-		MARK_COLUMN,		
-		STATE_COLUMN,			
+		CAR_TYPE_COLUMN,
+		MARCA_COLUMN,
+		STATE_COLUMN,
 		PTT_COLUMN,
 	};
 	
-	
-	
 	///////////////////////////////////////////////////////
-	// Constructors:
+	// Constructor:
 	
 	public VehicleTableModel(COLUMNS[] headerTable) {
 		this.vehicles = new ArrayList<Vehicle>();
@@ -67,18 +48,10 @@ public class VehicleTableModel extends AbstractTableModel {
 	            case TARGA_COLUMN:
 	                value = v.getPlate();
 	                break;
-	            case TYPE_COLUMN:
+	            case CAR_TYPE_COLUMN:
 	                value = VehicleUtils.findStringByColumnCarType(v.getType());
 	                break;
-	            case MARK_COLUMN:
-	                value = v.getMark();
-	                break;
-	            case STATE_COLUMN:
-	                value = v.getState();
-	                break;
-	            case PTT_COLUMN:
-	                value = v.getPtt();
-	                break;
+	            // other cases... bla bla...
 	        }
         }
         return value;
@@ -91,19 +64,18 @@ public class VehicleTableModel extends AbstractTableModel {
 	
 	public void addRow(Vehicle vehicle) {
 		vehicles.add(vehicle);
-		int rowIndex = vehicles.size();
-		fireTableRowsInserted(rowIndex, rowIndex); // TODO attenzione
+		fireTableRowsInserted(0, getRowCount()); // is right?
 	}
 	
 	/*public boolean removeRow(Vehicle vehicle) {
 		boolean flag = vehicles.remove(vehicle);
-		fireTableRowsDeleted(rowIndex, rowIndex); // TODO attenzione
+		fireTableRowsDeleted(0, getRowCount()); // is right?
 		return flag;
 	}*/
 	
 	public void removeRow(int row) {
 		vehicles.remove(row);
-		fireTableRowsDeleted(row, row);
+		fireTableRowsDeleted(row, row); // is right?
 	}
 	
 	public Vehicle getVehicleAt(int row) {
@@ -123,8 +95,7 @@ public class VehicleTableModel extends AbstractTableModel {
 	}
 
 	
-	// TODO non mi fa impazzire questo metodo...
-	// controlla se un valore in un campo già esiste in tutte le righe
+	// a value in that column exist in the table?
 	private boolean controllIfExist(Object value, int col) {
 		boolean bool = false;
 		for (int i=0; i<getRowCount();i++){
@@ -135,12 +106,6 @@ public class VehicleTableModel extends AbstractTableModel {
 		}
 		return bool;
 	}
-	
-	/*
-	public COLUMNS[] getHeader() {
-		return header;
-	}
-	*/
 	
 	public int getColumnIndex(COLUMNS column){
 		for(int i=0;i<header.length;i++){
@@ -163,8 +128,6 @@ public class VehicleTableModel extends AbstractTableModel {
     	COLUMNS column = header[col];
     	if (column.equals(COLUMNS.IMAGE_COLUMN))
     		c = ImageIcon.class;
-    	//else if (column.equals(COLUMNS.CAR_TYPE_COLUMN))
-    	//	c =  JComboBox.class;
     	else if (column.equals(COLUMNS.STATE_COLUMN))
     		c =  JComboBox.class;
     	else c = super.getColumnClass(col);
@@ -179,14 +142,7 @@ public class VehicleTableModel extends AbstractTableModel {
     		return " ";
     	else if (column.equals(COLUMNS.TARGA_COLUMN))
     		return "Targa";
-    	else if (column.equals(COLUMNS.TYPE_COLUMN))
-    		return "Tipo veicolo";
-    	else if (column.equals(COLUMNS.MARK_COLUMN))
-    		return "Marca";
-    	else if (column.equals(COLUMNS.STATE_COLUMN))
-    		return "Stato";
-    	else if (column.equals(COLUMNS.PTT_COLUMN))
-    		return "PTT";
+    	// others... bla bla...
     	return super.getColumnName(col);
     };
 	
@@ -206,49 +162,25 @@ public class VehicleTableModel extends AbstractTableModel {
 	        switch (column) {
 	            case TARGA_COLUMN:
 	            	if (!v.getPlate().equals(value)){
-	            		if (!controllIfExist(value, col)){
+	            		if (!controllIfExist(value, col)){  // mhm...
 	            			v.setPlate((String) value);
 	            			flag = true;
 	            		}
 	            	}
 	            	break;
-	            case MARK_COLUMN:
+	            case MARCA_COLUMN:
 	            	if (!v.getMark().equals(value)){
 	            		v.setMark((String) value);
 	            		flag = true;
 	            	}
 	            	break;
-	            case STATE_COLUMN:
-	            	if (!v.getState().equals(value)){
-	            		v.setStato((Stato) value);
-	            		flag = true;
-	            	}
-	            	break;
-	            case PTT_COLUMN:
-	            	if (v.getPtt()!=Float.valueOf((String) value)){
-	            		v.setPtt(Float.valueOf((String)value));
-	            		flag = true;
-	            	}
-	            	break;
+	            
+				// others ... bla bla...
 	        }
-	        // Aggiorna solo se ci sono state modifiche
-	        if (flag)
-		        fireTableCellUpdated(row, col);
+	        // update ONLY if necessary:
+	        if (flag) fireTableRowsUpdated(row, row); // is right?
         }
     }
-
-	
-    /**
-     * Convenience method to notify if a vehicle was update in 
-     * the outside not through setValueAt(...).
-     */
-    public void notifyVehicleUpdated(Vehicle vehicle) {
-        Vehicle[] elements = (Vehicle[]) vehicles.toArray();
-        for (int i=0; i<elements.length; i++) {
-            if (elements[i] == vehicle) {
-                fireTableRowsUpdated(i, i);
-            }
-        }
-    }
-	
+    
+    
 }
