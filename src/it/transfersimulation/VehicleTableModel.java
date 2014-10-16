@@ -90,8 +90,8 @@ public class VehicleTableModel extends AbstractTableModel {
 	// My methods:
 	
 	public void addRow(Vehicle vehicle) {
-		vehicles.add(vehicle);
 		int rowIndex = vehicles.size();
+		vehicles.add(vehicle);
 		fireTableRowsInserted(rowIndex, rowIndex); // TODO attenzione
 	}
 	
@@ -232,23 +232,8 @@ public class VehicleTableModel extends AbstractTableModel {
 	            	break;
 	        }
 	        // Aggiorna solo se ci sono state modifiche
-	        if (flag)
-		        fireTableCellUpdated(row, col);
+	        if (flag)// fireTableRowsUpdated(row, row);
+	        	fireTableCellUpdated(row, col);
         }
     }
-
-	
-    /**
-     * Convenience method to notify if a vehicle was update in 
-     * the outside not through setValueAt(...).
-     */
-    public void notifyVehicleUpdated(Vehicle vehicle) {
-        Vehicle[] elements = (Vehicle[]) vehicles.toArray();
-        for (int i=0; i<elements.length; i++) {
-            if (elements[i] == vehicle) {
-                fireTableRowsUpdated(i, i);
-            }
-        }
-    }
-	
 }

@@ -8,6 +8,7 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -23,7 +24,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	private String weight;
 
 	private AID[] companyAgents;
-
+	
 	private ShipperAgentGUI myGUI;
 	
 	private Vector<Vehicle> vehicles = new Vector<Vehicle>();
@@ -124,11 +125,12 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		
 		
 		
-		// SVILUPPO FUTURO:
 		
 		// Pubblica sulle Pagine Gialle il proprio servizio
 		publishService();
 		
+		
+		// SVILUPPO FUTURO:
 		// Trova le aziende che necessitano di un trasporto
 		//searchJob();
 		//addBehaviour(new HandlePropose());
@@ -147,7 +149,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
 		sd.setName("JADE-trasporto-merci");
-		sd.setType("trasporto-merci"); // cos'è?
+		sd.setType("shipper");
 		dfd.addServices(sd);
 		try {
 			DFService.register(this, dfd);
@@ -169,7 +171,6 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		
 		// Close the GUI
 		myGUI.dispose();
-		myGUI.setEnabled(false);
 		
 		// Printout a dismissal message
 		System.out.println("Shipper Agent "+getAID().getName()+" terminato.");
@@ -177,7 +178,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	
 	
 	///////////////////////////////////////////
-	// Comunication with agent methods
+	// Communication with agent methods
 	
 	public Vector<Vehicle> getVehicles(){
 		return vehicles;
@@ -187,6 +188,82 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	
 	
 	///////////////////////////////////////////
+	
+	
+	public void searchCustomers() {
+		addBehaviour(new OneShotBehaviour() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void action() {
+				ServiceDescription sd = new ServiceDescription();
+				sd.setName("JADE-trasporto-merci");
+				sd.setType("buyer");
+				DFAgentDescription template = new DFAgentDescription();
+				template.addServices(sd);
+				try {
+					DFAgentDescription[] result = DFService.search(myAgent, template);
+					System.out.println("Trovati i seguenti clienti: ");
+					AID[] customerAgents;
+					customerAgents = new AID[result.length];
+					
+					for (int i = 0; i < result.length; ++i) {
+						customerAgents[i] = result[i].getName();
+						System.out.println(customerAgents[i].getName());
+					}
+					
+				}
+				catch (FIPAException fe) {
+					fe.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	
+	
+	// TODO in futuro dovrà restituire una lista dei concorrenti
+	public void searchCompetitors() {
+		addBehaviour(new OneShotBehaviour() {
+			private static final long serialVersionUID = 1L;
+			
+			@Override
+			public void action() {
+				ServiceDescription sd = new ServiceDescription();
+				sd.setName("JADE-trasporto-merci");
+				sd.setType("shipper");
+				DFAgentDescription template = new DFAgentDescription();
+				template.addServices(sd);
+				try {
+					DFAgentDescription[] result = DFService.search(myAgent, template);
+					System.out.println("Trovate le seguenti aziende: ");
+					AID[] customerAgents;
+					customerAgents = new AID[result.length];
+					
+					for (int i = 0; i < result.length; ++i) {
+						customerAgents[i] = result[i].getName();
+						System.out.println(customerAgents[i].getName());
+					}
+					
+				}
+				catch (FIPAException fe) {
+					fe.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	private void searchJob() {
 		addBehaviour(new Behaviour() {
@@ -288,8 +365,18 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	}
 
 	@Override
+	public void newTruck(Vehicle vehicle) {
+		System.out.println("ShipperAgent "+getLocalName()+": Nuovo veicolo targato \""+vehicle.getPlate()+"\"");
+	}
+	
+	@Override
 	public void removeTruck(String targa) {
 		System.out.println("ShipperAgent "+getLocalName()+": Rimosso veicolo targato \""+targa+"\"");
+	}
+	
+	@Override
+	public void removeTruck(Vehicle vehicle) {
+		System.out.println("ShipperAgent "+getLocalName()+": Rimosso veicolo targato \""+vehicle.getPlate()+"\"");
 	}
 	 
 	@Override
@@ -302,4 +389,14 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		System.out.println("ShipperAgent "+getLocalName()+": Il veicolo targato \""+targa+"\" non è più disponibile");
 	}
 	
+	@Override
+	public void activateTruck(Vehicle vehicle) {
+		System.out.println("ShipperAgent "+getLocalName()+": Il veicolo targato \""+vehicle.getPlate()+"\" è stato reso disponibile");
+	}
+	
+	@Override
+	public void deactivateTruck(Vehicle vehicle) {
+		System.out.println("ShipperAgent "+getLocalName()+": Il veicolo targato \""+vehicle.getPlate()+"\" non è più disponibile");
+	}
+
 }

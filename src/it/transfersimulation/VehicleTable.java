@@ -25,7 +25,7 @@ public class VehicleTable extends JTable {
 		this.setRowSelectionAllowed(true);
 		this.setShowHorizontalLines(true);
 		this.setRowHeight(28);
-		this.setPreferredScrollableViewportSize(new Dimension(700,150));
+		this.setPreferredScrollableViewportSize(new Dimension(600,150));
 		this.setFillsViewportHeight(true);
 		
 		////////////////////////////////////
@@ -58,8 +58,8 @@ public class VehicleTable extends JTable {
 					...
 			));
 			*/
-			column.setMinWidth(150);
-			column.setMaxWidth(150);
+			column.setMinWidth(110);
+			column.setMaxWidth(120);
 		}
 		
 		// MARCA Column:
