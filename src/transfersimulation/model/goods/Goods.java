@@ -3,18 +3,19 @@ package transfersimulation.model.goods;
 public class Goods {
 	
 	private String codice;
-	private String nome, descrizione, dimensione;
+	private String descrizione, dimensione;
 	private int quantità;
+	private double volume;
 	
 	// tipo (solido, liquido, gas.... sfusa o non..)
 	
 	
-	public Goods(String codice, String nome, String descrizione, String dimensione, int quantità) {
+	public Goods(String codice, String descrizione, String dimensione, int quantità, double volume) {
 		this.codice = codice;
-		this.nome = nome;
 		this.descrizione = descrizione;
 		this.dimensione = dimensione;
 		this.quantità = quantità;
+		this.volume = volume;
 	}
 
 	
@@ -26,14 +27,6 @@ public class Goods {
 
 	public void setCodice(String codice) {
 		this.codice = codice;
-	}
-
-	public String getNome() {
-		return nome;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
 	}
 
 	public String getDescrizione() {
@@ -60,4 +53,11 @@ public class Goods {
 		this.quantità = quantità;
 	}
 	
+	public double getVolume() {
+		return volume;
+	}
+	
+	public void setVolume(int volume) {
+		this.volume = volume;
+	}
 }

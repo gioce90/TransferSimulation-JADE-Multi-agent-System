@@ -29,6 +29,7 @@ public class VehicleTableModel extends AbstractTableModel {
 		MARK_COLUMN,		
 		STATE_COLUMN,			
 		PTT_COLUMN,
+		LOCATION_COLUMN
 	};
 	
 	
@@ -80,6 +81,8 @@ public class VehicleTableModel extends AbstractTableModel {
 	            case PTT_COLUMN:
 	                value = v.getPtt();
 	                break;
+	            case LOCATION_COLUMN:
+	            	value = v.getLocazioneAttuale();
 	        }
         }
         return value;
@@ -95,12 +98,6 @@ public class VehicleTableModel extends AbstractTableModel {
 		vehicles.add(vehicle);
 		fireTableRowsInserted(rowIndex, rowIndex); // TODO attenzione
 	}
-	
-	/*public boolean removeRow(Vehicle vehicle) {
-		boolean flag = vehicles.remove(vehicle);
-		fireTableRowsDeleted(rowIndex, rowIndex); // TODO attenzione
-		return flag;
-	}*/
 	
 	public void removeRow(int row) {
 		vehicles.remove(row);
@@ -124,7 +121,7 @@ public class VehicleTableModel extends AbstractTableModel {
 	}
 
 	
-	// TODO non mi fa impazzire questo metodo...
+	// TODO
 	// controlla se un valore in un campo già esiste in tutte le righe
 	private boolean controllIfExist(Object value, int col) {
 		boolean bool = false;
@@ -136,12 +133,6 @@ public class VehicleTableModel extends AbstractTableModel {
 		}
 		return bool;
 	}
-	
-	/*
-	public COLUMNS[] getHeader() {
-		return header;
-	}
-	*/
 	
 	public int getColumnIndex(COLUMNS column){
 		for(int i=0;i<header.length;i++){
@@ -164,8 +155,6 @@ public class VehicleTableModel extends AbstractTableModel {
     	COLUMNS column = header[col];
     	if (column.equals(COLUMNS.IMAGE_COLUMN))
     		c = ImageIcon.class;
-    	//else if (column.equals(COLUMNS.CAR_TYPE_COLUMN))
-    	//	c =  JComboBox.class;
     	else if (column.equals(COLUMNS.STATE_COLUMN))
     		c =  JComboBox.class;
     	else c = super.getColumnClass(col);
@@ -188,6 +177,8 @@ public class VehicleTableModel extends AbstractTableModel {
     		return "Stato";
     	else if (column.equals(COLUMNS.PTT_COLUMN))
     		return "PTT";
+    	else if (column.equals(COLUMNS.LOCATION_COLUMN))
+    		return "Locazione attuale";
     	return super.getColumnName(col);
     };
 	
@@ -231,9 +222,14 @@ public class VehicleTableModel extends AbstractTableModel {
 	            		flag = true;
 	            	}
 	            	break;
+	            case LOCATION_COLUMN:
+	            	if (!v.getLocazioneAttuale().equals(value)){
+		            		v.setLocazioneAttuale((String) value);
+		            		flag = true;
+		            }
 	        }
 	        // Aggiorna solo se ci sono state modifiche
-	        if (flag)// fireTableRowsUpdated(row, row);
+	        if (flag)
 	        	fireTableCellUpdated(row, col);
         }
     }

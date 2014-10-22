@@ -26,7 +26,7 @@ public class VehicleTable extends JTable {
 		this.setRowSelectionAllowed(true);
 		this.setShowHorizontalLines(true);
 		this.setRowHeight(28);
-		this.setPreferredScrollableViewportSize(new Dimension(600,150));
+		this.setPreferredScrollableViewportSize(new Dimension(650,150));
 		this.setFillsViewportHeight(true);
 		
 		////////////////////////////////////
@@ -47,31 +47,24 @@ public class VehicleTable extends JTable {
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
 			column.setMinWidth(100);
-			column.setMaxWidth(150);
+			column.setMaxWidth(140);
 		}
 		
 		// Tipo veicolo Column
 		flag = vehicleModel.findColumn(COLUMNS.TYPE_COLUMN);
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
-			/* TODO se si volesse cambiare tipo?
-			column.setCellEditor(new DefaultCellEditor(
-					...
-			));
-			*/
-			column.setMinWidth(110);
-			column.setMaxWidth(120);
+			column.setMinWidth(100);
+			column.setMaxWidth(110);
 		}
 		
 		// MARCA Column:
-		/* Non necessaria
-		flag = vehicleModel.findColumn(COLUMNS.MARCA_COLUMN);
+		flag = vehicleModel.findColumn(COLUMNS.MARK_COLUMN);
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
-			column.setMinWidth(150);
-			column.setMaxWidth(150);
+			column.setMinWidth(80);
+			//column.setMaxWidth(120);
 		}
-		*/
 		
 		// Stato veicolo Column
 		flag = vehicleModel.findColumn(COLUMNS.STATE_COLUMN);
@@ -79,8 +72,8 @@ public class VehicleTable extends JTable {
 			column = this.getColumnModel().getColumn(flag);
 			column.setCellEditor(new DefaultCellEditor(
 					new JComboBox<Stato>(Stato.values())));
-			column.setMinWidth(150);
-			column.setMaxWidth(150);
+			column.setMinWidth(130);
+			column.setMaxWidth(130);
 		}
 		
 		// PTT Column:
@@ -88,8 +81,17 @@ public class VehicleTable extends JTable {
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
 			column.setMinWidth(50);
-			column.setMaxWidth(50);
+			column.setMaxWidth(60);
 		}
+		
+		// Actual Location Column:
+		flag = vehicleModel.findColumn(COLUMNS.LOCATION_COLUMN);
+		if (flag!=-1){
+			column = this.getColumnModel().getColumn(flag);
+			column.setMinWidth(130);
+			column.setMaxWidth(150);
+		}
+		
 		
 	}
 	

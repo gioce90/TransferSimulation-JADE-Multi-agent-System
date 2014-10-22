@@ -45,7 +45,7 @@ public class BuyerAgentGUI extends JFrame {
 		// Tabella
 		
 		List<String> colonne = new ArrayList<String>();
-		colonne.add("Nome");
+		colonne.add("Descrizione");
 		colonne.add("Dimensioni x*y*z");
 		colonne.add("Q.tà");
 		
@@ -57,7 +57,7 @@ public class BuyerAgentGUI extends JFrame {
 				Goods g = goodsModel.getDataObject(rowIndex);
 				String s = "?";
 				switch (columnIndex){
-					case 0: s= g.getNome(); break;
+					case 0: s= g.getDescrizione(); break;
 					case 1: s= g.getDimensione(); break;
 					case 2: s= String.valueOf(g.getQuantità()); break;
 				}

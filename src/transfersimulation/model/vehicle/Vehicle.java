@@ -24,7 +24,11 @@ public abstract class Vehicle {
 	private float length;		// lunghezza, misurata in metri
 	private float height;		// altezza, misurata in metri
 	
-	private Stato stato;	// Stato del veicolo
+	private Stato stato;		// Stato del veicolo
+	
+	private String locazioneAttuale = "";
+	
+	
 	//private short europallet;	// numero di Pedane Standard da Trasporto trasportabili
 	
 	// forse in futuro
@@ -135,6 +139,14 @@ public abstract class Vehicle {
 	
 	public  Class<? extends Vehicle> getType() {
 		return this.getClass();
+	}
+
+	public String getLocazioneAttuale() {
+		return locazioneAttuale;
+	}
+
+	public void setLocazioneAttuale(String locazioneAttuale) {
+		this.locazioneAttuale = locazioneAttuale;
 	}
 	
 }

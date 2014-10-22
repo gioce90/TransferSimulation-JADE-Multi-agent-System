@@ -39,19 +39,22 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		c1.setMark("Peugeot");
 		c1.setModel("206");
 		c1.setPtt(2);
-		c1.setStato(Stato.DISPONIBILE);
+		c1.setStato(Stato.NON_DISPONIBILE);
+		c1.setLocazioneAttuale("Bari");
 		
 		Vehicle c2 = new Van("AAA2");
 		c2.setMark("Volvo");
 		c2.setModel("xxx");
 		c2.setPtt(3);
 		c2.setStato(Stato.DISPONIBILE);
+		c2.setLocazioneAttuale("Andria");
 		
 		Vehicle c3 = new Truck("AAA3");
 		c3.setMark("Scania");
 		c3.setModel("xxx");
 		c3.setPtt(3);
 		c3.setStato(Stato.DISPONIBILE);
+		c3.setLocazioneAttuale("Foggia");
 		
 		/*
 		Vehicle c5 = new SemiTrailerTruck("AAA5");
@@ -80,13 +83,16 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 			t1.setModel("yyy");
 			t1.setPtt(15);
 			t1.setStato(Stato.DISPONIBILE);
+			t1.setLocazioneAttuale("Roma");
+			
 			
 			Vehicle tt1 = new TrailerTruck((Car) c1, (Trailer) t1);
 			tt1.setMark("Scania");
 			tt1.setModel("yyy");
 			tt1.setPtt(15);
 			tt1.setStato(Stato.DISPONIBILE);
-		
+			tt1.setLocazioneAttuale("Bari");
+			
 		////////////////////////////////////////////////
 		// Autotreno: van + trailer/
 			Vehicle tt2 = new TrailerTruck((Van) c2, (Trailer) t1);

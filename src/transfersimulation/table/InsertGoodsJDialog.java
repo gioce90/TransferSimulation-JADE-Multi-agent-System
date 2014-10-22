@@ -15,7 +15,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
-public class GoodsInsertJDialog extends JDialog {
+public class InsertGoodsJDialog extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textFieldCod;
@@ -26,7 +26,7 @@ public class GoodsInsertJDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public GoodsInsertJDialog() {
+	public InsertGoodsJDialog() {
 		setBounds(100, 100, 400, 230);
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -80,7 +80,7 @@ public class GoodsInsertJDialog extends JDialog {
 	}
 	
 	DefaultTableModel tm;
-	public GoodsInsertJDialog(JTable table) {
+	public InsertGoodsJDialog(JTable table) {
 		this();
 		
 		tm = (DefaultTableModel) table.getModel();
@@ -103,7 +103,7 @@ public class GoodsInsertJDialog extends JDialog {
 	 */
 	public static void main(String[] args) {
 		try {
-			GoodsInsertJDialog dialog = new GoodsInsertJDialog();
+			InsertGoodsJDialog dialog = new InsertGoodsJDialog();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {

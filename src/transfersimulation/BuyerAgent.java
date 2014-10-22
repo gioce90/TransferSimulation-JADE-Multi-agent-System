@@ -3,6 +3,8 @@ package transfersimulation;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Date;
+import java.util.List;
 import java.util.Vector;
 
 import transfersimulation.model.goods.Goods;
@@ -20,7 +22,7 @@ public class BuyerAgent extends Agent {
 	
 	BuyerAgentGUI myGUI;
 	Vector<Goods> goods;
-	
+	Vector<Transport> transports;
 	
 	@Override
 	protected void setup() {
@@ -28,18 +30,17 @@ public class BuyerAgent extends Agent {
 		
 		publishService();
 		
-		Goods m1 = new Goods("Cod1", "Merce1", "blabla", "Dimensioni x*y*z", 10);
-		Goods m2 = new Goods("Cod2", "Merce2", "blabla", "Dimensioni x*y*z", 5);
-		Goods m3 = new Goods("Cod3", "Merce2", "blabla", "Dimensioni x*y*z", 2);
+		Goods m1 = new Goods("Cod1", "Merce1", "Dimensioni x*y*z", 10, 0.2);
+		Goods m2 = new Goods("Cod2", "Merce2", "Dimensioni x*y*z", 5, 1);
+		Goods m3 = new Goods("Cod3", "Merce2", "Dimensioni x*y*z", 2, 3);
 		
 		goods = new Vector<Goods>();
 		goods.add(m1); goods.add(m2); goods.add(m3);
 		
-		Transport t1 = new Transport(m1, "x", "y"); // o Order
-		Transport t2 = new Transport(m2, "x", "y");
-		Transport t3 = new Transport(m3, "y", "z");
+		Transport t1 = new Transport(m1, "x", "y", Date.valueOf("2014-10-22"));
+		Transport t2 = new Transport(m2, "y", "z", Date.valueOf("2014-10-22"));
 		
-		final Object[] ordini = {t1, t2, t3};
+		final Object[] ordini = {t1, t2};
 		
 		
 		// GRAFICA E PRESENTAZIONE
@@ -101,10 +102,7 @@ public class BuyerAgent extends Agent {
 		
 		
 	}
-	
-	public Vector<Goods> getGoods(){
-		return goods;
-	}
+
 	
 	private void publishService() {
 		// Registra il servizio di Trasporto presso il servizio di Pagine Gialle
@@ -137,23 +135,31 @@ public class BuyerAgent extends Agent {
 	
 	////////////////////////////////////////////////////////////////////////////////
 	
-	private AID[] searchShippers(Object[] trasporti) {
+	public List<Transport> getTransports(){
+		return transports;
+	}
+	
+	public List<Goods> getGoods(){
+		return goods;
+	}
+	
+	protected AID[] searchShippers(Object[] trasporti) {
 		ServiceDescription sd = new ServiceDescription();
 		sd.setName("JADE-trasporto-merci");
 		sd.setType("shipper");
 		DFAgentDescription template = new DFAgentDescription();
 		template.addServices(sd);
-		AID[] shipperAgents = null;
+		AID[] shippers = null;
 		try {
 			DFAgentDescription[] result = DFService.search(this, template);
-			shipperAgents = new AID[result.length];
+			shippers = new AID[result.length];
 			for (int i=0; i<result.length; ++i) 
-				shipperAgents[i] = result[i].getName();
+				shippers[i] = result[i].getName();
 		}
 		catch (FIPAException fe) {
 			fe.printStackTrace();
 		}
-		return shipperAgents;
+		return shippers;
 	}
 	
 }

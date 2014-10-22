@@ -42,9 +42,9 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	
 	// Headers, TableModels, JTables and Coordinators for the tables
 	private COLUMNS[] parkModelHeader = {COLUMNS.IMAGE_COLUMN, COLUMNS.TARGA_COLUMN,
-		COLUMNS.TYPE_COLUMN, COLUMNS.MARK_COLUMN, COLUMNS.STATE_COLUMN, COLUMNS.PTT_COLUMN };
+		COLUMNS.TYPE_COLUMN, COLUMNS.MARK_COLUMN, COLUMNS.STATE_COLUMN, COLUMNS.PTT_COLUMN, COLUMNS.LOCATION_COLUMN };
 	private COLUMNS[] availablesModelHeader = {COLUMNS.IMAGE_COLUMN, COLUMNS.TARGA_COLUMN,
-		COLUMNS.TYPE_COLUMN, COLUMNS.MARK_COLUMN };
+		COLUMNS.TYPE_COLUMN, COLUMNS.MARK_COLUMN, COLUMNS.LOCATION_COLUMN };
 	
 	private VehicleTableModel parkModel = new VehicleTableModel(parkModelHeader);
 	private VehicleTableModel availablesModel = new VehicleTableModel(availablesModelHeader);
@@ -318,6 +318,12 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		super.setVisible(true);
 	}
 	
+		
+	// on dispose, delete the agent
+	public void dispose() {
+		super.dispose();
+		shipperAgent.doDelete(); 
+	}
 	
 	//////////////////////////////////////////////
 	// actionPerformed method
@@ -376,13 +382,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		coordinator.notifyAndDeleteRow(row);
 	}
 	
-	
-	// on dispose, delete the agent
-	public void dispose() {
-		super.dispose();
-		shipperAgent.doDelete(); 
-	}
-	
+
 	
 	
 	
