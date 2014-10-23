@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="it/transfersimulation/Vehicle.java|it/transfersimulation/VehicleComplex.java|it/transfersimulation/CompanyAgent.java|it/transfersimulation/Driver.java|it/transfersimulation/GoodsInsertJDialog.java|it/transfersimulation/MatcherAgent.java|database/|database/mysql/|databaseEX/|it/transfersimulation/model/TypeVehicle.java|it/transfersimulation/model/DrivenPart.java|it/transfersimulation/model/DrivingPartForTrailerTruck.java|transfersimulation/CompanyAgent.java|transfersimulation/Driver.java" kind="src" path="src"/>
+	<classpathentry excluding="it/transfersimulation/Vehicle.java|it/transfersimulation/VehicleComplex.java|it/transfersimulation/CompanyAgent.java|it/transfersimulation/Driver.java|it/transfersimulation/GoodsInsertJDialog.java|it/transfersimulation/MatcherAgent.java|database/|database/mysql/|databaseEX/|it/transfersimulation/model/TypeVehicle.java|it/transfersimulation/model/DrivenPart.java|it/transfersimulation/model/DrivingPartForTrailerTruck.java|transfersimulation/CompanyAgent.java|transfersimulation/Driver.java|transfersimulation/GeoCoding.java" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="lib" path="forms-1.3.0.jar" sourcepath="forms-1.3.0-src.zip"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.31-bin.jar"/>

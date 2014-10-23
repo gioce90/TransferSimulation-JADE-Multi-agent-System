@@ -227,6 +227,8 @@ public class VehicleTableModel extends AbstractTableModel {
 		            		v.setLocazioneAttuale((String) value);
 		            		flag = true;
 		            }
+			default:
+				break;
 	        }
 	        // Aggiorna solo se ci sono state modifiche
 	        if (flag)

@@ -15,9 +15,9 @@ public class MatcherAgent extends Agent {
 	
 	
 	public MatcherAgent(BuyerAgent buyer) {
-		List<Transport> transport = buyer.getTransports();
-		for (Transport t:transport)
-			t.getDateStart();
+		//List<Transport> transport = buyer.getTransports();
+		//for (Transport t:transport)
+			//t.getDateStart();
 		
 	}
 	
@@ -25,7 +25,9 @@ public class MatcherAgent extends Agent {
 	
 	
 	
-	
+	public static void main(String[] args) {
+		System.out.println("Ciaoooo");
+	}
 	
 	
 	
