@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Vector;
 
 import transfersimulation.model.goods.Goods;
-import transfersimulation.model.goods.Transport;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -16,81 +15,135 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.ACLMessage;
 
-public class BuyerAgent extends Agent {
+public class BuyerAgent extends Agent implements BuyerInterface {
 	private static final long serialVersionUID = 3399019455702807074L;
 	
 	BuyerAgentGUI myGUI;
 	Vector<Goods> goods;
-	Vector<Transport> transports;
 	
 	@Override
 	protected void setup() {
 		super.setup();
 		
 		publishService();
-		
-		Goods m1 = new Goods("Cod1", "Merce1", "Dimensioni x*y*z", 10, 0.2);
-		Goods m2 = new Goods("Cod2", "Merce2", "Dimensioni x*y*z", 5, 1);
-		Goods m3 = new Goods("Cod3", "Merce2", "Dimensioni x*y*z", 2, 3);
-		
+
+		// Inserisco una serie di merci:
 		goods = new Vector<Goods>();
-		goods.add(m1); goods.add(m2); goods.add(m3);
 		
-		Transport t1 = new Transport(m1, "x", "y", Date.valueOf("2014-10-22"));
-		Transport t2 = new Transport(m2, "y", "z", Date.valueOf("2014-10-22"));
+		Goods m = new Goods();
+		m.setCodice("Cod1");
+		m.setDescrizione("Sabbia");
+		m.setDimensione("x*y*z");
+		m.setPericolosa(false);
+		m.setQuantità(100);
+		m.setTipo("solida");
+		m.setVolume(200);
+		m.setLocationStart("Bari");
+		m.setLocationEnd("Lecce");
+		m.setDateStart(Date.valueOf("2014-10-22"));
+		m.setDateLimit(5);
+		goods.add(m);
 		
-		final Object[] ordini = {t1, t2};
+		m = new Goods();
+		m.setCodice("Cod2");
+		m.setDescrizione("Petrolio");
+		m.setDimensione("x*y*z");
+		m.setPericolosa(true);
+		m.setQuantità(100);
+		m.setTipo("liquida");
+		m.setVolume(200);
+		m.setLocationStart("Lecce");
+		m.setLocationEnd("Roma");
+		m.setDateStart(Date.valueOf("2014-10-22"));
+		m.setDateLimit(6);
+		goods.add(m);
+		
+		m = new Goods();
+		m.setCodice("Cod3");
+		m.setDescrizione("Cibo refrigerato");
+		m.setDimensione("x*y*z");
+		m.setPericolosa(true);
+		m.setQuantità(100);
+		m.setTipo("solida");
+		m.setVolume(200);
+		m.setLocationStart("Lecce");
+		m.setLocationEnd("Roma");
+		m.setDateStart(Date.valueOf("2014-10-22"));
+		m.setDateLimit(6);
+		goods.add(m);
+		
+		/*
+		Transport t1 = new Transport(m1, "x", "y", Date.valueOf("2014-10-22"), 5);
+		Transport t2 = new Transport(m2, "y", "z", Date.valueOf("2014-10-22"), 3);
+		transports = new Vector<Transport>();
+		transports.add(t1);
+		*/
+		
+		//final Object[] ordini = {t1, t2};
 		
 		
 		// GRAFICA E PRESENTAZIONE
 		myGUI = new BuyerAgentGUI(this);
 		myGUI.showGui();
 		
+			try {
+				ACLMessage acl = blockingReceive();
+				ACLMessage reply = acl.createReply();
+				reply.setPerformative(ACLMessage.INFORM);
+				reply.setContentObject(goods);
+				this.send(reply);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		
 		
+		/*
 		// TODO da rimuovere
 		addBehaviour(new CyclicBehaviour() {
 			private static final long serialVersionUID = 1L;
-
+			
 			@Override
 			public void action() {
 				System.out.println("\nInserire:\n"
-						+ "0 per chiudere l'agente\n"
+						//+ "0 per chiudere l'agente\n"
 						+ "1 per visualizzare le aziende disponibili\n"
-						+ "2 per richiedere un trasporto"
+						+ "2 per richiedere un trasporto\n"
+						+ "3 per renderti disponibile per un trasporto"
 				);
 				
 				BufferedReader leggi=new BufferedReader(new InputStreamReader(System.in));
 				try{
 					int tuoInt = Integer.parseInt(leggi.readLine());
 					switch (tuoInt){
-					case 0:
-						doDelete();
-						break;
 					case 1: {
 						System.out.println("Le aziende di trasporto disponibili sono:");
-						AID[] shippers = searchShippers(ordini);
-						for (AID i:shippers)
-							System.out.println(i.getName());
+						//AID[] shippers = searchShippers(ordini);
+						//for (AID i:shippers)
+						//	System.out.println(i.getName());
 					} break;
 					case 2: {
 						System.out.println("Richiesta di un trasporto");
-						AID[] shippers = searchShippers(ordini);
-						System.out.println("Matching...");
-						matching(shippers, ordini);
+						//AID[] shippers = searchShippers(ordini);
 						
 					} break;
-					case 3:
-						break;
-							
+					case 3: {
+						System.out.println("Renditi disponibile per un trasporto");
+						//System.out.println("Matching...");
+						//matching(shippers, ordini);
+						ACLMessage acl = blockingReceive();
+						ACLMessage reply = acl.createReply();
+						reply.setPerformative(ACLMessage.INFORM);
+						reply.setContentObject(goods);
+						myAgent.send(reply);
+					} break;	
 					}
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
 			}
-
-		});
+		});*/
 		
 		
 	}
@@ -135,15 +188,12 @@ public class BuyerAgent extends Agent {
 	
 	////////////////////////////////////////////////////////////////////////////////
 	
-	public List<Transport> getTransports(){
-		return transports;
-	}
-	
 	public List<Goods> getGoods(){
 		return goods;
 	}
 	
-	protected AID[] searchShippers(Object[] trasporti) {
+	
+	protected AID[] searchShippers() {
 		ServiceDescription sd = new ServiceDescription();
 		sd.setName("JADE-trasporto-merci");
 		sd.setType("shipper");

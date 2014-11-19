@@ -1,13 +1,14 @@
 package transfersimulation;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import transfersimulation.model.goods.Goods;
 import transfersimulation.model.vehicle.*;
 import transfersimulation.model.vehicle.Vehicle.Stato;
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
@@ -16,6 +17,8 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
+
 
 public class ShipperAgent extends Agent implements ShipperInterface {
 	
@@ -23,8 +26,6 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	
 	private String vehicle;
 	private String weight;
-
-	private AID[] companyAgents;
 	
 	private ShipperAgentGUI myGUI;
 	
@@ -131,8 +132,6 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		System.out.println("Ciao! Shipper Agent "+getAID().getName()+" pronto!");
 		
 		
-		
-		
 		// Pubblica sulle Pagine Gialle il proprio servizio
 		publishService();
 		
@@ -186,43 +185,33 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	
 	///////////////////////////////////////////
 	// Communication with agent methods
-
 	
 	
 	
 	///////////////////////////////////////////
 	
-	
-	public void searchCustomers() {
-		addBehaviour(new OneShotBehaviour() {
-			private static final long serialVersionUID = 1L;
+	/* Trova i clienti online */
+	public AID[] searchBuyers(){
+		ServiceDescription sd = new ServiceDescription();
+		sd.setName("JADE-trasporto-merci");
+		sd.setType("buyer");
+		DFAgentDescription template = new DFAgentDescription();
+		template.addServices(sd);
+		AID[] buyerAgents = null;
+		try {
+			DFAgentDescription[] result = DFService.search(this, template);
+			//System.out.println("Trovati i seguenti clienti: ");
+			buyerAgents = new AID[result.length];
 			
-			@Override
-			public void action() {
-				ServiceDescription sd = new ServiceDescription();
-				sd.setName("JADE-trasporto-merci");
-				sd.setType("buyer");
-				DFAgentDescription template = new DFAgentDescription();
-				template.addServices(sd);
-				try {
-					DFAgentDescription[] result = DFService.search(myAgent, template);
-					System.out.println("Trovati i seguenti clienti: ");
-					AID[] customerAgents;
-					customerAgents = new AID[result.length];
-					
-					for (int i = 0; i < result.length; ++i) {
-						customerAgents[i] = result[i].getName();
-						System.out.println(customerAgents[i].getName());
-					}
-					
-				}
-				catch (FIPAException fe) {
-					fe.printStackTrace();
-				}
+			for (int i = 0; i < result.length; ++i) {
+				buyerAgents[i] = result[i].getName();
 			}
-		});
+		}
+		catch (FIPAException fe) {
+			fe.printStackTrace();
+		}
+		return buyerAgents;
 	}
-	
 	
 	
 	// TODO in futuro dovrà restituire una lista dei concorrenti
@@ -258,42 +247,46 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	private void searchJob() {
-		addBehaviour(new Behaviour() {
+	/**
+	 * Invia una request a tutti i buyer agent attivi,
+	 * dove chiede la lista delle merci
+	 */
+	void searchJob() {
+		addBehaviour(new OneShotBehaviour() {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void action() {
-				DFAgentDescription template = new DFAgentDescription();
-				ServiceDescription sd = new ServiceDescription();
-				//sd.setName("trasporto-merci");
-				sd.setType("trasporto-merci");
-				template.addServices(sd);
-				try {
-					DFAgentDescription[] result = DFService.search(myAgent, template); 
-					System.out.println("Trovate le seguenti company agents:");
-					companyAgents = new AID[result.length];
-					for (int i = 0; i < result.length; ++i) {
-						companyAgents[i] = result[i].getName();
-						System.out.println(companyAgents[i].getName());
+				// crea la REQUEST
+				ACLMessage aclMessage = new ACLMessage(ACLMessage.REQUEST);
+				aclMessage.setContent("Descrizione merci");
+				
+				// Trova tutti i buyer e itera su di essi
+				AID[] buyerAgents=searchBuyers();
+				for (AID buyer : buyerAgents) {
+					aclMessage.addReceiver(buyer); //System.out.println(buyer.getName());
+				}
+				myAgent.send(aclMessage);
+				
+				// Attende le risposte:
+				for (int i=0; i<buyerAgents.length; i++) {
+					ACLMessage response = blockingReceive();
+					
+					try {
+						String nameBuyer = response.getSender().getName();
+						Vector<Goods> goods = (Vector<Goods>) response.getContentObject();
+						System.out.println("Cliente: "+nameBuyer);
+						for (Goods good : goods) {
+							System.out.println(good.getDescrizione() + "  " + good.getDateStart());
+						}
+					} catch (UnreadableException e) {
+						e.printStackTrace();
 					}
+					
+					response = response.createReply();
+					
+					myAgent.send(response);
 				}
-				catch (FIPAException fe) {
-					fe.printStackTrace();
-				}
-			}
-			
-			@Override
-			public boolean done() {
-				return false;
 			}
 		});
 	}

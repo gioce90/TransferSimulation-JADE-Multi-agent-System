@@ -1,34 +1,31 @@
 package transfersimulation.model.goods;
 
-public class Goods {
+import java.io.Serializable;
+import java.util.Date;
+
+public class Goods implements Serializable {
 	
 	private String codice;
-	private String descrizione, dimensione;
-	private int quantità;
+	private String descrizione;
+	private String tipo;
+	private String dimensione;
+	private double quantità;
 	private double volume;
+	private boolean pericolosa;
 	
-	// tipo (solido, liquido, gas.... sfusa o non..)
-	
-	
-	public Goods(String codice, String descrizione, String dimensione, int quantità, double volume) {
-		this.codice = codice;
-		this.descrizione = descrizione;
-		this.dimensione = dimensione;
-		this.quantità = quantità;
-		this.volume = volume;
-	}
-
-	
+	private String locationStart, locationEnd;
+	private Date dateStart;
+	private int dateLimit;
 	
 	
 	public String getCodice() {
 		return codice;
 	}
-
+	
 	public void setCodice(String codice) {
 		this.codice = codice;
 	}
-
+	
 	public String getDescrizione() {
 		return descrizione;
 	}
@@ -45,7 +42,7 @@ public class Goods {
 		this.dimensione = dimensione;
 	}
 
-	public int getQuantità() {
+	public double getQuantità() {
 		return quantità;
 	}
 
@@ -57,7 +54,56 @@ public class Goods {
 		return volume;
 	}
 	
-	public void setVolume(int volume) {
+	public void setVolume(double volume) {
 		this.volume = volume;
 	}
+
+	public boolean isPericolosa() {
+		return pericolosa;
+	}
+
+	public void setPericolosa(boolean pericolosa) {
+		this.pericolosa = pericolosa;
+	}
+
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+
+	public String getLocationStart() {
+		return locationStart;
+	}
+
+	public void setLocationStart(String locationStart) {
+		this.locationStart = locationStart;
+	}
+
+	public String getLocationEnd() {
+		return locationEnd;
+	}
+
+	public void setLocationEnd(String locationEnd) {
+		this.locationEnd = locationEnd;
+	}
+
+	public Date getDateStart() {
+		return dateStart;
+	}
+
+	public void setDateStart(Date dateStart) {
+		this.dateStart = dateStart;
+	}
+
+	public int getDateLimit() {
+		return dateLimit;
+	}
+
+	public void setDateLimit(int dateLimit) {
+		this.dateLimit = dateLimit;
+	}
+
 }

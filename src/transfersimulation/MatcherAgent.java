@@ -2,7 +2,6 @@ package transfersimulation;
 
 import java.util.List;
 
-import transfersimulation.model.goods.Transport;
 import jade.core.Agent;
 
 public class MatcherAgent extends Agent {

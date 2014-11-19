@@ -355,7 +355,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		} break;
 		
 		case "search": {
-			shipperAgent.searchCustomers();
+			shipperAgent.searchJob();
 		} break;
 
 		default:

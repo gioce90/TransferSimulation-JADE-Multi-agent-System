@@ -1,5 +1,7 @@
 package transfersimulation;
 
+import jade.core.AID;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,7 +23,9 @@ import java.awt.ComponentOrientation;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.awt.Component;
 
 public class BuyerAgentGUI extends JFrame {
 	
@@ -48,6 +52,14 @@ public class BuyerAgentGUI extends JFrame {
 		colonne.add("Descrizione");
 		colonne.add("Dimensioni x*y*z");
 		colonne.add("Q.tà");
+		colonne.add("Volume");
+		colonne.add("Tipo");
+		colonne.add("Pericolosa");
+		colonne.add("Partenza");
+		colonne.add("Destinazione");
+		colonne.add("Dal");
+		colonne.add("Entro");
+		
 		
 		goodsModel = new DataObjectTableModel<Goods>(colonne) {
 			private static final long serialVersionUID = 1L;
@@ -60,6 +72,13 @@ public class BuyerAgentGUI extends JFrame {
 					case 0: s= g.getDescrizione(); break;
 					case 1: s= g.getDimensione(); break;
 					case 2: s= String.valueOf(g.getQuantità()); break;
+					case 3: s= String.valueOf(g.getVolume()); break;
+					case 4: s= g.getTipo(); break;
+					case 5: s= String.valueOf(g.isPericolosa()); break;
+					case 6: s= g.getLocationStart(); break;
+					case 7: s= g.getLocationStart(); break;
+					case 8: s= String.valueOf(g.getDateStart()); break;
+					case 9: s= String.valueOf(g.getDateLimit())+" gg"; break;
 				}
 				return s;
 			}
@@ -100,25 +119,28 @@ public class BuyerAgentGUI extends JFrame {
 		pnlTableGoodsPanel.setLayout(new BoxLayout(pnlTableGoodsPanel, BoxLayout.X_AXIS));
 		goodsPanel.add(pnlTableGoodsPanel);
 		
+		JPanel panel_1 = new JPanel();
+		pnlTableGoodsPanel.add(panel_1);
+		
 		goodsTable = new JTable(goodsModel);
-		goodsTable.setPreferredScrollableViewportSize(new Dimension(500, 100));
+		goodsTable.setPreferredScrollableViewportSize(new Dimension(999, 100));
 		goodsTable.setFillsViewportHeight(true);
 		JScrollPane goodsScrollPane = new JScrollPane(goodsTable);
-		pnlTableGoodsPanel.add(goodsScrollPane);
+		panel_1.add(goodsScrollPane);
 		
 		JPanel pnlBtnGoodsPanel = new JPanel();
 		pnlTableGoodsPanel.add(pnlBtnGoodsPanel);
 		pnlBtnGoodsPanel.setLayout(new BoxLayout(pnlBtnGoodsPanel, BoxLayout.Y_AXIS));
 		
-		btnPM_plus = new JButton("+");
+		btnPM_plus = new JButton(" + ");
 		btnPM_plus.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-			//	new GoodsInsertJDialog(merciTable);
+			//	new GoodsInsertJDialog(merciTable); TODO
 			}
 		});
 		pnlBtnGoodsPanel.add(btnPM_plus);
 		
-		btnPM_meno = new JButton("-");
+		btnPM_meno = new JButton(" - ");
 		btnPM_meno.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				int selectedRow = goodsTable.getSelectedRow();
@@ -128,8 +150,21 @@ public class BuyerAgentGUI extends JFrame {
 		});
 		pnlBtnGoodsPanel.add(btnPM_meno);
 		
-		JButton btnSearch = new JButton("Search");
-		masterPanel.add(btnSearch);
+		JPanel pnlBtn = new JPanel();
+		goodsPanel.add(pnlBtn);
+		
+		JButton btnFoundShipper = new JButton("Trova aziende di trasporto");
+		btnFoundShipper.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent paramActionEvent) {
+				AID[] shippers = buyerAgent.searchShippers();
+				for (int i = 0; i < shippers.length; i++)
+					System.out.println(shippers[i].getName());
+			}
+		});
+		pnlBtn.add(btnFoundShipper);
+		
+		JButton btnSearch = new JButton("Richiedi un trasporto"); //TODO
+		pnlBtn.add(btnSearch);
 		
 		// Riempimento dati
 		for (Goods g: buyerAgent.getGoods())
@@ -152,9 +187,8 @@ public class BuyerAgentGUI extends JFrame {
 	
 	// on dispose, delete the agent
 	public void dispose() {
-		super.dispose();
-		buyerAgent.doSuspend();
 		buyerAgent.doDelete();
+		super.dispose();
 	}
 	
 }
