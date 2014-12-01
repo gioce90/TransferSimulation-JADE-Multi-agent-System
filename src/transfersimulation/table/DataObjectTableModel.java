@@ -3,7 +3,12 @@ package transfersimulation.table;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
 import javax.swing.table.AbstractTableModel;
+
+import transfersimulation.table.VehicleTableModel.COLUMNS;
 
 /**
  * Abstract base class which extends from {@code AbstractTableModel} and 
@@ -111,4 +116,6 @@ public abstract class DataObjectTableModel<T> extends AbstractTableModel {
             fireTableRowsDeleted(0, lastRow);
         }
     }
+    
+    
 }

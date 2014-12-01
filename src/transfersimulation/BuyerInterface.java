@@ -2,8 +2,12 @@ package transfersimulation;
 
 import java.util.List;
 
+import transfersimulation.model.goods.Goods;
+
 public interface BuyerInterface {
-	//List<Vehicle> getVehicles(); 
+	void addGoods(Goods g);
+	void removeGoods(Goods g);
+	List<Goods> getGoods();
 	
 	/*void newTruck(Vehicle vehicle);
 	void removeTruck(Vehicle vehicle);

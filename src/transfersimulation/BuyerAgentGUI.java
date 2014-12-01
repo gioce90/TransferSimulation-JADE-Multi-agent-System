@@ -34,7 +34,7 @@ public class BuyerAgentGUI extends JFrame {
 	private JButton btnPM_plus;
 	private JButton btnPM_meno;
 	private JTable goodsTable;
-	private DataObjectTableModel<Goods> goodsModel;
+	protected DataObjectTableModel<Goods> goodsModel;
 	
 	BuyerAgent buyerAgent;
 	
@@ -144,8 +144,11 @@ public class BuyerAgentGUI extends JFrame {
 		btnPM_meno.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				int selectedRow = goodsTable.getSelectedRow();
-				if (selectedRow != -1)
+				if (selectedRow != -1){
+					buyerAgent.removeGoods(goodsModel.getDataObject(selectedRow));
 					goodsModel.deleteRow(selectedRow);
+					
+				}
 			}
 		});
 		pnlBtnGoodsPanel.add(btnPM_meno);
@@ -165,6 +168,7 @@ public class BuyerAgentGUI extends JFrame {
 		
 		JButton btnSearch = new JButton("Richiedi un trasporto"); //TODO
 		pnlBtn.add(btnSearch);
+		
 		
 		// Riempimento dati
 		for (Goods g: buyerAgent.getGoods())

@@ -17,6 +17,20 @@ public class Goods implements Serializable {
 	private Date dateStart;
 	private int dateLimit;
 	
+	@Override
+	public String toString() {
+		return "Cod: "+codice
+				+" Descrizione: "+descrizione+", "
+				+"Dimensione: "+dimensione+", "
+				+"Tipo: "+tipo+", "
+				+"Q.tà: "+quantità+", "
+				+"Volume: "+volume+", "
+				+"Pericolosa: "+pericolosa+", "
+				+"Partenza: "+locationStart+", "
+				+"Destinazione: "+locationEnd+", "
+				+"Da: "+dateStart+", "
+				+"Limiti di consegna: "+dateLimit+" gg.";
+	}
 	
 	public String getCodice() {
 		return codice;
