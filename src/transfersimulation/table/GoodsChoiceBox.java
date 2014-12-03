@@ -1,6 +1,9 @@
 package transfersimulation.table;
 
 
+import jade.core.Agent;
+import jade.lang.acl.ACLMessage;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,8 +27,12 @@ import java.awt.BorderLayout;
 import javax.swing.JButton;
 
 
+
+
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 
 public class GoodsChoiceBox extends JFrame {
 	
@@ -104,6 +111,7 @@ public class GoodsChoiceBox extends JFrame {
 		jp.add(btnPanel, BorderLayout.SOUTH);
 		
 		btnAnnulla = new JButton("Annulla");
+		btnAnnulla.setActionCommand("REJECT_PROPOSAL");
 		btnAnnulla.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				dispose();
@@ -112,12 +120,7 @@ public class GoodsChoiceBox extends JFrame {
 		btnPanel.add(btnAnnulla);
 		
 		btnEsegui = new JButton("Esegui");
-		btnEsegui.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
+		btnAnnulla.setActionCommand("ACCEPT_PROPOSAL");
 		btnPanel.add(btnEsegui);
 		
 		this.setContentPane(jp);
@@ -128,12 +131,17 @@ public class GoodsChoiceBox extends JFrame {
 	}
 	
 	
+	Agent agent;
+	ACLMessage buyerPropose;
 	
-	public GoodsChoiceBox(String buyerName, Vector<Goods> goods) {
+	public GoodsChoiceBox(Agent agent, ACLMessage buyerPropose, Vector<Goods> goods) {
 		this();
-		setTitle("Merci disponibili da: "+buyerName);
-		for (Goods good : goods)
-			goodsModel.addRow(good);
+		this.agent=agent;
+		this.buyerPropose=buyerPropose;
+		setTitle("Merci disponibili da: "+buyerPropose.getSender().getName());
+		if (goods!=null)
+			for (Goods good : goods)
+				goodsModel.addRow(good);
 	}
 	
 	public JButton getEsegui() {
@@ -143,6 +151,45 @@ public class GoodsChoiceBox extends JFrame {
 	public JButton getAnnulla() {
 		return btnAnnulla;
 	}
+	
+	
+	/*
+	public void actionPerformed(ActionEvent e) {
+		switch (e.getActionCommand()){
+			case "ACCEPT_PROPOSAL": {
+				ACLMessage reply = buyerPropose.createReply();
+				ArrayList<Goods> l = (ArrayList<Goods>) getSelectedGoods();
+				if (l!=null && !l.isEmpty()){
+					try {
+						reply.setContentObject(l);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+					reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+					System.out.println("Agente "+agent.getLocalName()
+							+": ACCEPT PROPOSAL di "+buyerPropose.getSender().getLocalName());
+					//acceptances.addElement(reply);
+					agent.send(reply);
+					
+				}
+			} break;
+			
+			case "REJECT_PROPOSAL":{
+				ACLMessage reply = buyerPropose.createReply();
+				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+				System.out.println("Agente "+agent.getLocalName()
+						+": REJECT PROPOSAL di "+buyerPropose.getSender().getLocalName());
+				//acceptances.addElement(reply);
+				//send(reply);
+				agent.send(reply);
+			} break;
+		}
+	};
+	*/
+	
+	
+	
+	
 	
 	
 	public List<Goods> getSelectedGoods(){

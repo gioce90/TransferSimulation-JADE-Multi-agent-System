@@ -1,20 +1,11 @@
 package transfersimulation;
 
-import java.awt.AWTEvent;
-import java.awt.Event;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.awt.event.WindowStateListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-
-import javax.swing.SwingUtilities;
 
 import transfersimulation.model.goods.Goods;
 import transfersimulation.model.vehicle.*;
@@ -26,8 +17,7 @@ import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.DataStore;
 import jade.core.behaviours.OneShotBehaviour;
-import jade.core.behaviours.ParallelBehaviour;
-import jade.core.behaviours.ThreadedBehaviourFactory;
+import jade.core.behaviours.SequentialBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPANames;
@@ -152,11 +142,6 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		
 		// Pubblica sulle Pagine Gialle il proprio servizio
 		publishService();
-		
-		// SVILUPPO FUTURO:
-		// Trova le aziende che necessitano di un trasporto
-		//searchJob();
-		//addBehaviour(new HandlePropose());
 	}
 	
 	
@@ -253,53 +238,23 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	
 	private class IniziaContratto extends ContractNetInitiator {
 		
+		private static final long serialVersionUID = 1L;
+		
+		DataStore ds;
+		Vector acceptances;
+		
 		public IniziaContratto(Agent a, ACLMessage cfp) {
 			super(a, cfp);
+			
+			HandlePropose h1 = new HandlePropose();
+			registerHandlePropose(h1);
 		}
 		
 		@Override
-		protected void handlePropose(final ACLMessage propose, final Vector acceptances) {
-			try {
-				System.out.println("Agente "+getLocalName()+": ricevuta PROPOSE da "+propose.getSender().getLocalName());
-				final ACLMessage reply = propose.createReply();
-				Vector<Goods> goods = (Vector<Goods>) propose.getContentObject();
-				final GoodsChoiceBox gcb = new GoodsChoiceBox(propose.getSender().getName(), goods);
-				
-				gcb.getEsegui().addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						ArrayList<Goods> l = (ArrayList<Goods>) gcb.getSelectedGoods();
-						if (l!=null && !l.isEmpty()){
-							try {
-								reply.setContentObject(l);
-							} catch (IOException e1) {
-								e1.printStackTrace();
-							}
-							reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
-							System.out.println("Agente "+getLocalName()+": ACCEPT PROPOSAL di "+propose.getSender().getLocalName());
-							acceptances.addElement(reply);
-						} else {
-							reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
-							System.out.println("Agente "+getLocalName()+": REJECT PROPOSAL di "+propose.getSender().getLocalName());
-							acceptances.addElement(reply);
-						}
-					}
-				});
-				
-				gcb.getAnnulla().addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
-						System.out.println("Agente "+getLocalName()+": REJECT PROPOSAL di "+propose.getSender().getLocalName());
-						acceptances.addElement(reply);
-					}
-				});
-				
-				gcb.setVisible(true);
-				
-			} catch (UnreadableException e){
-				e.printStackTrace();
-			}
+		public void onStart() {
+			super.onStart();
+			ds=getDataStore();
+			acceptances = (Vector) ds.get(ALL_ACCEPTANCES_KEY);
 		}
 		
 		@Override
@@ -317,11 +272,140 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 			System.out.println("Refuse");
 		}
 		
-	}
+		@Override
+		protected void handleOutOfSequence(ACLMessage msg) {
+			System.out.println("Out of Sequence");
+		}
+		
+		
+		protected class HandlePropose extends SequentialBehaviour {
+			private static final long serialVersionUID = 1L;
+			
+			protected GoodsChoiceBox gcb;
+			ACLMessage propose;
+			
+			public HandlePropose() {
+				addSubBehaviour(new ReceiveProposeAndShow());
+				addSubBehaviour(new ShowTable());
+				addSubBehaviour(new SendReply());
+			}
+
+			
+			protected class ReceiveProposeAndShow extends OneShotBehaviour {
+				private static final long serialVersionUID = 1L;
+				
+				public void action() {
+					if (ds.containsKey(REPLY_KEY)){
+						propose = (ACLMessage) ds.get(REPLY_KEY);
+						try {
+							System.out.println("Agente "+getLocalName()
+									+": ricevuta PROPOSE da "+propose.getSender().getLocalName()
+									+":\n         "+propose.getContentObject().toString()
+							);
+						} catch (UnreadableException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			
+			protected class ShowTable extends OneShotBehaviour {
+				public void action() {
+					try {
+						Vector<Goods> goods = (Vector<Goods>) propose.getContentObject();
+						gcb = new GoodsChoiceBox(myAgent, propose, goods);
+					} catch (UnreadableException e){
+						e.printStackTrace();
+					}
+					gcb.getEsegui().addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							ArrayList<Goods> l = (ArrayList<Goods>) gcb.getSelectedGoods();
+							ACLMessage reply = propose.createReply();
+							if (l!=null && !l.isEmpty()){
+								try {
+									reply.setContentObject(l);
+								} catch (IOException e1) {
+									e1.printStackTrace();
+								}
+								reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+								System.out.println("Agente "+getLocalName()
+										+": ACCEPT PROPOSAL di "+propose.getSender().getLocalName());
+							} else {
+								reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+								System.out.println("Agente "+getLocalName()
+										+": REJECT PROPOSAL di "+propose.getSender().getLocalName());
+							}
+							acceptances.addElement(reply);
+							gcb.dispose();
+						}
+					});
+					
+					gcb.getAnnulla().addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							ACLMessage reply = propose.createReply();
+							reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+							System.out.println("Agente "+getLocalName()
+									+": REJECT PROPOSAL di "+propose.getSender().getLocalName());
+							acceptances.addElement(reply);
+						}
+					});
+					gcb.setVisible(true);
+				}
+			}
+			
+			protected class SendReply extends Behaviour {
+				public void action() {}
+				public boolean done() {
+					return !(gcb.isVisible());
+				}
+			}
+			
+		} //close HandlePropose
+		
+	} // close contract
 	
 	
 	
 	
+	
+	
+	
+/*
+	gcb.getEsegui().addActionListener(new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			ArrayList<Goods> l = (ArrayList<Goods>) gcb.getSelectedGoods();
+			if (l!=null && !l.isEmpty()){
+				try {
+					reply.setContentObject(l);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+				System.out.println("Agente "+getLocalName()+": ACCEPT PROPOSAL di "+propose.getSender().getLocalName());
+				//acceptances.addElement(reply);
+				send(reply);
+			} else {
+				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+				System.out.println("Agente "+getLocalName()+": REJECT PROPOSAL di "+propose.getSender().getLocalName());
+				//acceptances.addElement(reply);
+				send(reply);
+			}
+		}
+	});
+	
+	gcb.getAnnulla().addActionListener(new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+			System.out.println("Agente "+getLocalName()+": REJECT PROPOSAL di "+propose.getSender().getLocalName());
+			//acceptances.addElement(reply);
+			send(reply);
+		}
+	});
+*/
 	
 	
 	
@@ -614,14 +698,26 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	}
 
 	@Override
-	public void activateTruck(Vehicle vehicle) {
-		System.out.println("ShipperAgent "+getLocalName()+": Il veicolo targato \""+vehicle.getPlate()+"\" è stato reso disponibile");
+	public void activateTruck(final Vehicle vehicle) {
+		addBehaviour(new OneShotBehaviour() {
+			@Override
+			public void action() {
+				System.out.println("ShipperAgent "+getLocalName()+": Il veicolo targato \""+vehicle.getPlate()+"\" è stato reso disponibile");
+			}
+		});
+		//System.out.println("ShipperAgent "+getLocalName()+": Il veicolo targato \""+vehicle.getPlate()+"\" è stato reso disponibile");
 		//vehicles.get(vehicles.indexOf(vehicle)).setStato(Stato.DISPONIBILE);
 	}
 	
 	@Override
-	public void deactivateTruck(Vehicle vehicle) {
-		System.out.println("ShipperAgent "+getLocalName()+": Il veicolo targato \""+vehicle.getPlate()+"\" non è più disponibile");
+	public void deactivateTruck(final Vehicle vehicle) {
+		addBehaviour(new OneShotBehaviour() {
+			@Override
+			public void action() {
+				System.out.println("ShipperAgent "+getLocalName()+": Il veicolo targato \""+vehicle.getPlate()+"\" non è più disponibile");
+			}
+		});
+		//System.out.println("ShipperAgent "+getLocalName()+": Il veicolo targato \""+vehicle.getPlate()+"\" non è più disponibile");
 		//vehicles.get(vehicles.indexOf(vehicle)).setStato(Stato.NON_DISPONIBILE);
 	}
 	
@@ -632,108 +728,3 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	
 
 }
-
-
-
-
-
-
-
-
-
-
-/*
-addBehaviour(new Behaviour() {
-	private static final long serialVersionUID = 1L;
-	private int step = 0;
-	private int countBuyers = 0;
-	MessageTemplate mt;
-	
-	@Override
-	public void action() {
-		switch (step){
-		case 0: *//** trova i buyer attivi e invia loro la CFP *//*
-			// crea la REQUEST
-			ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
-			cfp.setContent("Fammi delle proposte di lavoro");
-			cfp.setConversationId("contrattazione-by-shipper-"+getName());
-			
-			// Trova tutti i buyer, itera su di essi e invia la CFP
-			AID[] buyerAgents = searchBuyers();
-			countBuyers = buyerAgents.length;
-			for (AID buyer : buyerAgents) 
-				cfp.addReceiver(buyer);
-			myAgent.send(cfp);
-			
-			step=1;
-			break;
-			
-		case 1: *//** attendo le risposte dai buyer *//*
-			
-			// Creo il template per filtrare le risposte
-			mt = MessageTemplate.and(
-					MessageTemplate.MatchConversationId("contrattazione-by-shipper-"+getName()),
-					MessageTemplate.or(
-							MessageTemplate.MatchPerformative(ACLMessage.PROPOSE), 
-							MessageTemplate.MatchPerformative(ACLMessage.REFUSE)));
-			
-			// cicla sui buyer contattati precedentemente
-			for (int i=0; i<countBuyers; i++) {
-				try {
-					ACLMessage mex  = blockingReceive(mt);
-					String nameBuyer = mex.getSender().getName();
-					Vector<Goods> goods = (Vector<Goods>) mex.getContentObject();
-					System.out.println("Cliente: "+nameBuyer);
-					
-					//TODO controllo sul vector nullo?
-					
-					// Stampa tutta la merce del buyer
-					for (Goods good : goods) 
-						System.out.println(good);
-					
-					ACLMessage reply = mex.createReply();
-					// TODO scegliere un sottoinsieme della merce
-					GoodsChoiceBox gcb = new GoodsChoiceBox(mex.getSender().getLocalName(), goods);
-					gcb.setVisible(true);
-					while (gcb.isVisible()){}
-					ArrayList<Goods> l = (ArrayList<Goods>) gcb.getSelectedGoods();
-					
-					reply.setContentObject(l);
-					reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL); //TODO nella gui fare i casi accept e reject
-					
-					myAgent.send(reply);
-				} catch (UnreadableException | IOException e) {
-					e.printStackTrace();
-				}
-			}
-			
-			step = 2;
-			break;
-		case 2:
-			
-			// Creo il template per filtrare le risposte
-			mt = MessageTemplate.and(
-					MessageTemplate.MatchConversationId("contrattazione-by-shipper-"+getName()),
-					MessageTemplate.or(
-						MessageTemplate.MatchPerformative(ACLMessage.INFORM),
-						MessageTemplate.MatchPerformative(ACLMessage.FAILURE)));
-			
-			for (int i=0; i<countBuyers; i++){
-				ACLMessage mex = blockingReceive(mt);
-				String nameBuyer = mex.getSender().getName();
-				System.out.println("Cliente: "+nameBuyer+" ha detto OK!"); //TODO inform o failure, gestire i casi
-			}
-			
-			step = 3;
-			break;
-		}
-		
-	}
-	
-	@Override
-	public boolean done() {
-		return (step==3);
-	}
-	
-});
-*/
