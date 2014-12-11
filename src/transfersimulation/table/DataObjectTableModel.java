@@ -95,6 +95,13 @@ public abstract class DataObjectTableModel<T> extends AbstractTableModel {
             fireTableRowsDeleted(rowIndex, rowIndex);
         }
     }
+    
+    //TODO
+    public void deleteRow(T object) {
+        if (this.data.remove(object)) {
+            fireTableDataChanged();
+        }
+    }
 
     public T getDataObject(int rowIndex) {
         return this.data.get(rowIndex);

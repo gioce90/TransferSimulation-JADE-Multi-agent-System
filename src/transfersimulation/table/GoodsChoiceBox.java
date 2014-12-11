@@ -2,7 +2,9 @@ package transfersimulation.table;
 
 
 import jade.core.Agent;
+import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,27 +16,22 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-
-import transfersimulation.model.goods.Goods;
-
 import javax.swing.JPanel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.JButton;
+
+import transfersimulation.AgentUtility;
+import transfersimulation.model.goods.Goods;
 
 import java.awt.Dimension;
 import java.awt.BorderLayout;
-
-import javax.swing.JButton;
-
-
-
-
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 
-public class GoodsChoiceBox extends JFrame {
+
+public class GoodsChoiceBox extends JFrame  {
 	
 	private static final long serialVersionUID = 1L;
 	private GoodsTableModel<Goods> goodsModel;
@@ -43,7 +40,7 @@ public class GoodsChoiceBox extends JFrame {
 	
 	public GoodsChoiceBox() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setType(Type.POPUP);
+		//setType(Type.POPUP);
 		setAlwaysOnTop(true);
 		
 		
@@ -100,7 +97,6 @@ public class GoodsChoiceBox extends JFrame {
 		jp.setLayout(new BorderLayout(0, 0));
 		
 		JTable jTable = new JTable(goodsModel);
-		//jTable.setPreferredScrollableViewportSize(new Dimension(800, 250));
 		jTable.setFillsViewportHeight(true);
 		JScrollPane goodsScrollPane = new JScrollPane(jTable);
 		jp.add(goodsScrollPane);
@@ -111,88 +107,92 @@ public class GoodsChoiceBox extends JFrame {
 		jp.add(btnPanel, BorderLayout.SOUTH);
 		
 		btnAnnulla = new JButton("Annulla");
-		btnAnnulla.setActionCommand("REJECT_PROPOSAL");
-		btnAnnulla.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				dispose();
-			}
-		});
+		btnAnnulla.setActionCommand("REJECT");
 		btnPanel.add(btnAnnulla);
 		
 		btnEsegui = new JButton("Esegui");
-		btnAnnulla.setActionCommand("ACCEPT_PROPOSAL");
+		btnEsegui.setActionCommand("ACCEPT");
 		btnPanel.add(btnEsegui);
 		
 		this.setContentPane(jp);
-		this.setSize(new Dimension(800, 250));
+		this.setSize(new Dimension(600, 250));
 		JCheckBox jcb = new JCheckBox();
 	    column.setCellEditor(new DefaultCellEditor(jcb));
 		
 	}
 	
 	
-	Agent agent;
-	ACLMessage buyerPropose;
-	
-	public GoodsChoiceBox(Agent agent, ACLMessage buyerPropose, Vector<Goods> goods) {
+	public GoodsChoiceBox(final Agent agent, final ACLMessage propose){
 		this();
-		this.agent=agent;
-		this.buyerPropose=buyerPropose;
-		setTitle("Merci disponibili da: "+buyerPropose.getSender().getName());
-		if (goods!=null)
-			for (Goods good : goods)
-				goodsModel.addRow(good);
-	}
-	
-	public JButton getEsegui() {
-		return btnEsegui;
-	}
-	
-	public JButton getAnnulla() {
-		return btnAnnulla;
-	}
-	
-	
-	/*
-	public void actionPerformed(ActionEvent e) {
-		switch (e.getActionCommand()){
-			case "ACCEPT_PROPOSAL": {
-				ACLMessage reply = buyerPropose.createReply();
-				ArrayList<Goods> l = (ArrayList<Goods>) getSelectedGoods();
-				if (l!=null && !l.isEmpty()){
-					try {
-						reply.setContentObject(l);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-					reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
-					System.out.println("Agente "+agent.getLocalName()
-							+": ACCEPT PROPOSAL di "+buyerPropose.getSender().getLocalName());
-					//acceptances.addElement(reply);
-					agent.send(reply);
-					
-				}
-			} break;
-			
-			case "REJECT_PROPOSAL":{
-				ACLMessage reply = buyerPropose.createReply();
-				reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
-				System.out.println("Agente "+agent.getLocalName()
-						+": REJECT PROPOSAL di "+buyerPropose.getSender().getLocalName());
-				//acceptances.addElement(reply);
-				//send(reply);
-				agent.send(reply);
-			} break;
+		setTitle("Merci disponibili da: "+propose.getSender().getLocalName()
+				+" per "+agent.getLocalName());
+		try {
+			Vector<Goods> goods = (Vector<Goods>) propose.getContentObject();
+			if (goods!=null)
+				for (Goods good : goods)
+					goodsModel.addRow(good);
+		} catch (UnreadableException e) {
+			e.printStackTrace();
 		}
-	};
-	*/
+		
+		btnEsegui.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				agent.addBehaviour(new OneShotBehaviour() {
+					private static final long serialVersionUID = 1L;
+					public void action() {
+						Vector<Goods> selectedGoods = (Vector<Goods>) getSelectedGoods();
+						if (selectedGoods!=null && !selectedGoods.isEmpty()){
+							acceptPropose(agent,propose,selectedGoods);
+						} else {
+							rejectPropose(agent, propose);
+						}
+					}
+				});
+			}
+		});
+		
+		btnAnnulla.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				agent.addBehaviour(new OneShotBehaviour() {
+					private static final long serialVersionUID = 1L;
+					public void action() {
+						rejectPropose(agent, propose);
+					}
+				});
+			}
+		});
+		
+	}
 	
 	
+	private void rejectPropose(Agent agent, ACLMessage propose){
+		ACLMessage reply = new ACLMessage(ACLMessage.REJECT_PROPOSAL);
+		System.out.println("Agent "+agent.getLocalName()
+			+": send REJECT PROPOSAL to "+propose.getSender().getLocalName());
+		reply.addReceiver(agent.getAID());
+		reply.setReplyWith("response"+propose.getReplyWith());
+		agent.send(reply);
+		dispose();
+	}
 	
 	
+	private void acceptPropose(Agent agent, ACLMessage propose, Vector<Goods> selectedGoods){
+		ACLMessage reply = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
+		try {
+			reply.setContentObject(selectedGoods);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Agent "+agent.getLocalName()
+			+": send ACCEPT PROPOSAL to "+propose.getSender().getLocalName());
+		reply.addReceiver(agent.getAID());
+		reply.setReplyWith("response"+propose.getReplyWith());
+		agent.send(reply);
+		dispose();
+	}
+
 	
-	
-	public List<Goods> getSelectedGoods(){
+	public Vector<Goods> getSelectedGoods(){
 		return goodsModel.getSelectedDataObjects();
 	}
 	
@@ -200,8 +200,6 @@ public class GoodsChoiceBox extends JFrame {
 	public static void main(String[] args) {
 		new GoodsChoiceBox().setVisible(true);
 	}
-	
-	
 	
 	
 	
@@ -320,8 +318,8 @@ public class GoodsChoiceBox extends JFrame {
 	        return t;
 	    } */
 	    
-	    public List<T> getSelectedDataObjects() {
-	    	ArrayList<T> item = new ArrayList<T>();
+	    public Vector<T> getSelectedDataObjects() {
+	    	Vector<T> item = new Vector<T>();
 	    	for (Row<T> row : this.data) 
 				if (row.selected)
 					item.add(row.dato);

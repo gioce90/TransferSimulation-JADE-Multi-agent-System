@@ -1,35 +1,29 @@
 package transfersimulation;
 
-import java.io.IOException;
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
 import transfersimulation.model.goods.Goods;
+import transfersimulation.protocols.SearchJobResponder;
+import transfersimulation.table.DataObjectTableModel;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPANames;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.FailureException;
-import jade.domain.FIPAAgentManagement.NotUnderstoodException;
-import jade.domain.FIPAAgentManagement.RefuseException;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
-import jade.proto.ContractNetInitiator;
-import jade.proto.ContractNetResponder;
+
 
 public class BuyerAgent extends Agent implements BuyerInterface {
 	private static final long serialVersionUID = 3399019455702807074L;
 	
-	BuyerAgentGUI myGUI;
-	Vector<Goods> goods;
+	private BuyerAgentGUI myGUI;
+	private Vector<Goods> goods;
 	
 	@Override
 	protected void setup() {
@@ -52,33 +46,61 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 		m.setDateLimit(5);
 		goods.add(m);
 		
-		m = new Goods();
-		m.setCodice("Cod2");
-		m.setDescrizione("Petrolio");
-		m.setDimensione("x*y*z");
-		m.setPericolosa(true);
-		m.setQuantità(100);
-		m.setTipo("liquida");
-		m.setVolume(200);
-		m.setLocationStart("Lecce");
-		m.setLocationEnd("Roma");
-		m.setDateStart(Date.valueOf("2014-10-22"));
-		m.setDateLimit(6);
-		goods.add(m);
+		Goods m1 = new Goods();
+		m1.setCodice("Cod2");
+		m1.setDescrizione("Petrolio");
+		m1.setDimensione("x*y*z");
+		m1.setPericolosa(true);
+		m1.setQuantità(100);
+		m1.setTipo("liquida");
+		m1.setVolume(200);
+		m1.setLocationStart("Lecce");
+		m1.setLocationEnd("Roma");
+		m1.setDateStart(Date.valueOf("2014-10-22"));
+		m1.setDateLimit(6);
+		goods.add(m1);
 		
-		m = new Goods();
-		m.setCodice("Cod3");
-		m.setDescrizione("Cibo refrigerato");
-		m.setDimensione("x*y*z");
-		m.setPericolosa(true);
-		m.setQuantità(100);
-		m.setTipo("solida");
-		m.setVolume(200);
-		m.setLocationStart("Lecce");
-		m.setLocationEnd("Roma");
-		m.setDateStart(Date.valueOf("2014-10-22"));
-		m.setDateLimit(6);
-		goods.add(m);
+		Goods m2 = new Goods();
+		m2.setCodice("Cod3");
+		m2.setDescrizione("Cibo refrigerato");
+		m2.setDimensione("x*y*z");
+		m2.setPericolosa(true);
+		m2.setQuantità(100);
+		m2.setTipo("solida");
+		m2.setVolume(200);
+		m2.setLocationStart("Lecce");
+		m2.setLocationEnd("Roma");
+		m2.setDateStart(Date.valueOf("2014-10-22"));
+		m2.setDateLimit(6);
+		goods.add(m2);
+		
+		Goods m3 = new Goods();
+		m3.setCodice("Cod4");
+		m3.setDescrizione("Pietra");
+		m3.setDimensione("x*y*z");
+		m3.setPericolosa(true);
+		m3.setQuantità(100);
+		m3.setTipo("solida");
+		m3.setVolume(200);
+		m3.setLocationStart("Milano");
+		m3.setLocationEnd("Roma");
+		m3.setDateStart(Date.valueOf("2014-10-22"));
+		m3.setDateLimit(6);
+		goods.add(m3);
+		
+		Goods m4 = new Goods();
+		m4.setCodice("Cod5");
+		m4.setDescrizione("Olio");
+		m4.setDimensione("x*y*z");
+		m4.setPericolosa(true);
+		m4.setQuantità(100);
+		m4.setTipo("liquida");
+		m4.setVolume(200);
+		m4.setLocationStart("Milano");
+		m4.setLocationEnd("Roma");
+		m4.setDateStart(Date.valueOf("2014-10-22"));
+		m4.setDateLimit(6);
+		goods.add(m4);
 		
 		/*
 		Transport t1 = new Transport(m1, "x", "y", Date.valueOf("2014-10-22"), 5);
@@ -98,18 +120,29 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 		// Pubblica sulle Pagine Gialle il proprio servizio
 		publishService();
 		
-		//addBehaviour(new CFPRequests());
+		
+		// TODO dai un'occhiata a SSResponderDispatcher 
+		
+		// SearchJobResponder per singola cfp
+		final MessageTemplate template = MessageTemplate.and(
+			MessageTemplate.MatchProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET),
+			MessageTemplate.MatchPerformative(ACLMessage.CFP) );
 		
 		
-		MessageTemplate template = MessageTemplate.and(
-				MessageTemplate.MatchProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET),
-				MessageTemplate.MatchPerformative(ACLMessage.CFP) );
+		addBehaviour(new CyclicBehaviour() {
+			private static final long serialVersionUID = 1L;
+			public void action() {
+				ACLMessage m= receive(template);
+				if (m!=null)
+					addBehaviour(new SearchJobResponder(myAgent, m));
+				else
+					block();
+			}
+		});
 		
-		addBehaviour(new ReplyContratto(this, template));
 	}
 	
-
-
+	
 	private void publishService() {
 		// Registra il servizio di Trasporto presso il servizio di Pagine Gialle
 		DFAgentDescription dfd = new DFAgentDescription();
@@ -126,18 +159,22 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 		}
 	}
 	
+	
 	@Override
 	protected void takeDown() {
 		super.takeDown();
 		try {
 			DFService.deregister(this); // deregister from the yellow pages
-		} catch (FIPAException fe) {fe.printStackTrace();}
+		} catch (FIPAException fe) {
+			fe.printStackTrace();
+		}
 		
 		myGUI.dispose();// Close the GUI
 		
 		// Printout a dismissal message:
 		System.out.println("Buyer Agent "+getAID().getName()+" terminato.");
 	}
+	
 	
 	////////////////////////////////////////////////////////////////////////////////
 	
@@ -161,222 +198,26 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 	}
 	
 	
-	//TODO
-	private void matching(AID[] shippers, Object[] ordini) {
-		System.out.println("risultato del Matching... inserire l'algoritmo");
-		
-		
-	}
-	
-	
-	
-
 	////////////////////////////////////////////////////////////////////////////////
 	
-	private class ReplyContratto extends ContractNetResponder{
-		private static final long serialVersionUID = 1L;
-
-		public ReplyContratto(Agent a, MessageTemplate mt) {
-			super(a, mt);
-		}
-		
-		@Override
-		protected ACLMessage handleCfp(ACLMessage cfp)
-				throws RefuseException, FailureException, NotUnderstoodException  {
-			System.out.println("Agente "+getLocalName()+": ricevuta CFP da "
-				+cfp.getSender().getName()+". Chiede '"+cfp.getContent()+"'");
-			ACLMessage reply = cfp.createReply();
-			
-			if (goods!=null && !goods.isEmpty()){
-				System.out.println("Agente "+getLocalName()+": invio PROPOSE ");
-				reply.setPerformative(ACLMessage.PROPOSE);
-				try {
-					reply.setContentObject(goods);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			} else {
-				System.out.println("Agente "+getLocalName()+": invio REFUSE ");
-				reply.setPerformative(ACLMessage.REFUSE);
-				reply.setContent("not-available");
-			}
-			return reply;
-		}
-		
-		@Override
-		protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept)
-				throws FailureException {
-			System.out.println("Agente "+getLocalName()+": la proposta e' stata accettata. Perform...");
-			ACLMessage reply = accept.createReply();
-			try {
-				Vector<Goods> l = (Vector<Goods>) propose.getContentObject();
-				
-				//TODO devo fare il matching
-				/*
-				for (Goods goods : l) {
-					if (BuyerAgent.this.goods.contains(goods)){
-						System.out.println("Beni '"+goods.toString()+"' disponibili! Prenotato.");
-						reply.setPerformative(ACLMessage.INFORM);
-					} else {
-						System.out.println("Beni '"+goods.toString()+"' non più disponibili!");
-						reply.setPerformative(ACLMessage.FAILURE);
-					}
-				}
-				*/
-				reply.setPerformative(ACLMessage.INFORM);
-				
-			} catch (UnreadableException e) {
-				e.printStackTrace(); 
-			}
-			return reply;
-		}
-		
-		@Override
-		protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose, ACLMessage reject) {
-			System.out.println("Agente "+getLocalName()+": proposta rifiutata");
-		}
-		
-		
-		
-	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	////////////////////////////////////////////////////////////////////////////////
-	
-	/**
-	   Inner class CFPRequests Behaviour
-	   TODO: fare il controllo nel caso la merce sia stata presa da altri shipper nel frattempo
-	 */
-	private class CFPRequests extends CyclicBehaviour {
-		private static final long serialVersionUID = 1L;
-
-		public void action() {
-			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
-			ACLMessage msg = myAgent.receive(mt);
-			
-			if (msg != null) {
-				// CFP Message received. Process it
-				ACLMessage reply = msg.createReply();
-				
-				if (goods!=null && !goods.isEmpty()){
-					reply.setPerformative(ACLMessage.PROPOSE);
-					try {
-						reply.setContentObject(goods);
-					} catch (IOException e) { e.printStackTrace(); }
-				} else {
-					reply.setContent("not-available");
-					reply.setPerformative(ACLMessage.REFUSE);
-				}
-				
-				/*
-				Integer price = (Integer) catalogue.get(title);
-				if (price != null) {
-					// The requested book is available for sale. Reply with the price
-					reply.setPerformative(ACLMessage.PROPOSE);
-					reply.setContent(String.valueOf(price.intValue()));
-				}
-				else {
-					// The requested book is NOT available for sale.
-					reply.setPerformative(ACLMessage.REFUSE);
-					reply.setContent("not-available");
-				}
-				*/
-				myAgent.send(reply);
-				
-				addBehaviour(new ProposeRequests(msg.getSender()));
-				
-			} else {
-				block();
-			}
-		}
-	}  // End of inner class CFPRequests
-	
-	
-	
-	/**
-	   Inner class ProposeRequests Behaviour
-	   TODO: fare il controllo nel caso la merce sia stata presa da altri shipper nel frattempo
-	   TODO: fare il matching
-	 */
-	private class ProposeRequests extends CyclicBehaviour {
-		private static final long serialVersionUID = 1L;
-		
-		AID sender;
-		
-		public ProposeRequests(AID sender) {
-			this.sender = sender;
-		}
-
-		@Override
-		public void action() {
-			
-			MessageTemplate mt = MessageTemplate.and(
-					MessageTemplate.MatchSender(sender),
-					MessageTemplate.or(
-							MessageTemplate.MatchPerformative(ACLMessage.ACCEPT_PROPOSAL),
-							MessageTemplate.MatchPerformative(ACLMessage.REJECT_PROPOSAL)
-			));
-			
-			ACLMessage msg = myAgent.receive(mt);
-			
-			if (msg!=null){
-				ACLMessage reply = msg.createReply();
-				
-				if (msg.getPerformative()==ACLMessage.ACCEPT_PROPOSAL){
-					try {
-						ArrayList<Goods> l = (ArrayList<Goods>) msg.getContentObject();
-						
-						System.out.println("Controlla... ");
-						//TODO devo fare il matching
-						for (Goods goods : l) {
-							if (BuyerAgent.this.goods.contains(goods)){
-								System.out.println("Beni '"+goods.toString()+"' disponibili! Prenotato.");
-								reply.setPerformative(ACLMessage.INFORM);
-							} else {
-								System.out.println("Beni '"+goods.toString()+"' non più disponibili!");
-								reply.setPerformative(ACLMessage.FAILURE);
-							}
-						}
-						
-					} catch (UnreadableException e) {
-						e.printStackTrace(); 
-					}
-					
-					myAgent.send(reply);
-				} else { // REJECT_PROPOSAL
-					// TODO dovrei fare inviare qualcosa?
-				}
-				removeBehaviour(this);
-			} else { // se non si riceve una risposta dallo Shipper:
-				
-				block();
-				System.out.println("ooohohohoho");
-			}
-		}
-	} // End of inner class ProposeRequests
-
-
-
 	@Override
 	public void addGoods(Goods g) {
 		goods.add(g);
 	}
 	
-
+	
 	@Override
 	public void removeGoods(Goods g) {
 		goods.remove(g);
+		myGUI.goodsModel.deleteRow(g);
 	}
-
+	
+	
 	@Override
-	public List<Goods> getGoods(){
+	public Vector<Goods> getGoods(){
 		return goods;
 	}
+	
+	
 }

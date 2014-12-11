@@ -123,7 +123,7 @@ public class BuyerAgentGUI extends JFrame {
 		pnlTableGoodsPanel.add(panel_1);
 		
 		goodsTable = new JTable(goodsModel);
-		goodsTable.setPreferredScrollableViewportSize(new Dimension(999, 100));
+		goodsTable.setPreferredScrollableViewportSize(new Dimension(800, 100));
 		goodsTable.setFillsViewportHeight(true);
 		JScrollPane goodsScrollPane = new JScrollPane(goodsTable);
 		panel_1.add(goodsScrollPane);
@@ -146,8 +146,7 @@ public class BuyerAgentGUI extends JFrame {
 				int selectedRow = goodsTable.getSelectedRow();
 				if (selectedRow != -1){
 					buyerAgent.removeGoods(goodsModel.getDataObject(selectedRow));
-					goodsModel.deleteRow(selectedRow);
-					
+					//goodsModel.deleteRow(selectedRow);
 				}
 			}
 		});
