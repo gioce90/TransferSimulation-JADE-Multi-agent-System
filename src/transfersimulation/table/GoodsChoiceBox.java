@@ -21,8 +21,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.JButton;
 
-import transfersimulation.AgentUtility;
 import transfersimulation.model.goods.Goods;
+import transfersimulation.protocols.SearchJobInitiator.HandlePropose;
 
 import java.awt.Dimension;
 import java.awt.BorderLayout;
@@ -121,7 +121,7 @@ public class GoodsChoiceBox extends JFrame  {
 		
 	}
 	
-	
+	/*
 	public GoodsChoiceBox(final Agent agent, final ACLMessage propose){
 		this();
 		setTitle("Merci disponibili da: "+propose.getSender().getLocalName()
@@ -163,8 +163,71 @@ public class GoodsChoiceBox extends JFrame  {
 		});
 		
 	}
+	*/
 	
 	
+	public GoodsChoiceBox(final Agent agent, final HandlePropose behaviour, final ACLMessage propose){
+		this();
+		setTitle("Merci disponibili da: "+propose.getSender().getLocalName()
+				+" per "+agent.getLocalName());
+		try {
+			Vector<Goods> goods = (Vector<Goods>) propose.getContentObject();
+			if (goods!=null)
+				for (Goods good : goods)
+					goodsModel.addRow(good);
+		} catch (UnreadableException e) {
+			e.printStackTrace();
+		}
+		
+		btnEsegui.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				agent.addBehaviour(new OneShotBehaviour() {
+					private static final long serialVersionUID = 1L;
+					public void action() {
+						Vector<Goods> selectedGoods = (Vector<Goods>) getSelectedGoods();
+						if (selectedGoods!=null && !selectedGoods.isEmpty()){
+							//acceptPropose(agent,propose,selectedGoods);
+							
+							System.out.println("Agente "+agent.getLocalName()
+									+": invio ACCEPT PROPOSAL a "+propose.getSender().getLocalName());
+							behaviour.handleChoice(propose,true,selectedGoods);
+							dispose();
+							
+						} else {
+							//rejectPropose(agent, propose);
+							
+							System.out.println("Agente "+agent.getLocalName()
+									+": invio REJECT PROPOSAL a "+propose.getSender().getLocalName());
+							behaviour.handleChoice(propose,false,null);
+							dispose();
+							
+						}
+					}
+				});
+			}
+		});
+		
+		btnAnnulla.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				agent.addBehaviour(new OneShotBehaviour() {
+					private static final long serialVersionUID = 1L;
+					public void action() {
+						rejectPropose(agent, propose);
+						/*
+						System.out.println("Agente "+agent.getLocalName()
+								+": invio REJECT PROPOSAL a "+propose.getSender().getLocalName());
+						behaviour.handleChoice(propose,false,null);
+						dispose();
+						*/
+					}
+				});
+			}
+		});
+		
+	}
+	
+	
+
 	private void rejectPropose(Agent agent, ACLMessage propose){
 		ACLMessage reply = new ACLMessage(ACLMessage.REJECT_PROPOSAL);
 		System.out.println("Agent "+agent.getLocalName()

@@ -210,7 +210,7 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 	@Override
 	public void removeGoods(Goods g) {
 		goods.remove(g);
-		myGUI.goodsModel.deleteRow(g);
+		myGUI.goodsModel.deleteRow(g); //Potrebbe dare problemi in futuro
 	}
 	
 	

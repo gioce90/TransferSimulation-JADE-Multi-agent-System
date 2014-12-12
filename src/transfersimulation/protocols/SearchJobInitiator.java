@@ -1,16 +1,12 @@
 package transfersimulation.protocols;
 
-import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.domain.FIPANames;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
 import jade.proto.ContractNetInitiator;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Vector;
 
 import transfersimulation.AgentUtility;
@@ -19,7 +15,6 @@ import transfersimulation.table.GoodsChoiceBox;
 
 public class SearchJobInitiator extends ContractNetInitiator {
 	private static final long serialVersionUID = 1L;
-	
 	
 	public SearchJobInitiator(Agent a, ACLMessage cfp) {
 		super(a, cfp);
@@ -40,6 +35,8 @@ public class SearchJobInitiator extends ContractNetInitiator {
 		return super.prepareCfps(cfp);
 	}
 
+	
+	
 	@Override
 	protected void handleRefuse(ACLMessage refuse) {
 		System.out.println("Refuse");
@@ -54,63 +51,51 @@ public class SearchJobInitiator extends ContractNetInitiator {
 	}
 	
 	
-	private class HandlePropose extends Behaviour {
+	public class HandlePropose extends Behaviour {
 		private static final long serialVersionUID = 1L;
-		//private Boolean finished = false;
-		private int count;
-		private Vector<ACLMessage> acceptances;
 		private ACLMessage propose;
+		private Vector<ACLMessage> acceptances;
+		
 		
 		public void onStart() {
-			//if (ds.containsKey(REPLY_KEY)){
 			propose = (ACLMessage) getDataStore().get(REPLY_KEY);
 			acceptances = (Vector<ACLMessage>) getDataStore().get(ALL_ACCEPTANCES_KEY);
 			System.out.println("Agente "+myAgent.getLocalName()
 					+": ricevuta PROPOSE da "+propose.getSender().getLocalName());
-			//AgentUtility.aclToString(propose,"propose");
-			
 			count++;
-			
-			GoodsChoiceBox gcb = new GoodsChoiceBox(myAgent, propose); // fill the JTable
+			GoodsChoiceBox gcb = new GoodsChoiceBox(myAgent, this, propose); // fill the JTable
 			gcb.setVisible(true);
 		}
 		
+		private int count;
+		
 		public void action() {
-			MessageTemplate mt = MessageTemplate.and(
-				MessageTemplate.MatchSender(myAgent.getAID()),
-				MessageTemplate.and(
-					MessageTemplate.MatchReplyWith("response"+propose.getReplyWith()),
-					MessageTemplate.or(
-						MessageTemplate.MatchPerformative(ACLMessage.ACCEPT_PROPOSAL),
-						MessageTemplate.MatchPerformative(ACLMessage.REJECT_PROPOSAL)
-			) ) );
-			
-			ACLMessage decisionFromGUI = myAgent.receive(mt); // Read data from GUI: the user accept or reject
-			if (decisionFromGUI != null) {
-				ACLMessage reply = propose.createReply();
-				reply.setPerformative(decisionFromGUI.getPerformative());
-				try {
-					Vector<Goods> list = (Vector<Goods>) decisionFromGUI.getContentObject();
-					if (list!=null)
-						reply.setContentObject(list);
-				} catch (IOException | UnreadableException e) {
-					e.printStackTrace();
-				}
-				
-				//AgentUtility.aclToString(reply,"decision");
-				
-				acceptances.add(reply);
-				count--;
-				//finished = true;
-			} else {
+			if (count!=0)
 				block();
-			}
 		}
 		
 		public boolean done() {
 			return count==0;
 		}
+		
+		public void handleChoice(ACLMessage propose, boolean accept, Vector<Goods> selectedGoods) {
+			ACLMessage acceptance;
+	        acceptance = propose.createReply();
+	        acceptance.setPerformative(accept ? ACLMessage.ACCEPT_PROPOSAL : ACLMessage.REJECT_PROPOSAL);
+	        if (selectedGoods!=null){
+		        try {
+		        	acceptance.setContentObject(selectedGoods);
+		        } catch (IOException e) {
+					e.printStackTrace();
+				}
+	        }
+	        acceptances.add(acceptance);
+	        count--;
+	        restart();
+		}
 	}
+	
+	
 	
 	@Override
 	protected void handleFailure(ACLMessage failure) {
@@ -126,6 +111,7 @@ public class SearchJobInitiator extends ContractNetInitiator {
 		//AgentUtility.aclToString(failure,"failure");
 	}
 	
+	
 	@Override
 	protected void handleInform(ACLMessage inform) {
 		System.out.println("Agente "+myAgent.getLocalName()
@@ -133,4 +119,11 @@ public class SearchJobInitiator extends ContractNetInitiator {
 				+" ha eseguito l'azione con successo");
 		//AgentUtility.aclToString(inform,"inform");
 	}
+	
+	
+	
+	
+	
+	
+	
 }
