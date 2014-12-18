@@ -415,8 +415,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	public void insertInfo(String info){
 		communicationTextArea.append(info+"\n");
 		System.out.println("Agent "+shipperAgent.getLocalName()+": "+info);
-	} 
-	
+	}  
 	
 	///////////////////////////////////////
 	// INNER CLASS

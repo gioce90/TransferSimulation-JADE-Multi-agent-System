@@ -353,7 +353,7 @@ public class BuyerAgentGUI extends JFrame {
 						dispose();
 					}
 				});
-				
+				 
 				JPanel buttonPane = new JPanel();
 				buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 				getContentPane().add(buttonPane, BorderLayout.SOUTH);
