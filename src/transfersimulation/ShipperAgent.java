@@ -19,9 +19,7 @@ import jade.lang.acl.ACLMessage;
 public class ShipperAgent extends Agent implements ShipperInterface {
 	
 	private static final long serialVersionUID = 1L;
-	
-	private ShipperAgentGUI myGUI;
-	
+	public ShipperAgentGUI myGUI;
 	private Vector<Vehicle> vehicles = new Vector<Vehicle>();
 	
 	@Override
@@ -122,7 +120,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		myGUI.showGui();
 		
 		// Printout a welcome message
-		System.out.println("Ciao! Shipper Agent "+getAID().getName()+" pronto!");
+		myGUI.insertInfo("Ciao! Shipper Agent "+getAID().getName()+" pronto!");
 		
 		// Pubblica sulle Pagine Gialle il proprio servizio
 		publishService();
@@ -138,7 +136,6 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	 * Registra il servizio di Trasporto presso le Pagine Gialle
 	 */
 	private void publishService() {
-		
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
 		ServiceDescription sd = new ServiceDescription();
@@ -147,7 +144,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		dfd.addServices(sd);
 		try {
 			DFService.register(this, dfd);
-			System.out.println("Registrazione sulle pagine gialle... avvenuta con successo");
+			myGUI.insertInfo("Registrazione sulle pagine gialle... avvenuta con successo");
 		} catch (FIPAException fe) {
 			fe.printStackTrace();
 		}
@@ -169,7 +166,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		myGUI.dispose();
 		
 		// Printout a dismissal message
-		System.out.println("Shipper Agent "+getAID().getName()+" terminato.");
+		myGUI.insertInfo("Shipper Agent "+getAID().getName()+" terminato.");
 	}
 	
 	
@@ -189,12 +186,15 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		AID[] buyerAgents = null;
 		try {
 			DFAgentDescription[] result = DFService.search(this, template);
-			//System.out.println("Trovati i seguenti clienti: ");
 			buyerAgents = new AID[result.length];
-			
+			String list = "";
 			for (int i = 0; i < result.length; ++i) {
 				buyerAgents[i] = result[i].getName();
+				list+=buyerAgents[i].getLocalName();
+				if (!(i==result.length-1))
+					list+=", ";
 			}
+			myGUI.insertInfo("Trovati i seguenti clienti: "+list);//TODO probabilmente è da spostare
 		}
 		catch (FIPAException fe) {
 			fe.printStackTrace();
@@ -205,7 +205,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	
 	
 	/**
-	 * Invia una request a tutti i buyer agent attivi,
+	 * Invia una CFP a tutti i buyer agent attivi,
 	 * e richiede la lista delle merci
 	 */
 	void searchJob() {
@@ -221,9 +221,10 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	
 	////////////////////////////
 
+	
+	/*
 	private String vehicle;
 	private String weight;
-	// TODO modificare
 	private void whichVehicle() {
 		Object[] args = getArguments();
 		if (args!=null && args.length==2){
@@ -235,10 +236,11 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		} else
 			System.out.println("Tipo di automezzo non definito");
 	}
-	
+	*/
 	
 	// Utility: lista dei concorrenti
-	public void searchCompetitors() {
+	/*
+	private void searchCompetitors() {
 		addBehaviour(new OneShotBehaviour() {
 			private static final long serialVersionUID = 1L;
 			@Override
@@ -251,6 +253,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 				try {
 					DFAgentDescription[] result = DFService.search(myAgent, template);
 					System.out.println("Trovate le seguenti aziende: ");
+					
 					AID[] customerAgents;
 					customerAgents = new AID[result.length];
 					
@@ -266,7 +269,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 			}
 		});
 	}
-	
+	*/
 	
 	
 	////////////////////////////////////////////////////////
@@ -283,14 +286,12 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void action() {
-				System.out.println("ShipperAgent "+getLocalName()
-						+": Nuovo veicolo targato \""+vehicle.getPlate()+"\"");
+				myGUI.insertInfo("Nuovo veicolo targato '"+vehicle.getPlate()+"'");
 				//vehicles.add(vehicle);
 			}
 		});
 		
 	}
-
 	
 	@Override
 	public void removeTruck(final Vehicle vehicle) {
@@ -298,8 +299,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void action() {
-				System.out.println("ShipperAgent "+getLocalName()
-						+": Rimosso veicolo targato \""+vehicle.getPlate()+"\"");
+				myGUI.insertInfo("Rimosso veicolo targato '"+vehicle.getPlate()+"'");
 				//vehicles.remove(vehicle);
 			}
 		});
@@ -312,8 +312,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void action() {
-				System.out.println("ShipperAgent "+getLocalName()
-						+": Il veicolo targato \""+vehicle.getPlate()+"\" è stato reso disponibile");
+				myGUI.insertInfo("Il veicolo targato '"+vehicle.getPlate()+"' è disponibile");
 				//vehicles.get(vehicles.indexOf(vehicle)).setStato(Stato.DISPONIBILE);
 			}
 		});
@@ -325,8 +324,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void action() {
-				System.out.println("ShipperAgent "+getLocalName()
-						+": Il veicolo targato \""+vehicle.getPlate()+"\" non è più disponibile");
+				myGUI.insertInfo("Il veicolo targato '"+vehicle.getPlate()+"' non è più disponibile");
 				//vehicles.get(vehicles.indexOf(vehicle)).setStato(Stato.NON_DISPONIBILE);
 			}
 		});

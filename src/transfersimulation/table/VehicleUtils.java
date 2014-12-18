@@ -14,7 +14,6 @@ import transfersimulation.model.vehicle.Vehicle;
 
 public class VehicleUtils {
 	
-	
 	// found the right image
 	protected static ImageIcon findImageByColumnCarType(Class<? extends Vehicle> type) {
 		ImageIcon i = null;
@@ -40,7 +39,7 @@ public class VehicleUtils {
 	}
 	
 	
-	protected static String findStringByColumnCarType(Class<? extends Vehicle> type) {
+	private static String findStringByColumnCarType(Class<? extends Vehicle> type) {
 		String i = "?";
 		if (type.equals(Car.class))
 			i = "Automobile";

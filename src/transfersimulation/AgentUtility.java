@@ -7,7 +7,7 @@ import jade.lang.acl.ACLMessage;
 
 public class AgentUtility {
 	
-	public static void aclToString(ACLMessage msg, String nome){
+	protected static void aclToString(ACLMessage msg, String nome){
 		
 		String sender = "n/d";
 		String receivers = "n/d";
@@ -42,9 +42,9 @@ public class AgentUtility {
 		return receivers;
 	}
 	
+	
 	public static void main(String[] args) {
 		ACLMessage m = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
-		
 		m.setSender(new AID("CECCO@QUESTOPC", AID.ISGUID));
 		m.addReceiver(new AID("MEMT@QUESTOPC", AID.ISGUID));
 		m.addReceiver(new AID("MEMT2@QUESTOPC", AID.ISGUID));

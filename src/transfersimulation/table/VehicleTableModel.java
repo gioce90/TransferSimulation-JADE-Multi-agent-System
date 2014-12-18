@@ -1,7 +1,6 @@
 package transfersimulation.table;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
@@ -12,11 +11,7 @@ import transfersimulation.model.vehicle.Vehicle.Stato;
 
 public class VehicleTableModel extends AbstractTableModel {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	
 	private ArrayList<Vehicle> vehicles;
 	private COLUMNS[] header;
 	
@@ -64,13 +59,13 @@ public class VehicleTableModel extends AbstractTableModel {
         	COLUMNS column = header[col];
 	        switch (column) {
 	            case IMAGE_COLUMN:
-	                value = VehicleUtils.findImageByColumnCarType(v.getType());
+	                value = findImageByColumnCarType(v.getType());
 	                break;
 	            case TARGA_COLUMN:
 	                value = v.getPlate();
 	                break;
 	            case TYPE_COLUMN:
-	                value = VehicleUtils.findStringByColumnCarType(v.getType());
+	                value = findStringByColumnCarType(v.getType());
 	                break;
 	            case MARK_COLUMN:
 	                value = v.getMark();
@@ -112,8 +107,9 @@ public class VehicleTableModel extends AbstractTableModel {
 		return vehicles.indexOf(v);
 	}
 	
+	
 	// found the corresponding column index
-	public int findColumn(COLUMNS columnName) {
+	protected int findColumn(COLUMNS columnName) {
 		for (int i=0; i<getColumnCount(); i++)
 			if (columnName.equals(header[i])) 
 		        return i;
@@ -121,8 +117,7 @@ public class VehicleTableModel extends AbstractTableModel {
 	}
 
 	
-	// TODO
-	// controlla se un valore in un campo già esiste in tutte le righe
+	// TODO controlla se un valore in un campo già esiste in tutte le righe
 	private boolean controllIfExist(Object value, int col) {
 		boolean bool = false;
 		for (int i=0; i<getRowCount();i++){
@@ -134,7 +129,8 @@ public class VehicleTableModel extends AbstractTableModel {
 		return bool;
 	}
 	
-	public int getColumnIndex(COLUMNS column){
+	/*
+	private int getColumnIndex(COLUMNS column){
 		for(int i=0;i<header.length;i++){
 			if (column.equals(header[i])){
 				return i;
@@ -142,12 +138,58 @@ public class VehicleTableModel extends AbstractTableModel {
 		}
 		return -1;
 	}
+	*/
+
+	// found the right image
+	private static ImageIcon findImageByColumnCarType(Class<? extends Vehicle> type) {
+		ImageIcon i = null;
+		if (type.equals(Car.class))						// auto
+			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/car_32.png"));
+		else if (type.equals(Van.class))				// furgone
+			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/van_32.png"));
+		else if (type.equals(Truck.class))				// autocarro
+			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/truck_32.png"));
+		else if (type.equals(TrailerTruck.class))		// autotreno
+			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/trailertruck_32.png"));
+		else if (type.equals(SemiTrailer.class))		// semirimorchio
+			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/semitrailer_32.png"));
+		else if (type.equals(RoadTractor.class))		// trattore stradale
+			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/roadtractor_32.png"));
+		
+		else if (type.equals(SemiTrailerTruck.class))	// autoarticolato
+			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/semitrailertruck_32.png"));
+		else if (type.equals(Trailer.class))			// rimorchio
+			i = new ImageIcon(VehicleTableModel.class.getResource("/images/vehicles/semitrailer_32.png"));
+		
+		return i;
+	}
+	
+	
+	private static String findStringByColumnCarType(Class<? extends Vehicle> type) {
+		String i = "?";
+		if (type.equals(Car.class))
+			i = "Automobile";
+		else if (type.equals(Van.class))
+			i = "Furgone";
+		else if (type.equals(Truck.class))
+			i = "Autocarro";
+		else if (type.equals(TrailerTruck.class))
+			i = "Autotreno"; 
+		else if (type.equals(SemiTrailerTruck.class))
+			i = "Autoarticolato";
+		else if (type.equals(RoadTractor.class))
+			i = "Trattore stradale";
+		else if (type.equals(Trailer.class))
+			i = "Rimorchio";
+		else if (type.equals(SemiTrailer.class))
+			i = "Semirimorchio";
+		return i;
+	}
 	
 	
 	
 	///////////////////////////////////////////////////////
 	// other methods (from AbstractTableModel) to override:
-	
 	
     @Override
 	public Class<?> getColumnClass(int col) {

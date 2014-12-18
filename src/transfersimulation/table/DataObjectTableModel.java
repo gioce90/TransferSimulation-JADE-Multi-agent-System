@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
 import javax.swing.table.AbstractTableModel;
 
-import transfersimulation.table.VehicleTableModel.COLUMNS;
 
 /**
  * Abstract base class which extends from {@code AbstractTableModel} and 
@@ -28,7 +25,8 @@ import transfersimulation.table.VehicleTableModel.COLUMNS;
  */
 public abstract class DataObjectTableModel<T> extends AbstractTableModel {
 
-    private final List<String> columnNames;
+	private static final long serialVersionUID = 1L;
+	private final List<String> columnNames;
     private final List<T> data;
 
     public DataObjectTableModel() {
@@ -96,7 +94,6 @@ public abstract class DataObjectTableModel<T> extends AbstractTableModel {
         }
     }
     
-    //TODO
     public void deleteRow(T object) {
         if (this.data.remove(object)) {
             fireTableDataChanged();

@@ -1,14 +1,13 @@
 package transfersimulation;
 
 import java.sql.Date;
-import java.util.List;
 import java.util.Vector;
 
 import transfersimulation.model.goods.Goods;
 import transfersimulation.protocols.SearchJobResponder;
-import transfersimulation.table.DataObjectTableModel;
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -17,12 +16,13 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-
+import jade.proto.SSResponderDispatcher;
+ 
 
 public class BuyerAgent extends Agent implements BuyerInterface {
 	private static final long serialVersionUID = 3399019455702807074L;
 	
-	private BuyerAgentGUI myGUI;
+	public BuyerAgentGUI myGUI;
 	private Vector<Goods> goods;
 	
 	@Override
@@ -112,33 +112,31 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 		
 		// GRAFICA E PRESENTAZIONE
 		myGUI = new BuyerAgentGUI(this);
-		myGUI.showGui();
 		
 		// Printout a welcome message
-		System.out.println("Ciao! Shipper Agent "+getAID().getName()+" pronto!");
+		myGUI.insertInfo("Ciao! Buyer Agent "+getAID().getName()+" pronto!");
+		
 		
 		// Pubblica sulle Pagine Gialle il proprio servizio
 		publishService();
 		
-		
-		// TODO dai un'occhiata a SSResponderDispatcher 
 		
 		// SearchJobResponder per singola cfp
 		final MessageTemplate template = MessageTemplate.and(
 			MessageTemplate.MatchProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET),
 			MessageTemplate.MatchPerformative(ACLMessage.CFP) );
 		
-		
-		addBehaviour(new CyclicBehaviour() {
+		// SSResponderDispatcher per gestire le varie CFP degli ShipperAgents
+		SSResponderDispatcher dispatcher = new SSResponderDispatcher(this, template) {
 			private static final long serialVersionUID = 1L;
-			public void action() {
-				ACLMessage m= receive(template);
-				if (m!=null)
-					addBehaviour(new SearchJobResponder(myAgent, m));
-				else
-					block();
+			BuyerAgent b = (BuyerAgent) this.myAgent;
+			protected Behaviour createResponder(ACLMessage initiationMsg) {
+				
+				return new SearchJobResponder(b, initiationMsg);
 			}
-		});
+		};
+		addBehaviour(dispatcher);
+		
 		
 	}
 	
@@ -153,7 +151,7 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 		dfd.addServices(sd);
 		try {
 			DFService.register(this, dfd);
-			System.out.println("Registrazione sulle pagine gialle... avvenuta con successo");
+			myGUI.insertInfo("Registrazione sulle pagine gialle... avvenuta con successo");
 		} catch (FIPAException fe) {
 			fe.printStackTrace();
 		}
@@ -172,7 +170,7 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 		myGUI.dispose();// Close the GUI
 		
 		// Printout a dismissal message:
-		System.out.println("Buyer Agent "+getAID().getName()+" terminato.");
+		myGUI.insertInfo("Buyer Agent "+getAID().getName()+" terminato.");
 	}
 	
 	
@@ -195,7 +193,7 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 			fe.printStackTrace();
 		}
 		return shippers;
-	}
+	} 
 	
 	
 	////////////////////////////////////////////////////////////////////////////////
@@ -204,13 +202,15 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 	@Override
 	public void addGoods(Goods g) {
 		goods.add(g);
+		myGUI.insertInfo("Nuova merce inserita");
 	}
 	
-	
+	  
 	@Override
 	public void removeGoods(Goods g) {
 		goods.remove(g);
 		myGUI.goodsModel.deleteRow(g); //Potrebbe dare problemi in futuro
+		myGUI.insertInfo("Merce ("+g.getCodice()+") rimossa");
 	}
 	
 	

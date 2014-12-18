@@ -2,15 +2,12 @@ package transfersimulation.table;
 
 import java.awt.Dimension;
 
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumn;
 
-import transfersimulation.model.vehicle.*;
 import transfersimulation.model.vehicle.Vehicle.Stato;
 import transfersimulation.table.VehicleTableModel.COLUMNS;
 
@@ -97,10 +94,7 @@ public class VehicleTable extends JTable {
 	
 	
 	
-	/*
-	
-	TODO: se in futuro si volesse fare l'ordinamento da colonna
-	
+	/*	TODO: se in futuro si volesse fare l'ordinamento da colonna
 	tableHeader = parkTable.getTableHeader();
 	tableHeader.addMouseListener( new MouseAdapter() {
 		   public void mouseClicked(MouseEvent e) {

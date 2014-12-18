@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.text.DefaultCaret;
 
 import transfersimulation.model.vehicle.Vehicle;
 import transfersimulation.model.vehicle.Vehicle.Stato;
@@ -28,6 +29,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.ComponentOrientation;
+
+import javax.swing.JTextArea;
 
 
 @SuppressWarnings("serial")
@@ -52,10 +55,14 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	private VehicleTable parkTable;
 	private VehicleTable availablesTable;
 	
-	// My third-part software, a JADE agent:
-	protected ShipperAgent shipperAgent;
 	private Coordinator parkCoordinator;
 	private Coordinator availablesCoordinator;
+	
+	// My third-part software, a JADE agent:
+	private ShipperAgent shipperAgent;
+	
+	// For visual interaction with user
+	private JTextArea communicationTextArea;
 	
 	
 	// --------------------------------------------------------------------------
@@ -71,7 +78,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		///////////////////////////////////////////////////////////////////////
 		// Graphics:
 		
-		setTitle("Shipper Agent: "+agent.getLocalName());
+		setTitle("Shipper agent: "+agent.getLocalName());
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		try {
@@ -149,8 +156,8 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		
 		// Availables Panel
 		JPanel availablesPanel = new JPanel();
-		masterPanel.add(availablesPanel);
 		availablesPanel.setLayout(new BoxLayout(availablesPanel, BoxLayout.Y_AXIS));
+		masterPanel.add(availablesPanel);
 		
 		JPanel pnlHeaderAvailablesPanel = new JPanel();
 		FlowLayout fl_pnlHeaderAvailablesPanel = (FlowLayout) pnlHeaderAvailablesPanel.getLayout();
@@ -165,6 +172,27 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		JScrollPane availablesScrollPane = new JScrollPane(availablesTable);
 		availablesPanel.add(availablesScrollPane);
 		
+		
+		// Communication Panel
+		JPanel communicationPanel = new JPanel();
+		communicationPanel.setLayout(new BoxLayout(communicationPanel, BoxLayout.Y_AXIS));
+		masterPanel.add(communicationPanel);
+		
+		JPanel pnlHeaderCommunicationPanel = new JPanel();
+		FlowLayout fl_pnlHeaderCommunicationPanel = (FlowLayout) pnlHeaderCommunicationPanel.getLayout();
+		fl_pnlHeaderCommunicationPanel.setAlignment(FlowLayout.LEFT);
+		communicationPanel.add(pnlHeaderCommunicationPanel);
+		
+		JLabel lblComunicazioni = new JLabel("Comunicazioni:");
+		pnlHeaderCommunicationPanel.add(lblComunicazioni);
+		
+		communicationTextArea = new JTextArea(5,0);
+		communicationTextArea.setLineWrap(true);
+		((DefaultCaret)communicationTextArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		JScrollPane scrollPane = new JScrollPane(communicationTextArea);
+		communicationPanel.add(scrollPane);
+		
+		
 		// Search Panel
 		JPanel searchPanel = new JPanel();
 		masterPanel.add(searchPanel);
@@ -172,7 +200,8 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		btnSearch.setActionCommand("search");
 		btnSearch.addActionListener(this);
 		searchPanel.add(btnSearch);
-
+		
+		
 		// End of graphics init
 		///////////////////////////////////
 		
@@ -382,8 +411,11 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		coordinator.notifyAndDeleteRow(row);
 	}
 	
-
 	
+	public void insertInfo(String info){
+		communicationTextArea.append(info+"\n");
+		System.out.println("Agent "+shipperAgent.getLocalName()+": "+info);
+	} 
 	
 	
 	///////////////////////////////////////
@@ -410,10 +442,11 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		
 		// TODO attenzione forse c'è un dupplicato in un'altra classe
 		// inoltre non effettua alcun controllo sulle targhe
-		boolean vehicleExists(Vehicle vehicle){
-			int bool = indexOf(vehicle);
-			if (bool==-1) return false;
-			else return true;
+		protected boolean vehicleExists(Vehicle vehicle){
+			if (indexOf(vehicle)==-1)
+				return false;
+			else
+				return true;
 		}	
 		
 	}

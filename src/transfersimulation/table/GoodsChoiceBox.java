@@ -28,19 +28,18 @@ import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 
 
 public class GoodsChoiceBox extends JFrame  {
 	
 	private static final long serialVersionUID = 1L;
 	private GoodsTableModel<Goods> goodsModel;
+	
 	private JButton btnEsegui;
 	private JButton btnAnnulla;
 	
 	public GoodsChoiceBox() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		//setType(Type.POPUP);
 		setAlwaysOnTop(true);
 		
 		
@@ -71,7 +70,7 @@ public class GoodsChoiceBox extends JFrame  {
 					case 5: s= g.getTipo(); break;
 					case 6: s= g.isPericolosa(); break;
 					case 7: s= g.getLocationStart(); break;
-					case 8: s= g.getLocationStart(); break;
+					case 8: s= g.getLocationEnd(); break;
 					case 9: s= String.valueOf(g.getDateStart()); break;
 					case 10: s= String.valueOf(g.getDateLimit())+" gg"; break;
 				}
@@ -83,7 +82,6 @@ public class GoodsChoiceBox extends JFrame  {
 				Class<?> c = String.class;
 		    	if (columnIndex==0)
 		    		c = Boolean.class;
-		    	//else c = super.getColumnClass(columnIndex);
 		    	return c;
 			}
 			
@@ -107,11 +105,9 @@ public class GoodsChoiceBox extends JFrame  {
 		jp.add(btnPanel, BorderLayout.SOUTH);
 		
 		btnAnnulla = new JButton("Annulla");
-		btnAnnulla.setActionCommand("REJECT");
 		btnPanel.add(btnAnnulla);
 		
 		btnEsegui = new JButton("Esegui");
-		btnEsegui.setActionCommand("ACCEPT");
 		btnPanel.add(btnEsegui);
 		
 		this.setContentPane(jp);
@@ -120,50 +116,6 @@ public class GoodsChoiceBox extends JFrame  {
 	    column.setCellEditor(new DefaultCellEditor(jcb));
 		
 	}
-	
-	/*
-	public GoodsChoiceBox(final Agent agent, final ACLMessage propose){
-		this();
-		setTitle("Merci disponibili da: "+propose.getSender().getLocalName()
-				+" per "+agent.getLocalName());
-		try {
-			Vector<Goods> goods = (Vector<Goods>) propose.getContentObject();
-			if (goods!=null)
-				for (Goods good : goods)
-					goodsModel.addRow(good);
-		} catch (UnreadableException e) {
-			e.printStackTrace();
-		}
-		
-		btnEsegui.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				agent.addBehaviour(new OneShotBehaviour() {
-					private static final long serialVersionUID = 1L;
-					public void action() {
-						Vector<Goods> selectedGoods = (Vector<Goods>) getSelectedGoods();
-						if (selectedGoods!=null && !selectedGoods.isEmpty()){
-							acceptPropose(agent,propose,selectedGoods);
-						} else {
-							rejectPropose(agent, propose);
-						}
-					}
-				});
-			}
-		});
-		
-		btnAnnulla.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				agent.addBehaviour(new OneShotBehaviour() {
-					private static final long serialVersionUID = 1L;
-					public void action() {
-						rejectPropose(agent, propose);
-					}
-				});
-			}
-		});
-		
-	}
-	*/
 	
 	
 	public GoodsChoiceBox(final Agent agent, final HandlePropose behaviour, final ACLMessage propose){
@@ -185,23 +137,11 @@ public class GoodsChoiceBox extends JFrame  {
 					private static final long serialVersionUID = 1L;
 					public void action() {
 						Vector<Goods> selectedGoods = (Vector<Goods>) getSelectedGoods();
-						if (selectedGoods!=null && !selectedGoods.isEmpty()){
-							//acceptPropose(agent,propose,selectedGoods);
-							
-							System.out.println("Agente "+agent.getLocalName()
-									+": invio ACCEPT PROPOSAL a "+propose.getSender().getLocalName());
+						if (selectedGoods!=null && !selectedGoods.isEmpty())
 							behaviour.handleChoice(propose,true,selectedGoods);
-							dispose();
-							
-						} else {
-							//rejectPropose(agent, propose);
-							
-							System.out.println("Agente "+agent.getLocalName()
-									+": invio REJECT PROPOSAL a "+propose.getSender().getLocalName());
+						else
 							behaviour.handleChoice(propose,false,null);
-							dispose();
-							
-						}
+						dispose();
 					}
 				});
 			}
@@ -212,13 +152,8 @@ public class GoodsChoiceBox extends JFrame  {
 				agent.addBehaviour(new OneShotBehaviour() {
 					private static final long serialVersionUID = 1L;
 					public void action() {
-						rejectPropose(agent, propose);
-						/*
-						System.out.println("Agente "+agent.getLocalName()
-								+": invio REJECT PROPOSAL a "+propose.getSender().getLocalName());
 						behaviour.handleChoice(propose,false,null);
 						dispose();
-						*/
 					}
 				});
 			}
@@ -226,34 +161,6 @@ public class GoodsChoiceBox extends JFrame  {
 		
 	}
 	
-	
-
-	private void rejectPropose(Agent agent, ACLMessage propose){
-		ACLMessage reply = new ACLMessage(ACLMessage.REJECT_PROPOSAL);
-		System.out.println("Agent "+agent.getLocalName()
-			+": send REJECT PROPOSAL to "+propose.getSender().getLocalName());
-		reply.addReceiver(agent.getAID());
-		reply.setReplyWith("response"+propose.getReplyWith());
-		agent.send(reply);
-		dispose();
-	}
-	
-	
-	private void acceptPropose(Agent agent, ACLMessage propose, Vector<Goods> selectedGoods){
-		ACLMessage reply = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
-		try {
-			reply.setContentObject(selectedGoods);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		System.out.println("Agent "+agent.getLocalName()
-			+": send ACCEPT PROPOSAL to "+propose.getSender().getLocalName());
-		reply.addReceiver(agent.getAID());
-		reply.setReplyWith("response"+propose.getReplyWith());
-		agent.send(reply);
-		dispose();
-	}
-
 	
 	public Vector<Goods> getSelectedGoods(){
 		return goodsModel.getSelectedDataObjects();
@@ -266,6 +173,8 @@ public class GoodsChoiceBox extends JFrame  {
 	
 	
 	
+	/////////////////////////////////
+	// INNER CLASS GoodsTableModel:
 	
 	/**
 	 * @class GoodsTableModel

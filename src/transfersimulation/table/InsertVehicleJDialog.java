@@ -3,6 +3,9 @@ package transfersimulation.table;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
@@ -12,14 +15,8 @@ import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-
-import java.awt.GridLayout;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
 import javax.swing.DefaultComboBoxModel;
 
 import transfersimulation.ShipperAgentGUI;
@@ -29,7 +26,10 @@ import transfersimulation.model.vehicle.Vehicle.Stato;
 
 public class InsertVehicleJDialog extends JDialog {
  
-	private final JPanel contentPanel = new JPanel();
+
+	private static final long serialVersionUID = 1L;
+
+	//private final JPanel contentPanel = new JPanel();
 	
 	private JTextField textFieldTarga;
 	private JTextField textFieldMarca;
@@ -68,6 +68,7 @@ public class InsertVehicleJDialog extends JDialog {
 		this.setTitle("Insert Vehicle");
 		setBounds(100, 100, 400, 230);
 		getContentPane().setLayout(new BorderLayout());
+		JPanel contentPanel = new JPanel(); // TODO
 		getContentPane().add(contentPanel, BorderLayout.NORTH);
 		
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
