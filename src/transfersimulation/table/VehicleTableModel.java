@@ -24,6 +24,7 @@ public class VehicleTableModel extends AbstractTableModel {
 		MARK_COLUMN,		
 		STATE_COLUMN,			
 		PTT_COLUMN,
+		SETTINGUP_COLUMN,
 		LOCATION_COLUMN
 	};
 	
@@ -70,6 +71,9 @@ public class VehicleTableModel extends AbstractTableModel {
 	            case MARK_COLUMN:
 	                value = v.getMark();
 	                break;
+	            case SETTINGUP_COLUMN:
+	                value = v.getAllestimento();
+	                break; 
 	            case STATE_COLUMN:
 	                value = v.getState();
 	                break;
@@ -217,6 +221,8 @@ public class VehicleTableModel extends AbstractTableModel {
     		return "Marca";
     	else if (column.equals(COLUMNS.STATE_COLUMN))
     		return "Stato";
+    	else if (column.equals(COLUMNS.SETTINGUP_COLUMN))
+    		return "Allestimento";
     	else if (column.equals(COLUMNS.PTT_COLUMN))
     		return "PTT";
     	else if (column.equals(COLUMNS.LOCATION_COLUMN))
@@ -255,6 +261,12 @@ public class VehicleTableModel extends AbstractTableModel {
 	            case STATE_COLUMN:
 	            	if (!v.getState().equals(value)){
 	            		v.setStato((Stato) value);
+	            		flag = true;
+	            	}
+	            	break;
+	            case SETTINGUP_COLUMN:
+	            	if (!v.getAllestimento().equals(value)){
+	            		v.setAllestimento((String) value);
 	            		flag = true;
 	            	}
 	            	break;

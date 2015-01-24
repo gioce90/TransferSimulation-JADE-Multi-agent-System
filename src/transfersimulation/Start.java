@@ -3,7 +3,6 @@ package transfersimulation;
 import jade.core.Runtime;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
-import jade.tools.introspector.Introspector;
 import jade.wrapper.*;
 
 public class Start {

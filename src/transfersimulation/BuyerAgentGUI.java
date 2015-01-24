@@ -68,7 +68,7 @@ public class BuyerAgentGUI extends JFrame {
 		colonne.add("Destinazione");
 		colonne.add("Dal");
 		colonne.add("Entro");
-		
+		colonne.add("Necessità");
 		
 		goodsModel = new DataObjectTableModel<Goods>(colonne) {
 			private static final long serialVersionUID = 1L;
@@ -88,6 +88,7 @@ public class BuyerAgentGUI extends JFrame {
 					case 7: s= g.getLocationEnd(); break;
 					case 8: s= String.valueOf(g.getDateStart()); break;
 					case 9: s= String.valueOf(g.getDateLimit())+" gg"; break;
+					case 10: s= g.getNecessità(); break;
 				}
 				return s;
 			}
@@ -284,6 +285,11 @@ public class BuyerAgentGUI extends JFrame {
 				contentPanel.add(lblPericolosa);
 				contentPanel.add(txtPericolosa);
 				
+				JLabel lblNecessità = new JLabel("Necessità");
+				final JTextField txtNecessità = new JTextField(10);
+				contentPanel.add(lblNecessità);
+				contentPanel.add(txtNecessità);
+				
 				JLabel lblPartenza = new JLabel("Partenza");
 				final JTextField txtPartenza = new JTextField(10);
 				contentPanel.add(lblPartenza);
@@ -341,6 +347,9 @@ public class BuyerAgentGUI extends JFrame {
 						
 						if (!txtPericolosa.getText().isEmpty())
 							g.setPericolosa(Boolean.valueOf(txtPericolosa.getText()));
+						
+						if (!txtNecessità.getText().isEmpty())
+							g.setNecessità(txtNecessità.getText());
 						
 						goodsModel.addRow(g);
 						buyerAgent.addGoods(g);

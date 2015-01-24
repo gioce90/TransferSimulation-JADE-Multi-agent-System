@@ -22,7 +22,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.JButton;
 
 import transfersimulation.model.goods.Goods;
-import transfersimulation.protocols.SearchJobInitiator.HandlePropose;
+import transfersimulation.protocols.SearchJobInitiator.HandleProposes.HandleSinglePropose;
 
 import java.awt.Dimension;
 import java.awt.BorderLayout;
@@ -48,6 +48,7 @@ public class GoodsChoiceBox extends JFrame  {
 		colonne.add("Descrizione");		colonne.add("Dimensioni x*y*z");
 		colonne.add("Q.tà");			colonne.add("Volume");
 		colonne.add("Tipo");			colonne.add("Pericolosa");
+		colonne.add("Necessità");
 		colonne.add("Partenza");		colonne.add("Destinazione");
 		colonne.add("Dal");				colonne.add("Entro");
 		
@@ -69,10 +70,11 @@ public class GoodsChoiceBox extends JFrame  {
 					case 4: s= String.valueOf(g.getVolume()); break;
 					case 5: s= g.getTipo(); break;
 					case 6: s= g.isPericolosa(); break;
-					case 7: s= g.getLocationStart(); break;
-					case 8: s= g.getLocationEnd(); break;
-					case 9: s= String.valueOf(g.getDateStart()); break;
-					case 10: s= String.valueOf(g.getDateLimit())+" gg"; break;
+					case 7: s= g.getNecessità(); break;
+					case 8: s= g.getLocationStart(); break;
+					case 9: s= g.getLocationEnd(); break;
+					case 10: s= String.valueOf(g.getDateStart()); break;
+					case 11: s= String.valueOf(g.getDateLimit())+" gg"; break;
 				}
 				return s;
 			}
@@ -111,14 +113,14 @@ public class GoodsChoiceBox extends JFrame  {
 		btnPanel.add(btnEsegui);
 		
 		this.setContentPane(jp);
-		this.setSize(new Dimension(600, 250));
+		this.setSize(new Dimension(700, 250));
 		JCheckBox jcb = new JCheckBox();
 	    column.setCellEditor(new DefaultCellEditor(jcb));
 		
 	}
 	
 	
-	public GoodsChoiceBox(final Agent agent, final HandlePropose behaviour, final ACLMessage propose){
+	public GoodsChoiceBox(final Agent agent, final HandleSinglePropose behaviour, final ACLMessage propose){
 		this();
 		setTitle("Merci disponibili da: "+propose.getSender().getLocalName()
 				+" per "+agent.getLocalName());

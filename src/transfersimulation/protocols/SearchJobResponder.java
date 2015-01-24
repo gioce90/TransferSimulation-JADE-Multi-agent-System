@@ -13,6 +13,7 @@ import java.util.Vector;
 
 import transfersimulation.BuyerAgent;
 import transfersimulation.model.goods.Goods;
+import transfersimulation.model.vehicle.Vehicle;
 
 public class SearchJobResponder extends SSContractNetResponder {
 	private static final long serialVersionUID = 1L;
@@ -31,7 +32,20 @@ public class SearchJobResponder extends SSContractNetResponder {
 		buyerAgent.myGUI.insertInfo("Ricevuta CFP da "+cfp.getSender().getLocalName());
 		
 		ACLMessage reply = cfp.createReply();
+		reply.setReplyWith(buyerAgent.getName()+System.currentTimeMillis());
+		
 		Vector<Goods> goods = buyerAgent.getGoods();
+		
+		Vector<Vehicle> availableVehicles = null;
+		try {
+			availableVehicles = (Vector<Vehicle>) cfp.getContentObject();
+		} catch (UnreadableException e1) {
+			e1.printStackTrace();
+		}
+		
+		/* Matching tra i beni del buyer e i veicoli dello Shipper */
+		goods = matchingGoodsAndVehicles(goods, availableVehicles);
+		
 		if (goods!=null && !goods.isEmpty()){
 			buyerAgent.myGUI.insertInfo("Invio PROPOSE a "+cfp.getSender().getLocalName());
 			reply.setPerformative(ACLMessage.PROPOSE);
@@ -40,7 +54,7 @@ public class SearchJobResponder extends SSContractNetResponder {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
+			
 			/*
 			 * L'utente dello shipper agent ha 120 secondi per 
 			 * rispondere alla PROPOSE, o il protocollo si interrompe
@@ -56,7 +70,7 @@ public class SearchJobResponder extends SSContractNetResponder {
 		return reply;
 	}
 	
-	
+
 	@Override
 	protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept)
 			throws FailureException {
@@ -78,6 +92,7 @@ public class SearchJobResponder extends SSContractNetResponder {
 			
 			if (matchResult){
 				reply.setPerformative(ACLMessage.INFORM);
+				reply.setContentObject(selectedGoods);
 				buyerAgent.myGUI.insertInfo("Proposta accettata da "+accept.getSender().getLocalName());
 				for (Goods goods : selectedGoods)
 					buyerAgent.removeGoods(goods);
@@ -86,7 +101,7 @@ public class SearchJobResponder extends SSContractNetResponder {
 				throw new FailureException("change");
 			}
 			
-		} catch (UnreadableException e) {
+		} catch (UnreadableException | IOException e) {
 			e.printStackTrace(); 
 		}
 		/*
@@ -144,5 +159,38 @@ public class SearchJobResponder extends SSContractNetResponder {
 		}
 		return bool;
 	}
+	
+	/**
+	 * Certi beni possono essere trasportati solo da un certo tipo di
+	 * veicoli, dotati di un certo tipo di allestimenti e accorgimenti.
+	 * In questa versione, il matching si limita solo al tipo di allestimento.
+	 * In futuro raccomandiamo di sostituire questo algoritmo e impiegare
+	 * un motore inferenziale
+	 * @param goods
+	 * @param availableVehicles
+	 * @return
+	 */
+	private Vector<Goods> matchingGoodsAndVehicles(Vector<Goods> goods, Vector<Vehicle> availableVehicles) {
+		Vector<Goods> proposta = new Vector<Goods>();
+		if (availableVehicles!=null){
+			if (goods!=null){
+				for (Goods g : goods) {
+					String necessità = g.getNecessità();
+					if (necessità!=null){
+						for (Vehicle vehicle : availableVehicles) {
+							String allestimento = vehicle.getAllestimento();
+							if (allestimento!=null && allestimento.equals(necessità)){
+								proposta.add(g);
+								break;
+							}
+						}
+					} else
+						proposta.add(g);
+				}
+			}
+		}
+		return proposta;
+	}
+
 	
 }

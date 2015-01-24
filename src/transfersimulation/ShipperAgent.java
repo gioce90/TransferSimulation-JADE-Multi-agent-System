@@ -1,5 +1,7 @@
 package transfersimulation;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
 
@@ -46,7 +48,16 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		c3.setModel("xxx");
 		c3.setPtt(3);
 		c3.setStato(Stato.DISPONIBILE);
+		c3.setAllestimento("Frigo");
 		c3.setLocazioneAttuale("Foggia");
+		
+		Vehicle c4 = new Truck("AAA4");
+		c4.setMark("Scania");
+		c4.setModel("xxx");
+		c4.setPtt(3);
+		c4.setStato(Stato.DISPONIBILE);
+		c4.setAllestimento("Cisterna");
+		c4.setLocazioneAttuale("Foggia");
 		
 		/*
 		Vehicle c5 = new SemiTrailerTruck("AAA5");
@@ -105,6 +116,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		vehicles.add(c1);
 		vehicles.add(c2);
 		vehicles.add(c3);
+		vehicles.add(c4);
 		
 		vehicles.add(t1);
 		
@@ -214,6 +226,13 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		AID[] buyerAgents = searchBuyers();
 		for (AID buyer : buyerAgents)
 			cfp.addReceiver(buyer);
+		
+		try {
+			cfp.setContentObject(getAvailableVehicles());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		addBehaviour(new SearchJobInitiator(this, cfp));
 	}
 	
@@ -278,6 +297,16 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	@Override
 	public List<Vehicle> getVehicles(){
 		return vehicles;
+	}
+	
+	@Override
+	public Vector<Vehicle> getAvailableVehicles(){
+		Vector<Vehicle> availableVehicles = new Vector<Vehicle>();
+		for (Vehicle vehicle : vehicles) {
+			if (vehicle.getState()==Vehicle.Stato.DISPONIBILE)
+				availableVehicles.add(vehicle);
+		}
+		return availableVehicles;
 	}
 	
 	@Override

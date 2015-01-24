@@ -35,32 +35,40 @@ public class VehicleTable extends JTable {
 		flag = vehicleModel.findColumn(COLUMNS.IMAGE_COLUMN);
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
-			column.setMinWidth(80);
-			column.setMaxWidth(80);
+			column.setMinWidth(70);
+			column.setMaxWidth(75);
 		}
 		
 		// Targa Column:
 		flag = vehicleModel.findColumn(COLUMNS.TARGA_COLUMN);
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
-			column.setMinWidth(100);
-			column.setMaxWidth(140);
+			column.setMinWidth(80);
+			column.setMaxWidth(115);
 		}
 		
 		// Tipo veicolo Column
 		flag = vehicleModel.findColumn(COLUMNS.TYPE_COLUMN);
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
-			column.setMinWidth(100);
-			column.setMaxWidth(110);
+			column.setMinWidth(90);
+			column.setMaxWidth(100);
 		}
 		
 		// MARCA Column:
 		flag = vehicleModel.findColumn(COLUMNS.MARK_COLUMN);
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
+			column.setMinWidth(70);
+			column.setMaxWidth(115);
+		}
+		
+		// ALLESTIMENTO Column:
+		flag = vehicleModel.findColumn(COLUMNS.SETTINGUP_COLUMN);
+		if (flag!=-1){
+			column = this.getColumnModel().getColumn(flag);
 			column.setMinWidth(80);
-			//column.setMaxWidth(120);
+			//column.setMaxWidth(100);
 		}
 		
 		// Stato veicolo Column
@@ -69,24 +77,24 @@ public class VehicleTable extends JTable {
 			column = this.getColumnModel().getColumn(flag);
 			column.setCellEditor(new DefaultCellEditor(
 					new JComboBox<Stato>(Stato.values())));
-			column.setMinWidth(130);
-			column.setMaxWidth(130);
+			column.setMinWidth(128);
+			column.setMaxWidth(128);
 		}
 		
 		// PTT Column:
 		flag = vehicleModel.findColumn(COLUMNS.PTT_COLUMN);
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
-			column.setMinWidth(50);
-			column.setMaxWidth(60);
+			column.setMinWidth(55);
+			column.setMaxWidth(55);
 		}
 		
 		// Actual Location Column:
 		flag = vehicleModel.findColumn(COLUMNS.LOCATION_COLUMN);
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
-			column.setMinWidth(130);
-			column.setMaxWidth(150);
+			column.setMinWidth(100);
+			//column.setMaxWidth(140);
 		}
 		
 		

@@ -1,8 +1,10 @@
 package transfersimulation.model.vehicle;
 
+import java.io.Serializable;
 
 
-public abstract class Vehicle {
+
+public abstract class Vehicle implements Serializable {
 	
 	public enum Stato {
 		DISPONIBILE,
@@ -16,7 +18,7 @@ public abstract class Vehicle {
 	private String trim;	// Trim
 	
 	private float weight;			// peso, misurato in tonnellate ???
-	private float carryingCapacity;	// capacità di carico (portata massima) musurato in tonnellate
+	private float carryingCapacity;	// capacità di carico (portata massima) misurato in tonnellate
 	private float ptt = weight+carryingCapacity; // massa a pieno carico, misurata in tonnellate
 	
 	private float volume; 		// volume, misurato in metri cubi
@@ -25,6 +27,8 @@ public abstract class Vehicle {
 	private float height;		// altezza, misurata in metri
 	
 	private Stato stato;		// Stato del veicolo
+	
+	private String allestimento;
 	
 	private String locazioneAttuale = "";
 	
@@ -147,6 +151,14 @@ public abstract class Vehicle {
 
 	public void setLocazioneAttuale(String locazioneAttuale) {
 		this.locazioneAttuale = locazioneAttuale;
+	}
+
+	public String getAllestimento() {
+		return allestimento;
+	}
+
+	public void setAllestimento(String allestimento) {
+		this.allestimento = allestimento;
 	}
 	
 }

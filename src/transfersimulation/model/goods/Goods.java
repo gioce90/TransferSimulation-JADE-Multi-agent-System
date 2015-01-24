@@ -18,6 +18,10 @@ public class Goods implements Serializable {
 	private Date dateStart;
 	private int dateLimit;
 	
+	private String necessità;
+	
+	private String buyer;
+	
 	@Override
 	public String toString() {
 		return "Cod: "+codice
@@ -30,7 +34,9 @@ public class Goods implements Serializable {
 				+"Partenza: "+locationStart+", "
 				+"Destinazione: "+locationEnd+", "
 				+"Da: "+dateStart+", "
-				+"Limiti di consegna: "+dateLimit+" gg.";
+				+"Limiti di consegna: "+dateLimit+" gg, "
+				+"Allestimenti necessari: ";
+		
 	}
 	
 	public String getCodice() {
@@ -195,6 +201,22 @@ public class Goods implements Serializable {
 		if (Double.doubleToLongBits(volume) != Double.doubleToLongBits(other.volume))
 			return false;
 		return true;
+	}
+
+	public String getBuyer() {
+		return buyer;
+	}
+
+	public void setBuyer(String buyer) {
+		this.buyer = buyer;
+	}
+
+	public String getNecessità() {
+		return necessità;
+	}
+
+	public void setNecessità(String necessità) {
+		this.necessità = necessità;
 	}
 	
 }

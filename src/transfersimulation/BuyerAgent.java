@@ -8,7 +8,6 @@ import transfersimulation.protocols.SearchJobResponder;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
-import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPANames;
@@ -44,6 +43,7 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 		m.setLocationEnd("Lecce");
 		m.setDateStart(Date.valueOf("2014-10-22"));
 		m.setDateLimit(5);
+		m.setBuyer(this.getLocalName());
 		goods.add(m);
 		
 		Goods m1 = new Goods();
@@ -58,6 +58,8 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 		m1.setLocationEnd("Roma");
 		m1.setDateStart(Date.valueOf("2014-10-22"));
 		m1.setDateLimit(6);
+		m1.setBuyer(this.getLocalName());
+		m1.setNecessità("Cisterna");
 		goods.add(m1);
 		
 		Goods m2 = new Goods();
@@ -72,6 +74,8 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 		m2.setLocationEnd("Roma");
 		m2.setDateStart(Date.valueOf("2014-10-22"));
 		m2.setDateLimit(6);
+		m2.setBuyer(this.getLocalName());
+		m2.setNecessità("Frigo");
 		goods.add(m2);
 		
 		Goods m3 = new Goods();
@@ -86,6 +90,7 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 		m3.setLocationEnd("Roma");
 		m3.setDateStart(Date.valueOf("2014-10-22"));
 		m3.setDateLimit(6);
+		m3.setBuyer(this.getLocalName());
 		goods.add(m3);
 		
 		Goods m4 = new Goods();
@@ -100,6 +105,9 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 		m4.setLocationEnd("Roma");
 		m4.setDateStart(Date.valueOf("2014-10-22"));
 		m4.setDateLimit(6);
+		m4.setNecessità("Cisterna");
+		m4.setBuyer(this.getLocalName());
+		
 		goods.add(m4);
 		
 		/*
@@ -121,17 +129,17 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 		publishService();
 		
 		
-		// SearchJobResponder per singola cfp
+		// MessageTemplate per filtrare i messaggi:
 		final MessageTemplate template = MessageTemplate.and(
 			MessageTemplate.MatchProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET),
 			MessageTemplate.MatchPerformative(ACLMessage.CFP) );
 		
-		// SSResponderDispatcher per gestire le varie CFP degli ShipperAgents
+		// SSResponderDispatcher per gestire le varie CFP degli ShipperAgents:
 		SSResponderDispatcher dispatcher = new SSResponderDispatcher(this, template) {
 			private static final long serialVersionUID = 1L;
 			BuyerAgent b = (BuyerAgent) this.myAgent;
 			protected Behaviour createResponder(ACLMessage initiationMsg) {
-				
+				// SearchJobResponder per singola cfp:
 				return new SearchJobResponder(b, initiationMsg);
 			}
 		};
@@ -193,7 +201,7 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 			fe.printStackTrace();
 		}
 		return shippers;
-	} 
+	}
 	
 	
 	////////////////////////////////////////////////////////////////////////////////

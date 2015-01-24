@@ -25,11 +25,7 @@ import transfersimulation.model.vehicle.*;
 import transfersimulation.model.vehicle.Vehicle.Stato;
 
 public class InsertVehicleJDialog extends JDialog {
- 
-
 	private static final long serialVersionUID = 1L;
-
-	//private final JPanel contentPanel = new JPanel();
 	
 	private JTextField textFieldTarga;
 	private JTextField textFieldMarca;

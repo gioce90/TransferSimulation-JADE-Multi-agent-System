@@ -15,8 +15,10 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.text.DefaultCaret;
 
+import transfersimulation.model.goods.Goods;
 import transfersimulation.model.vehicle.Vehicle;
 import transfersimulation.model.vehicle.Vehicle.Stato;
+import transfersimulation.table.DataObjectTableModel;
 import transfersimulation.table.InsertVehicleJDialog;
 import transfersimulation.table.VehicleTable;
 import transfersimulation.table.VehicleTableModel;
@@ -31,13 +33,18 @@ import java.awt.event.ActionEvent;
 import java.awt.ComponentOrientation;
 
 import javax.swing.JTextArea;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @SuppressWarnings("serial")
 public class ShipperAgentGUI extends JFrame implements ActionListener {
 
 	// Variabili di classe
-	private JPanel masterPanel;
 	private JButton btnPM_plus;
 	private JButton btnPM_meno;
 	private JButton btnMD_plus;
@@ -45,9 +52,9 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	
 	// Headers, TableModels, JTables and Coordinators for the tables
 	private COLUMNS[] parkModelHeader = {COLUMNS.IMAGE_COLUMN, COLUMNS.TARGA_COLUMN,
-		COLUMNS.TYPE_COLUMN, COLUMNS.MARK_COLUMN, COLUMNS.STATE_COLUMN, COLUMNS.PTT_COLUMN, COLUMNS.LOCATION_COLUMN };
+		COLUMNS.TYPE_COLUMN, COLUMNS.MARK_COLUMN, COLUMNS.SETTINGUP_COLUMN, COLUMNS.STATE_COLUMN, COLUMNS.PTT_COLUMN, COLUMNS.LOCATION_COLUMN };
 	private COLUMNS[] availablesModelHeader = {COLUMNS.IMAGE_COLUMN, COLUMNS.TARGA_COLUMN,
-		COLUMNS.TYPE_COLUMN, COLUMNS.MARK_COLUMN, COLUMNS.LOCATION_COLUMN };
+		COLUMNS.TYPE_COLUMN, COLUMNS.MARK_COLUMN, COLUMNS.SETTINGUP_COLUMN, COLUMNS.LOCATION_COLUMN };
 	
 	private VehicleTableModel parkModel = new VehicleTableModel(parkModelHeader);
 	private VehicleTableModel availablesModel = new VehicleTableModel(availablesModelHeader);
@@ -63,6 +70,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	
 	// For visual interaction with user
 	private JTextArea communicationTextArea;
+	private DataObjectTableModel<Goods> goodsModel;
 	
 	
 	// --------------------------------------------------------------------------
@@ -89,110 +97,181 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 			e.printStackTrace();
 		}
 		
-		// MasterPanel
-		masterPanel = new JPanel();
-		masterPanel.setLayout(new BoxLayout(masterPanel, BoxLayout.Y_AXIS));
-		masterPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		JPanel masterPanel = new JPanel();
 		getContentPane().add(masterPanel, BorderLayout.CENTER);
-		
-		// Park Panel
-		JPanel parkPanel = new JPanel();
-		parkPanel.setLayout(new BoxLayout(parkPanel, BoxLayout.Y_AXIS));
-		masterPanel.add(parkPanel);
-		
-		JPanel pnlHeaderParkPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		JLabel parkLabel = new JLabel("Parco auto:");
-		pnlHeaderParkPanel.add(parkLabel);
-		parkPanel.add(pnlHeaderParkPanel);
-		
-		JPanel pnlTableParkPanel = new JPanel();
-		pnlTableParkPanel.setLayout(new BoxLayout(pnlTableParkPanel, BoxLayout.X_AXIS));
-		parkPanel.add(pnlTableParkPanel);
-		
-		// Park Table
-		parkTable = new VehicleTable(parkModel);
-		JScrollPane parkScrollPane = new JScrollPane(parkTable);
-		pnlTableParkPanel.add(parkScrollPane);
 
-		JPanel pnlBtnParkPanel = new JPanel();
-		pnlTableParkPanel.add(pnlBtnParkPanel);
-		pnlBtnParkPanel.setLayout(new BoxLayout(pnlBtnParkPanel, BoxLayout.Y_AXIS));
+		// Primo TAB: Veicoli
+		JPanel vehiclesPanel = new JPanel();
+		{
+			// MasterPanel
+			vehiclesPanel.setLayout(new BoxLayout(vehiclesPanel, BoxLayout.Y_AXIS));
+			vehiclesPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+	
+			// Park Panel
+			JPanel parkPanel = new JPanel();
+			parkPanel.setLayout(new BoxLayout(parkPanel, BoxLayout.Y_AXIS));
+			vehiclesPanel.add(parkPanel);
+	
+			JPanel pnlHeaderParkPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+			JLabel parkLabel = new JLabel("Flotta:");
+			pnlHeaderParkPanel.add(parkLabel);
+			parkPanel.add(pnlHeaderParkPanel);
+	
+			JPanel pnlTableParkPanel = new JPanel();
+			pnlTableParkPanel.setLayout(new BoxLayout(pnlTableParkPanel, BoxLayout.X_AXIS));
+			parkPanel.add(pnlTableParkPanel);
+	
+			// Park Table
+			parkTable = new VehicleTable(parkModel);
+			JScrollPane parkScrollPane = new JScrollPane(parkTable);
+			pnlTableParkPanel.add(parkScrollPane);
+	
+			JPanel pnlBtnParkPanel = new JPanel();
+			pnlTableParkPanel.add(pnlBtnParkPanel);
+			pnlBtnParkPanel.setLayout(new BoxLayout(pnlBtnParkPanel, BoxLayout.Y_AXIS));
+	
+			// JButtons: add/remove vehicle in Park Table
+			btnPM_plus = new JButton();
+			btnPM_plus.setToolTipText("Aggiungi mezzo");
+			btnPM_plus.setIcon(new ImageIcon(ShipperAgentGUI.class.getResource("/images/lorry-add.png")));
+			btnPM_plus.setActionCommand("+parco");
+			btnPM_plus.addActionListener(this);
+			pnlBtnParkPanel.add(btnPM_plus);
+	
+			btnPM_meno = new JButton();
+			btnPM_meno.setToolTipText("Rimuovi mezzo");
+			btnPM_meno.setIcon(new ImageIcon(ShipperAgentGUI.class.getResource("/images/lorry-delete.png")));
+			btnPM_meno.setActionCommand("-parco");
+			btnPM_meno.addActionListener(this);
+			pnlBtnParkPanel.add(btnPM_meno);
+	
+	
+			// Arrow Panel
+			JPanel arrowPanel = new JPanel();
+			vehiclesPanel.add(arrowPanel);
+	
+			// JButtons: available or not vehicle
+			btnMD_plus = new JButton();
+			btnMD_plus.setToolTipText("Rendi disponibile il mezzo selezionato");
+			btnMD_plus.setIcon(new ImageIcon(ShipperAgentGUI.class.getResource("/images/arrow-green-down.png")));
+			arrowPanel.add(btnMD_plus);
+			btnMD_plus.setActionCommand("+disponibili");
+			btnMD_plus.addActionListener(this);
+	
+			btnMD_meno = new JButton();
+			btnMD_meno.setToolTipText("Rendi indisponibile il mezzo selezionato");
+			btnMD_meno.setIcon(new ImageIcon(ShipperAgentGUI.class.getResource("/images/arrow-red-up.png")));
+			arrowPanel.add(btnMD_meno);
+			btnMD_meno.setActionCommand("-disponibili");
+			btnMD_meno.addActionListener(this);
+			masterPanel.setLayout(new BoxLayout(masterPanel, BoxLayout.PAGE_AXIS));
+	
+			// Availables Panel
+			JPanel availablesPanel = new JPanel();
+			availablesPanel.setLayout(new BoxLayout(availablesPanel, BoxLayout.Y_AXIS));
+			vehiclesPanel.add(availablesPanel);
+	
+			JPanel pnlHeaderAvailablesPanel = new JPanel();
+			FlowLayout fl_pnlHeaderAvailablesPanel = (FlowLayout) pnlHeaderAvailablesPanel.getLayout();
+			fl_pnlHeaderAvailablesPanel.setAlignment(FlowLayout.LEFT);
+			availablesPanel.add(pnlHeaderAvailablesPanel);
+			JLabel label_1 = new JLabel("Mezzi disponibili:");
+			pnlHeaderAvailablesPanel.add(label_1);
+			label_1.setHorizontalAlignment(SwingConstants.LEFT);
+	
+			// Available Table
+			availablesTable = new VehicleTable(availablesModel);
+			JScrollPane availablesScrollPane = new JScrollPane(availablesTable);
+			availablesPanel.add(availablesScrollPane);
+		}
 
-		// JButtons: add/remove vehicle in Park Table
-		btnPM_plus = new JButton();
-		btnPM_plus.setToolTipText("Aggiungi mezzo");
-		btnPM_plus.setIcon(new ImageIcon(ShipperAgentGUI.class.getResource("/images/lorry-add.png")));
-		btnPM_plus.setActionCommand("+parco");
-		btnPM_plus.addActionListener(this);
-		pnlBtnParkPanel.add(btnPM_plus);
+		// Secondo TAB: Merci
+		JPanel goodsPanel = new JPanel();
+		{
+			goodsPanel.setLayout(new BoxLayout(goodsPanel, BoxLayout.Y_AXIS));
+	
+			JLabel lblMerciPrenotate = new JLabel("Merci prenotate");
+			lblMerciPrenotate.setAlignmentX(Component.CENTER_ALIGNMENT);
+			goodsPanel.add(lblMerciPrenotate);
+			
+			final ArrayList<String> colonne = new ArrayList<String>();
+			colonne.add("Descrizione");
+			colonne.add("Dimensioni x*y*z");
+			colonne.add("Q.tà");
+			colonne.add("Volume");
+			colonne.add("Tipo");
+			colonne.add("Pericolosa");
+			colonne.add("Necessità");
+			colonne.add("Partenza");
+			colonne.add("Destinazione");
+			colonne.add("Dal");
+			colonne.add("Entro");
+			colonne.add("Cliente");
+			// TODO affidato a... colonne.add("Veicolo di riferimento");
+			
+			goodsModel = new DataObjectTableModel<Goods>(colonne) {
+				private static final long serialVersionUID = 1L;
 
-		btnPM_meno = new JButton();
-		btnPM_meno.setToolTipText("Rimuovi mezzo");
-		btnPM_meno.setIcon(new ImageIcon(ShipperAgentGUI.class.getResource("/images/lorry-delete.png")));
-		btnPM_meno.setActionCommand("-parco");
-		btnPM_meno.addActionListener(this);
-		pnlBtnParkPanel.add(btnPM_meno);
+				@Override
+				public Object getValueAt(int rowIndex, int columnIndex) {
+					//Prenotazione p = (Prenotazione) goodsModel.getDataObject(rowIndex);
+					//Goods g = p.goods;
+					Goods g = goodsModel.getDataObject(rowIndex);
+					String s = "?";
+					switch (columnIndex){
+						case 0: s= g.getDescrizione(); break;
+						case 1: s= g.getDimensione(); break;
+						case 2: s= String.valueOf(g.getQuantità()); break;
+						case 3: s= String.valueOf(g.getVolume()); break;
+						case 4: s= g.getTipo(); break;
+						case 5: s= String.valueOf(g.isPericolosa()); break;
+						case 6: s= g.getNecessità(); break;
+						case 7: s= g.getLocationStart(); break;
+						case 8: s= g.getLocationEnd(); break;
+						case 9: s= String.valueOf(g.getDateStart()); break;
+						case 10: s= String.valueOf(g.getDateLimit())+" gg"; break;
+						case 11: s= g.getBuyer(); break;
+					}
+					return s;
+				}
+			};
+			
+			JTable goodsTable = new JTable(goodsModel);
+			goodsTable.setFillsViewportHeight(true);
+			JScrollPane goodsScrollPane = new JScrollPane(goodsTable);
+			goodsPanel.add(goodsScrollPane);
+		}
+		
+		// TODO prende le merci prenotate dal DB
 		
 		
-		// Arrow Panel
-		JPanel arrowPanel = new JPanel();
-		masterPanel.add(arrowPanel);
+		// TabbedPane
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		masterPanel.add(tabbedPane);
+		tabbedPane.addTab("Veicoli", null, vehiclesPanel, null);
+		tabbedPane.addTab("Merci", null, goodsPanel, null);
 
-		// JButtons: available or not vehicle
-		btnMD_plus = new JButton();
-		btnMD_plus.setToolTipText("Rendi disponibile il mezzo selezionato");
-		btnMD_plus.setIcon(new ImageIcon(ShipperAgentGUI.class.getResource("/images/arrow-green-down.png")));
-		arrowPanel.add(btnMD_plus);
-		btnMD_plus.setActionCommand("+disponibili");
-		btnMD_plus.addActionListener(this);
 
-		btnMD_meno = new JButton();
-		btnMD_meno.setToolTipText("Rendi indisponibile il mezzo selezionato");
-		btnMD_meno.setIcon(new ImageIcon(ShipperAgentGUI.class.getResource("/images/arrow-red-up.png")));
-		arrowPanel.add(btnMD_meno);
-		btnMD_meno.setActionCommand("-disponibili");
-		btnMD_meno.addActionListener(this);
-
-		
-		// Availables Panel
-		JPanel availablesPanel = new JPanel();
-		availablesPanel.setLayout(new BoxLayout(availablesPanel, BoxLayout.Y_AXIS));
-		masterPanel.add(availablesPanel);
-		
-		JPanel pnlHeaderAvailablesPanel = new JPanel();
-		FlowLayout fl_pnlHeaderAvailablesPanel = (FlowLayout) pnlHeaderAvailablesPanel.getLayout();
-		fl_pnlHeaderAvailablesPanel.setAlignment(FlowLayout.LEFT);
-		availablesPanel.add(pnlHeaderAvailablesPanel);
-		JLabel label_1 = new JLabel("Disponibili:");
-		pnlHeaderAvailablesPanel.add(label_1);
-		label_1.setHorizontalAlignment(SwingConstants.LEFT);
-
-		// Available Table
-		availablesTable = new VehicleTable(availablesModel);
-		JScrollPane availablesScrollPane = new JScrollPane(availablesTable);
-		availablesPanel.add(availablesScrollPane);
-		
-		
 		// Communication Panel
 		JPanel communicationPanel = new JPanel();
-		communicationPanel.setLayout(new BoxLayout(communicationPanel, BoxLayout.Y_AXIS));
 		masterPanel.add(communicationPanel);
-		
+		communicationPanel.setLayout(new BoxLayout(communicationPanel, BoxLayout.Y_AXIS));
+
 		JPanel pnlHeaderCommunicationPanel = new JPanel();
 		FlowLayout fl_pnlHeaderCommunicationPanel = (FlowLayout) pnlHeaderCommunicationPanel.getLayout();
 		fl_pnlHeaderCommunicationPanel.setAlignment(FlowLayout.LEFT);
 		communicationPanel.add(pnlHeaderCommunicationPanel);
-		
+
 		JLabel lblComunicazioni = new JLabel("Comunicazioni:");
 		pnlHeaderCommunicationPanel.add(lblComunicazioni);
-		
+
 		communicationTextArea = new JTextArea(5,0);
 		communicationTextArea.setLineWrap(true);
 		((DefaultCaret)communicationTextArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		JScrollPane scrollPane = new JScrollPane(communicationTextArea);
 		communicationPanel.add(scrollPane);
-		
-		
+
+
 		// Search Panel
 		JPanel searchPanel = new JPanel();
 		masterPanel.add(searchPanel);
@@ -200,11 +279,10 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		btnSearch.setActionCommand("search");
 		btnSearch.addActionListener(this);
 		searchPanel.add(btnSearch);
-		
-		
+
 		// End of graphics init
 		///////////////////////////////////
-		
+
 		
 		/////////////////////////////////////////////////////
 		// Contatto con l'agente
@@ -332,18 +410,17 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 	}
 	
 	
-	
 	///////////////////////////////////////////////////////////////////////
 	// Methods
 	///////////////////////////////////////////////////////////////////////
 	
 	
 	public void showGui() {
-		pack();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int centerX = (int) screenSize.getWidth() / 2;
 		int centerY = (int) screenSize.getHeight() / 2;
 		setLocation(centerX - getWidth() / 2, centerY - getHeight() / 2);
+		pack();
 		super.setVisible(true);
 	}
 	
@@ -384,7 +461,10 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		} break;
 		
 		case "search": {
-			shipperAgent.searchJob();
+			if (availablesModel.getRowCount()>0)
+				shipperAgent.searchJob();
+			else
+				shipperAgent.myGUI.insertInfo("Nessun veicolo disponibile!");
 		} break;
 
 		default:
@@ -411,11 +491,26 @@ public class ShipperAgentGUI extends JFrame implements ActionListener {
 		coordinator.notifyAndDeleteRow(row);
 	}
 	
+	///////////////////////////////////////
+	// Add goods methods
+	/*public void addGoods(Goods g) {
+		goodsModel.addRow(g);
+	}*/
+	
+	public void addGoods(List<Goods> g) {
+		/*for (Goods goods : g) {
+			Prenotazione p = new Prenotazione(v, goods);
+			goodsModel.addRow(p);
+		}*/
+		goodsModel.addRows(g);
+	}
 	
 	public void insertInfo(String info){
 		communicationTextArea.append(info+"\n");
 		System.out.println("Agent "+shipperAgent.getLocalName()+": "+info);
 	}  
+	
+	
 	
 	///////////////////////////////////////
 	// INNER CLASS
