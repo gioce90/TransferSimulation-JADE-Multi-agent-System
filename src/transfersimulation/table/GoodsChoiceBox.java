@@ -6,28 +6,27 @@ import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JPanel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
-import javax.swing.JButton;
 
 import transfersimulation.model.goods.Goods;
 import transfersimulation.protocols.SearchJobInitiator.HandleProposes.HandleSinglePropose;
-
-import java.awt.Dimension;
-import java.awt.BorderLayout;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 
 public class GoodsChoiceBox extends JFrame  {

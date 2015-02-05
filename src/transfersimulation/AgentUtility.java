@@ -5,7 +5,7 @@ import java.util.Iterator;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 
-public class AgentUtility {
+public class AgentUtility{
 	
 	protected static void aclToString(ACLMessage msg, String nome){
 		
@@ -54,4 +54,7 @@ public class AgentUtility {
 		
 		aclToString(m, "accept");
 	}
+	
+	
+	
 }

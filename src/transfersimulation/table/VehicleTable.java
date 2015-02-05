@@ -1,6 +1,7 @@
 package transfersimulation.table;
 
 import java.awt.Dimension;
+import java.io.Serializable;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
@@ -13,7 +14,7 @@ import transfersimulation.table.VehicleTableModel.COLUMNS;
 
 
 @SuppressWarnings("serial")
-public class VehicleTable extends JTable {
+public class VehicleTable extends JTable implements Serializable {
 	
 	public VehicleTable(VehicleTableModel vehicleModel) {
 		super(vehicleModel); 

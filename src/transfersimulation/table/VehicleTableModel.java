@@ -1,15 +1,24 @@
 package transfersimulation.table;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.table.AbstractTableModel;
 
-import transfersimulation.model.vehicle.*;
+import transfersimulation.model.vehicle.Car;
+import transfersimulation.model.vehicle.RoadTractor;
+import transfersimulation.model.vehicle.SemiTrailer;
+import transfersimulation.model.vehicle.SemiTrailerTruck;
+import transfersimulation.model.vehicle.Trailer;
+import transfersimulation.model.vehicle.TrailerTruck;
+import transfersimulation.model.vehicle.Truck;
+import transfersimulation.model.vehicle.Van;
+import transfersimulation.model.vehicle.Vehicle;
 import transfersimulation.model.vehicle.Vehicle.Stato;
 
-public class VehicleTableModel extends AbstractTableModel {
+public class VehicleTableModel extends AbstractTableModel implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	private ArrayList<Vehicle> vehicles;

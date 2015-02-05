@@ -1,5 +1,7 @@
 package transfersimulation;
 
+import jade.util.leap.Serializable;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -42,7 +44,7 @@ import java.util.List;
 
 
 @SuppressWarnings("serial")
-public class ShipperAgentGUI extends JFrame implements ActionListener {
+public class ShipperAgentGUI extends JFrame implements ActionListener,Serializable {
 
 	// Variabili di classe
 	private JButton btnPM_plus;

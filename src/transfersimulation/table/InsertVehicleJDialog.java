@@ -4,24 +4,30 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
 import javax.swing.JTextField;
-import javax.swing.DefaultComboBoxModel;
+import javax.swing.border.EmptyBorder;
 
 import transfersimulation.ShipperAgentGUI;
 import transfersimulation.ShipperAgentGUI.Coordinator;
-import transfersimulation.model.vehicle.*;
+import transfersimulation.model.vehicle.Car;
+import transfersimulation.model.vehicle.RoadTractor;
+import transfersimulation.model.vehicle.SemiTrailer;
+import transfersimulation.model.vehicle.Trailer;
+import transfersimulation.model.vehicle.Truck;
+import transfersimulation.model.vehicle.Van;
+import transfersimulation.model.vehicle.Vehicle;
 import transfersimulation.model.vehicle.Vehicle.Stato;
 
 public class InsertVehicleJDialog extends JDialog {

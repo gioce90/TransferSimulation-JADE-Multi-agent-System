@@ -9,7 +9,7 @@ public class Start {
 	
 	public static void main(String args[]) throws InterruptedException, StaleProxyException {
 		// Get a hold on JADE runtime
-		Runtime runTime = Runtime.instance();
+		final Runtime runTime = Runtime.instance();
 		
 		// Exit the JVM when there are no more containers around
 		runTime.setCloseVM(true);
@@ -35,14 +35,15 @@ public class Start {
 		introspector.start();
 		Thread.sleep(500);
 		
+		/////////////////////////////////////////
 		// Prepare for create and fire new agents:
-		Profile anotherProfile;
-		AgentContainer anotherContainer;
-		AgentController agent;
 		
 		/* 	Create a new profile and a new non-main container, connecting to the
 			default main container (i.e. on this host, port 1099)
 			NB. Two containers CAN'T share the same Profile object: create a new one. */
+		Profile anotherProfile;
+		AgentContainer anotherContainer;
+		AgentController agent;
 		
 		anotherProfile = new ProfileImpl(false);
 		anotherContainer = runTime.createAgentContainer(anotherProfile);
@@ -65,16 +66,26 @@ public class Start {
 		agent.start();
 		Thread.sleep(900);
 		
+		anotherProfile = new ProfileImpl(false);
+		anotherContainer = runTime.createAgentContainer(anotherProfile);
+		System.out.println("Starting up a ShipperAgent...");
+		agent = anotherContainer.acceptNewAgent("ShipperAgent2", new ShipperAgent());
+		agent.start();
+		Thread.sleep(900);
+		
+		/*
 		// Indica le operazioni di termiazione TODO
 		runTime.invokeOnTermination(new Runnable() {
 			public void run() {
-				//runTime.instance().shutDown();
+				runTime.shutDown();
 			}
 		});
-		
+		*/
 		
 		return;
 	}
+	
+	
 }
 			// Kill the BuyerAgent1
 			//System.out.println("Killing BuyerAgent...");
