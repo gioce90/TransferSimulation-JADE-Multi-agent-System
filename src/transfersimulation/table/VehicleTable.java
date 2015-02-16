@@ -36,7 +36,7 @@ public class VehicleTable extends JTable implements Serializable {
 		flag = vehicleModel.findColumn(COLUMNS.IMAGE_COLUMN);
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
-			column.setMinWidth(70);
+			column.setMinWidth(45);
 			column.setMaxWidth(75);
 		}
 		
@@ -44,7 +44,7 @@ public class VehicleTable extends JTable implements Serializable {
 		flag = vehicleModel.findColumn(COLUMNS.TARGA_COLUMN);
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
-			column.setMinWidth(80);
+			column.setMinWidth(50);
 			column.setMaxWidth(115);
 		}
 		
@@ -52,7 +52,7 @@ public class VehicleTable extends JTable implements Serializable {
 		flag = vehicleModel.findColumn(COLUMNS.TYPE_COLUMN);
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
-			column.setMinWidth(90);
+			column.setMinWidth(60);
 			column.setMaxWidth(100);
 		}
 		
@@ -60,7 +60,7 @@ public class VehicleTable extends JTable implements Serializable {
 		flag = vehicleModel.findColumn(COLUMNS.MARK_COLUMN);
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
-			column.setMinWidth(70);
+			column.setMinWidth(50);
 			column.setMaxWidth(115);
 		}
 		
@@ -68,7 +68,7 @@ public class VehicleTable extends JTable implements Serializable {
 		flag = vehicleModel.findColumn(COLUMNS.SETTINGUP_COLUMN);
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
-			column.setMinWidth(80);
+			column.setMinWidth(60);
 			//column.setMaxWidth(100);
 		}
 		
@@ -78,7 +78,7 @@ public class VehicleTable extends JTable implements Serializable {
 			column = this.getColumnModel().getColumn(flag);
 			column.setCellEditor(new DefaultCellEditor(
 					new JComboBox<Stato>(Stato.values())));
-			column.setMinWidth(128);
+			column.setMinWidth(70);
 			column.setMaxWidth(128);
 		}
 		
@@ -86,7 +86,7 @@ public class VehicleTable extends JTable implements Serializable {
 		flag = vehicleModel.findColumn(COLUMNS.PTT_COLUMN);
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
-			column.setMinWidth(55);
+			column.setMinWidth(40);
 			column.setMaxWidth(55);
 		}
 		
@@ -94,7 +94,7 @@ public class VehicleTable extends JTable implements Serializable {
 		flag = vehicleModel.findColumn(COLUMNS.LOCATION_COLUMN);
 		if (flag!=-1){
 			column = this.getColumnModel().getColumn(flag);
-			column.setMinWidth(100);
+			column.setMinWidth(60);
 			//column.setMaxWidth(140);
 		}
 		
