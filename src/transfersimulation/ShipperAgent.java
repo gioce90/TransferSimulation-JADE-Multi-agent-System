@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
 
+import test.common.TestException;
 import transfersimulation.model.vehicle.*;
 import transfersimulation.model.vehicle.Vehicle.Stato;
 import transfersimulation.protocols.SearchJobInitiator;
@@ -136,6 +137,18 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		
 		// Pubblica sulle Pagine Gialle il proprio servizio
 		publishService();
+		
+		/*
+		MyTest m = new MyTest();
+		try {
+			Thread.sleep(9000);
+			System.out.println("GNEE");
+			m.load(this);
+		} catch (TestException | InterruptedException e) {
+			e.printStackTrace();
+		}
+		*/
+		
 	}
 	
 	

@@ -1,11 +1,19 @@
-package transfersimulation;
+package StartAgents;
 
+import test.common.Test;
+import test.common.TestException;
+import transfersimulation.ShipperAgent;
+import transfersimulation.protocols.SearchJobInitiator;
+import jade.core.Agent;
 import jade.core.Runtime;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
+import jade.core.behaviours.Behaviour;
+import jade.core.behaviours.OneShotBehaviour;
+import jade.lang.acl.ACLMessage;
 import jade.wrapper.*;
 
-public class Start {
+public class StartAll {
 	
 	public static void main(String args[]) throws InterruptedException, StaleProxyException {
 		// Get a hold on JADE runtime
@@ -19,21 +27,21 @@ public class Start {
 		AgentContainer mainContainer = runTime.createMainContainer(mainProfile);
 		AgentController rma = mainContainer.createNewAgent("rma", "jade.tools.rma.rma", null);
 		rma.start();
-		Thread.sleep(500);
+		Thread.sleep(900);
 		
 		// Creo uno Sniffer
 		AgentController sniffer = mainContainer.createNewAgent(
 				"mySniffer", "jade.tools.sniffer.Sniffer",
 				new Object[]{"BuyerAgent1;BuyerAgent2;ShipperAgent1;ShipperAgent2"});
 		sniffer.start();
-		Thread.sleep(500);
+		Thread.sleep(900);
 		
 		// Creo un Introspector
 		AgentController introspector = mainContainer.createNewAgent(
 				"myIntrospector", "jade.tools.introspector.Introspector",
 				null);
 		introspector.start();
-		Thread.sleep(500);
+		Thread.sleep(900);
 		
 		/////////////////////////////////////////
 		// Prepare for create and fire new agents:
@@ -74,6 +82,17 @@ public class Start {
 		Thread.sleep(900);
 		
 		/*
+		 * TEST:
+		anotherProfile = new ProfileImpl(false);
+		anotherContainer = runTime.createAgentContainer(anotherProfile);
+		System.out.println("Starting up a Test Suite...");
+		agent = anotherContainer.createNewAgent("TSA", "test.common.testSuite.TestSuiteAgent", new Object[0]);
+		agent.start();
+		Thread.sleep(500);
+		*/
+		
+		
+		/*
 		// Indica le operazioni di termiazione TODO
 		runTime.invokeOnTermination(new Runnable() {
 			public void run() {
@@ -87,6 +106,8 @@ public class Start {
 	
 	
 }
+
+
 			// Kill the BuyerAgent1
 			//System.out.println("Killing BuyerAgent...");
 			//buyer1.kill();

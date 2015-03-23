@@ -101,11 +101,12 @@ public class BuyerAgentGUI extends JFrame {
 		setTitle("Buyer agent: "+buyerAgent.getLocalName());
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
+		//LookAndFeel oldLaF = UIManager.getLookAndFeel();
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 			//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException
-			   | IllegalAccessException | UnsupportedLookAndFeelException e) {
+				| IllegalAccessException | UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
 		
@@ -217,11 +218,8 @@ public class BuyerAgentGUI extends JFrame {
 	
 	
 	public void showGui() {
+		setLocationRelativeTo(null);
 		pack();
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int centerX = (int) screenSize.getWidth() / 2;
-		int centerY = (int) screenSize.getHeight() / 2;
-		setLocation(centerX - getWidth() / 2, centerY - getHeight() / 2);
 		super.setVisible(true);
 	}
 	
