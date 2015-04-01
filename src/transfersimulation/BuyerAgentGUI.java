@@ -28,10 +28,11 @@ import java.awt.Toolkit;
 import java.awt.ComponentOrientation;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.io.Serializable;
 import java.sql.Date;
 import java.util.ArrayList;
 
-public class BuyerAgentGUI extends JFrame {
+public class BuyerAgentGUI extends JFrame implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	// Variabili di classe
@@ -225,7 +226,8 @@ public class BuyerAgentGUI extends JFrame {
 	
 	// on dispose, delete the agent
 	public void dispose() {
-		super.dispose();
+		if (isActive())
+			super.dispose();
 		buyerAgent.doDelete();
 	}
 	
@@ -233,7 +235,7 @@ public class BuyerAgentGUI extends JFrame {
 	///////////////
 	// INNER CLASS
 	
-	private class InsertGoodsJDialog extends JDialog {
+	private class InsertGoodsJDialog extends JDialog implements Serializable {
 		
 		private static final long serialVersionUID = 1L;
 		private JPanel contentPanel = new JPanel();

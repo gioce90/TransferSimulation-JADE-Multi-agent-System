@@ -44,7 +44,7 @@ import java.util.List;
 
 
 @SuppressWarnings("serial")
-public class ShipperAgentGUI extends JFrame implements ActionListener,Serializable {
+public class ShipperAgentGUI extends JFrame implements ActionListener, Serializable {
 
 	// Variabili di classe
 	private JButton btnPM_plus;
@@ -429,8 +429,9 @@ public class ShipperAgentGUI extends JFrame implements ActionListener,Serializab
 		
 	// on dispose, delete the agent
 	public void dispose() {
-		super.dispose();
-		shipperAgent.doDelete(); 
+		if (isActive())
+			super.dispose();
+		shipperAgent.doDelete();
 	}
 	
 	//////////////////////////////////////////////
@@ -518,7 +519,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener,Serializab
 	// INNER CLASS
 	///////////////////////////////////////
 	
-	public abstract class Coordinator {
+	public abstract class Coordinator implements Serializable {
 		private VehicleTableModel tableModel;
 
 		public Coordinator(VehicleTableModel tm) {

@@ -26,7 +26,7 @@ public class VehicleTableModel extends AbstractTableModel implements Serializabl
 	
 	
 	// possible column names:
-	public enum COLUMNS {
+	public enum COLUMNS implements Serializable {
 		IMAGE_COLUMN,
 		TARGA_COLUMN,
 		TYPE_COLUMN,

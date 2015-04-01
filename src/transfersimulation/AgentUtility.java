@@ -1,12 +1,16 @@
 package transfersimulation;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 
-public class AgentUtility{
+public class AgentUtility implements Serializable{
 	
+	private static final long serialVersionUID = 1L;
+
+
 	protected static void aclToString(ACLMessage msg, String nome){
 		
 		String sender = "n/d";

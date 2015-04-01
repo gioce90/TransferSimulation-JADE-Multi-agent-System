@@ -1,6 +1,7 @@
 package transfersimulation.model.vehicle;
 
-interface DrivingPart {
+public interface DrivingPart {
 	String getPlate();
+	String getAllestimento();
 	
 }

@@ -1,5 +1,6 @@
 package transfersimulation.table;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +24,7 @@ import javax.swing.table.AbstractTableModel;
  * 
  * @param <T> The data object's class handled by this TableModel.
  */
-public abstract class DataObjectTableModel<T> extends AbstractTableModel {
+public abstract class DataObjectTableModel<T> extends AbstractTableModel implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private final List<String> columnNames;

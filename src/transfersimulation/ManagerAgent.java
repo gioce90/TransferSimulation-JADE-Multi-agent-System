@@ -14,9 +14,6 @@ public class ManagerAgent extends Agent {
 	
 	StartSystem system;
 	
-	public ManagerAgent() {
-		//system=(StartSystem) getArguments()[0];
-	}
 	
 	@Override
 	protected void setup() {

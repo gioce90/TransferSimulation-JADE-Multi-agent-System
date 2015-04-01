@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
 
-import test.common.TestException;
+import XmlParser.ShipperXmlParser;
 import transfersimulation.model.vehicle.*;
 import transfersimulation.model.vehicle.Vehicle.Stato;
 import transfersimulation.protocols.SearchJobInitiator;
@@ -19,7 +19,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
 
-public class ShipperAgent extends Agent implements ShipperInterface {
+public class ShipperAgent extends Agent implements ShipperInterface, Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	public ShipperAgentGUI myGUI;
@@ -28,8 +28,11 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 	@Override
 	protected void setup() {
 		
-		// TODO: li dovrà prendere da un database
+		// TODO: li dovrà prendere da file xml
+		ShipperXmlParser shipperParser = new ShipperXmlParser(getAID().getLocalName());
+		vehicles = shipperParser.getVehicles();
 		
+		/*
 		Vehicle c1 = new Car("AAA1");
 		c1.setMark("Peugeot");
 		c1.setModel("206");
@@ -59,7 +62,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		c4.setStato(Stato.DISPONIBILE);
 		c4.setAllestimento("Cisterna");
 		c4.setLocazioneAttuale("Foggia");
-		
+		*/
 		/*
 		Vehicle c5 = new SemiTrailerTruck("AAA5");
 		c5.setMark("DAF");
@@ -82,6 +85,8 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		
 		////////////////////////////////////////////////
 		// Autotreno: car + trailer/
+		
+		/* ok
 			Vehicle t1 = new Trailer("TTT1");
 			t1.setMark("Menci");
 			t1.setModel("yyy");
@@ -97,8 +102,10 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 			tt1.setStato(Stato.DISPONIBILE);
 			tt1.setLocazioneAttuale("Bari");
 			
+		*/
 		////////////////////////////////////////////////
 		// Autotreno: van + trailer/
+		/* ok
 			Vehicle tt2 = new TrailerTruck((Van) c2, (Trailer) t1);
 			tt2.setMark("Scania");
 			tt2.setModel("yyy");
@@ -124,7 +131,7 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 		//vehicles.add(tt1);
 		//vehicles.add(tt2);
 		vehicles.add(tt3);
-		
+		*/
 		
 		///////////////////////////////////////////////////
 		
@@ -187,12 +194,14 @@ public class ShipperAgent extends Agent implements ShipperInterface {
 			fe.printStackTrace();
 		}
 		
-		// Close the GUI
-		myGUI.dispose();
-		
 		// Printout a dismissal message
 		myGUI.insertInfo("Shipper Agent "+getAID().getName()+" terminato.");
+
+		// Close the GUI
+		myGUI.dispose();
 	}
+	
+	
 	
 	
 	///////////////////////////////////////////

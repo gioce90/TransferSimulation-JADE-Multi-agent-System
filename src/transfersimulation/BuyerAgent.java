@@ -1,5 +1,6 @@
 package transfersimulation;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.util.Vector;
 
@@ -18,7 +19,7 @@ import jade.lang.acl.MessageTemplate;
 import jade.proto.SSResponderDispatcher;
  
 
-public class BuyerAgent extends Agent implements BuyerInterface {
+public class BuyerAgent extends Agent implements BuyerInterface, Serializable {
 	private static final long serialVersionUID = 3399019455702807074L;
 	
 	public BuyerAgentGUI myGUI;
@@ -175,10 +176,11 @@ public class BuyerAgent extends Agent implements BuyerInterface {
 			fe.printStackTrace();
 		}
 		
-		myGUI.dispose();// Close the GUI
-		
 		// Printout a dismissal message:
 		myGUI.insertInfo("Buyer Agent "+getAID().getName()+" terminato.");
+		
+		myGUI.dispose();// Close the GUI
+		
 	}
 	
 	

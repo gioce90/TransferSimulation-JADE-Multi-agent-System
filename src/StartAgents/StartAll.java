@@ -1,7 +1,5 @@
 package StartAgents;
 
-import test.common.Test;
-import test.common.TestException;
 import transfersimulation.ShipperAgent;
 import transfersimulation.protocols.SearchJobInitiator;
 import jade.core.Agent;

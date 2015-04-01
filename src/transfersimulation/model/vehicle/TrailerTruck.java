@@ -1,7 +1,7 @@
 package transfersimulation.model.vehicle;
 
 public class TrailerTruck extends Vehicle {
-
+	
 	// TRAILER TRUCK: autocarro
 	
 	// DrivingPart: Car, Van, Truck
@@ -10,11 +10,27 @@ public class TrailerTruck extends Vehicle {
 	String plateFront;
 	String plateTrailer;
 	
-	public TrailerTruck(DrivingPart frontVehicle, Trailer trailerVehicle) {
-		plateFront=frontVehicle.getPlate();
+	DrivingPart drivingVehicle;
+	Trailer trailerVehicle;
+	
+	public TrailerTruck(DrivingPart drivingVehicle, Trailer trailerVehicle) {
+		plateFront=drivingVehicle.getPlate();
 		plateTrailer=trailerVehicle.getPlate();
 		setPlate(plateFront+" - "+plateTrailer);
+		
+		this.drivingVehicle=drivingVehicle;
+		this.trailerVehicle=trailerVehicle;
 	}
 	
+	@Override
+	public String getAllestimento() {
+		return drivingVehicle.getAllestimento()
+				+", "+trailerVehicle.getAllestimento();
+	}
+	
+	@Override
+	public float getCarryingCapacity() {
+		return trailerVehicle.getCarryingCapacity();
+	}
 	
 }

@@ -6,25 +6,31 @@ import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.util.leap.Properties;
 import jade.wrapper.*;
+import jade.wrapper.PlatformController.Listener;
 
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 
 
@@ -38,9 +44,13 @@ public class StartSystem extends JFrame {
 	
 	private Runtime runTime;
 	private Profile mainProfile;
-	private AgentContainer mainContainer; // l'interfaccia ContainerController è nuova, ma AgentConbtainer gestisce meglio le eccezioni
+	private ContainerController mainContainer; // l'interfaccia ContainerController è nuova, ma AgentConbtainer gestisce meglio le eccezioni
+	private	PlatformController platform;
+	
+	Properties props = new Properties();
 	
 	
+	// CONSTRUCTOR
 	public StartSystem() {
 		
 		setTitle("TransferSimulation 1.0");
@@ -54,7 +64,6 @@ public class StartSystem extends JFrame {
 			e.printStackTrace();
 		}
 		
-		
 		////////////////////////////////////
 		
 		GridBagLayout gbl_centerPanel = new GridBagLayout();
@@ -62,9 +71,6 @@ public class StartSystem extends JFrame {
 		gbl_centerPanel.columnWeights = new double[]{1.0};
 		JPanel centerPanel = new JPanel(new GridBagLayout());
 		getContentPane().add(centerPanel);
-		
-		////////////////////////////////////
-		
 		
 		// centerPanel
 		JPanel btnPanel = new JPanel();
@@ -74,7 +80,7 @@ public class StartSystem extends JFrame {
 		centerPanel.add(btnPanel, gbc);
 		
 		{
-			JButton shipperBtn = new JButton("Shipper");
+			final JButton shipperBtn = new JButton("Shipper");
 			agentBtnGroup.add(shipperBtn);
 			shipperBtn.setToolTipText("Avvia un agente Shipper, per le aziende di trasporto");
 			shipperBtn.setIcon(new ImageIcon(StartSystem.class.getResource("/images/truck-green-icon.png")));
@@ -82,11 +88,12 @@ public class StartSystem extends JFrame {
 			shipperBtn.setHorizontalTextPosition(SwingConstants.CENTER);
 			shipperBtn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					startShipperAgent();
+					ChooseAgentName c = new ChooseAgentName(shipperBtn, "Shipper", "Shipper1");
+					c.setVisible(true);
 				}
 			});
 			
-			JButton buyerBtn = new JButton("Buyer");
+			final JButton buyerBtn = new JButton("Buyer");
 			agentBtnGroup.add(buyerBtn);
 			buyerBtn.setToolTipText("Avvia un agente buyer, per le aziende che hanno merci");
 			buyerBtn.setIcon(new ImageIcon(StartSystem.class.getResource("/images/boxes-brown-icon.png")));
@@ -94,7 +101,8 @@ public class StartSystem extends JFrame {
 			buyerBtn.setHorizontalTextPosition(SwingConstants.CENTER);
 			buyerBtn.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					startBuyerAgent();
+					ChooseAgentName c = new ChooseAgentName(buyerBtn, "Buyer", "Buyer1");
+					c.setVisible(true);
 				}
 			});
 			
@@ -117,8 +125,6 @@ public class StartSystem extends JFrame {
 			platformPanel.add(lblSystemJade);
 			lblOnoff.setOpaque(true);
 			platformPanel.add(lblOnoff);
-			
-			startPlatform();
 		}
 		
 		///////////////////////////////////////
@@ -169,7 +175,10 @@ public class StartSystem extends JFrame {
 			JButton btnOnline = new JButton("Avvia piattaforma");
 			btnOnline.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					startPlatform();
+					if(!isPlatformActivated())
+						startPlatform();
+					else
+						showNews("Piattaforma già online");
 				}
 			});
 			anotherPanel.add(btnOnline);
@@ -186,7 +195,6 @@ public class StartSystem extends JFrame {
 
 		///////////////////////////////////////
 		
-		
 		JPanel newsPanel = new JPanel();
 		gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.BOTH;
@@ -196,104 +204,133 @@ public class StartSystem extends JFrame {
 
 		newsPanel.add(newsLabel);
 		
-		
 		//////////////////////////////////////
 		
 		pack();
 		setLocationRelativeTo(null);
-		
+		startPlatform();
 	}
 	
 	
-	
-	// TODO to modify in future
+	// TODO 
 	private void startPlatform() {
 		runTime = Runtime.instance(); 	// Get a hold on JADE runtime
-		//runTime.setCloseVM(true); 		// Exit the JVM when there are no more containers around
 		
 		if (!isPlatformActivated()){
 			mainProfile = new ProfileImpl(true);
 			mainContainer = runTime.createMainContainer(mainProfile);
-			
-			showNews("Accensione piattaforma...");
-			
-			lblOnoff.setText("Online");
-			lblOnoff.setFont(new Font(null, Font.BOLD, 11));
-			lblOnoff.setForeground(Color.GREEN);
-			lblOnoff.setBackground(Color.BLACK);
-			
-			/* //ManagerAgent manager = new ManagerAgent(this);
-			try {
-				Object[] args = {this};
-				Profile anotherProfile = new ProfileImpl(false);
-				AgentContainer anotherContainer =  Runtime.instance().createAgentContainer(anotherProfile);
-				AgentController a = anotherContainer.createNewAgent("mmanager", "transfersimulation.ManagerAgent", args);
-				a.start();
-			} catch (StaleProxyException e1) {
-				e1.printStackTrace();
-			}
-			*/
+			showNews("Accensione piattaforma");
 		} else {
 			showNews("Piattaforma già online");
+			mainProfile = new ProfileImpl();
+			mainProfile.setParameter(Profile.DETECT_MAIN, "true");
+			mainProfile.setParameter(Profile.PLATFORM_ID, "*");
+	        mainContainer = runTime.createAgentContainer(mainProfile);
 		}
 		
+		lblOnoff.setText("Online");
+		lblOnoff.setFont(new Font(null, Font.BOLD, 11));
+		lblOnoff.setForeground(Color.GREEN);
+		lblOnoff.setBackground(Color.BLACK);
+		
+		// TODO
+		try {
+			platform = mainContainer.getPlatformController();
+			platform.addPlatformListener(new Listener() {
+				
+				@Override
+				public void suspendedPlatform(PlatformEvent anEvent) {	}
+				
+				@Override
+				public void startedPlatform(PlatformEvent anEvent) {System.out.println("eeeeee");}
+				
+				@Override
+				public void resumedPlatform(PlatformEvent anEvent) {}
+				
+				@Override
+				public void killedPlatform(PlatformEvent anEvent) {
+					System.out.println("oooooohhhh");
+				}
+				
+				@Override
+				public void deadAgent(PlatformEvent anEvent) {}
+				
+				@Override
+				public void bornAgent(PlatformEvent anEvent) {}
+			});
+			
+			
+		} catch (ControllerException e) {}
 	}
+	
 	
 	private void stopPlatform() {
 		if (isPlatformActivated()){
-			try {
-				mainContainer.kill();
-
-				showNews("Spegnimento piattaforma...");
-				
-				lblOnoff.setText("Offline");
-				lblOnoff.setFont(new Font(null, Font.BOLD, 11));
-				lblOnoff.setBackground(Color.BLACK);
-				lblOnoff.setForeground(Color.RED);
-				
-			} catch (StaleProxyException e) {
-				showNews("Piattaforma già offline");
-			}
+			showNews("Spegnimento piattaforma");
+			Thread t = new Thread(new Runnable() {
+				public void run() {
+					try {
+						platform.kill();
+					} catch (ControllerException e) {
+						showNews("Piattaforma già offline!");
+					}
+				}
+			});
+			t.start();
 		} else {
 			showNews("Piattaforma già offline");
 		}
+		lblOnoff.setText("Offline");
+		lblOnoff.setFont(new Font(null, Font.BOLD, 11));
+		lblOnoff.setBackground(Color.BLACK);
+		lblOnoff.setForeground(Color.RED);
 	}
 	
 	
-	Properties props = new Properties();
 	private boolean isPlatformActivated() {
-		// mainProfile.getBootProperties() // TODO verificare con questo
+		// mainProfile.getBootProperties() // verificare con questo
 		//props.setProperty(Profile.MAIN, "false");
 		return MainContainerChecker.check(props);
 	}
 	
 	
 	private void showNews(final String news){
-		newsLabel.setText(news);
-		Timer t = new Timer(5000, taskPerformer);
-		t.setInitialDelay(2000);
-		t.setRepeats(false);
-		t.start();
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				newsLabel.setText(news);
+				
+				final Timer t = new Timer(300, new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						newsLabel.setText(" "+newsLabel.getText()+".");
+					}
+				});
+				t.setDelay(1500);
+				t.start();
+				
+				Timer t2 = new Timer(4000, new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						t.stop();
+						newsLabel.setText(" ");
+					}
+				});
+				t2.setRepeats(false);
+				t2.start();
+			}
+		});
 	}
 	
 	
-	private ActionListener taskPerformer = new ActionListener(){		
-		public void actionPerformed(ActionEvent evt){
-			newsLabel.setText(" ");
-		}
-	};
-	
-	
-	private void startTool(String agentName){
+	private void startTool(String agentType){
 		
 		if (isPlatformActivated()){
 			
-			String name = "";
-			String location = "";
+			String name="",location="",exception="";
 			Object[] args = null;
-			String exception = "";
 			
-			switch (agentName) {
+			switch (agentType) {
 				case "rma":	
 					name = "RMA";
 					location = "jade.tools.rma.rma";
@@ -302,7 +339,7 @@ public class StartSystem extends JFrame {
 				case "sniffer":
 					name = "mySniffer";
 					location = "jade.tools.sniffer.Sniffer";
-					args = new Object[]{"BuyerAgent1;BuyerAgent2;ShipperAgent1;ShipperAgent2"};
+					args = new Object[]{"Buyer*;Shipper*"};
 					exception = "Sniffer già attivo";
 					break;
 				case "introspector":
@@ -325,60 +362,139 @@ public class StartSystem extends JFrame {
 	}
 	
 	
-	
-	
-	
-	private void startBuyerAgent() {
-		Profile anotherProfile = new ProfileImpl(false);
-		AgentContainer anotherContainer =  runTime.createAgentContainer(anotherProfile);
-		
-		if (isPlatformActivated()){
-			try {
-				AgentController agent = anotherContainer.createNewAgent(
-						"BuyerAgent1", "transfersimulation.BuyerAgent", new Object[0]);
-				System.out.println("Starting up a BuyerAgent...");
-				agent.start();
-			} catch (StaleProxyException e) {
-				showNews("Buyer già attivo");  // TODO e se ne voglio di più?
+	private void startAgent(final String typeAgent, final String nameAgent) {
+		// TODO Forse non c'è bisogno di nuovi Thread
+		Thread agentThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if (isPlatformActivated()){
+					Profile anotherProfile = new ProfileImpl(false);
+					ContainerController anotherContainer = runTime.createAgentContainer(anotherProfile);
+					String location="";
+					
+					switch (typeAgent){
+						case "Shipper":
+							location = "transfersimulation.ShipperAgent";
+							break;
+						case "Buyer":
+							location = "transfersimulation.BuyerAgent";
+							break;
+					}
+					
+					try {
+						AgentController agent =	anotherContainer.createNewAgent(
+								nameAgent, location, new Object[0]);
+						agent.start();
+					} catch (StaleProxyException e) {
+						showNews("Nome occupato: sceglierne un altro");
+						try {
+							anotherContainer.kill();
+						} catch (StaleProxyException e1) {
+							e1.printStackTrace();
+						}
+					}
+					
+				} else {
+					showNews("La piattaforma non è attiva");
+				}
 			}
-		} else {
-			showNews("La piattaforma non è attiva");
-		}
+		});
+		agentThread.start();
 	}
 	
 	
-	private void startShipperAgent() {
-		Profile anotherProfile = new ProfileImpl(false);
-		AgentContainer anotherContainer =  runTime.createAgentContainer(anotherProfile);
-		
-		if (isPlatformActivated()){
-			try {
-				AgentController agent =	anotherContainer.createNewAgent(
-						"ShipperAgent1", "transfersimulation.ShipperAgent", new Object[0]);
-				System.out.println("Starting up a ShipperAgent...");
-				agent.start();
-			} catch (StaleProxyException e) {
-				showNews("Shipper già attivo"); // TODO e se ne voglio di più?
-			}
-		} else {
-			showNews("La piattaforma non è attiva");
+	@Override
+	public void dispose() {
+		super.dispose();
+		try {
+			platform.kill();
+		} catch (ControllerException e) {
+			e.printStackTrace();
 		}
 	}
-	
-	//TODO startAgent(String name, Agent agentType, String property?){ ...
-	
+
 	
 	public static void main(String args[]) throws InterruptedException, StaleProxyException {
 		StartSystem ss = new StartSystem();
 		ss.setVisible(true);
 	}
 
+	
+	
+	
+	private class ChooseAgentName extends JDialog {
+		private static final long serialVersionUID = 1L;
+		private JTextField textField;
+		private JButton jButton;
+		
+		public ChooseAgentName(JButton externalBtn, final String agentType) {
+			jButton = externalBtn;
+			externalBtn.setEnabled(false);
+			
+			setTitle("Start a "+agentType);
+			setAlwaysOnTop(true);
+			setModal(true);
+			setModalityType(ModalityType.DOCUMENT_MODAL);
+			setDefaultCloseOperation(DISPOSE_ON_CLOSE);;
+			
+			getContentPane().setLayout(new FlowLayout());
+			
+			textField = new JTextField();
+			final JButton btnStartAgent = new JButton("Start");
+			btnStartAgent.setEnabled(false);
+			
+			textField.setColumns(20);
+			textField.getDocument().addDocumentListener(new DocumentListener() {
+				public void changedUpdate(DocumentEvent e) 	{changed();}
+				public void removeUpdate(DocumentEvent e) 	{changed();}
+				public void insertUpdate(DocumentEvent e) 	{changed();}
+				
+				public void changed() {
+					if (textField.getText().equals("")){
+						btnStartAgent.setEnabled(false);
+					} else {
+						btnStartAgent.setEnabled(true);
+					}
+
+				}
+			});
+			
+			btnStartAgent.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					startAgent(agentType, getAgentName());
+					dispose();
+				}
+			});
+			
+			getContentPane().add(textField);
+			getContentPane().add(btnStartAgent);
+			
+			pack();
+			setLocationRelativeTo(null);
+		}
+		
+		public ChooseAgentName(JButton externalBtn, final String agentType, String suggestName) {
+			this(externalBtn, agentType);
+			textField.setText(suggestName);
+		}
+		
+		
+		@Override
+		public void dispose() {
+			jButton.setEnabled(true);
+			super.dispose();
+		}
+		
+		
+		private String getAgentName(){
+			return textField.getText();
+		}
+		
+	} // close JDialog
+
+	
 }
-
-
-
-
-
 
 
 

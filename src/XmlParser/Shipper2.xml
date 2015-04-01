@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Fleet shipperName="Shipper1"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="VehicleXMLSchema2.xsd"> 
+
+	<Car id="c1" >
+		<plate>AAA</plate>
+		<mark>Peugeot</mark>
+		<model>206</model>
+		<trim></trim>
+		<allestimento></allestimento>
+		<stato>DISPONIBILE</stato>
+		<carryingCapacity>0.0</carryingCapacity>
+		<ptt>2</ptt>
+		<weight>0.0</weight>
+		<volume>0.0</volume>
+		<length>0.0</length>
+		<height>0.0</height>
+		<width>0.0</width>
+		<locazioneAttuale>Bari</locazioneAttuale>
+	</Car>
+	
+	<Car id="c2">
+		<plate>BBB</plate>
+		<mark>Peugeot</mark>
+		<model>206</model>
+		<trim></trim>
+		<allestimento></allestimento>
+		<stato>DISPONIBILE</stato>
+		<carryingCapacity>0.0</carryingCapacity>
+		<ptt>2</ptt>
+		<weight>0.0</weight>
+		<volume>0.0</volume>
+		<length>0.0</length>
+		<height>0.0</height>
+		<width>0.0</width>
+		<locazioneAttuale>Bari</locazioneAttuale>
+	</Car>
+	
+	<Van id="v1">
+		<plate>CCC</plate>
+		<mark>Volvo</mark>
+		<model></model>
+		<trim></trim>
+		<allestimento>frigorifero</allestimento>
+		<stato>DISPONIBILE</stato>
+		<carryingCapacity>0.0</carryingCapacity>
+		<ptt>3</ptt>
+		<weight>0.0</weight>
+		<volume>0.0</volume>
+		<length>0.0</length>
+		<height>0.0</height>
+		<width>0.0</width>
+		<locazioneAttuale>Barletta</locazioneAttuale>
+	</Van>
+	
+	<Truck id="t1">
+		<plate>DDD</plate>
+		<mark>Scania</mark>
+		<model></model>
+		<trim></trim>
+		<allestimento>Frigo</allestimento>
+		<stato>DISPONIBILE</stato>
+		<carryingCapacity>0.0</carryingCapacity>
+		<ptt>5</ptt>
+		<weight>0.0</weight>
+		<volume>0.0</volume>
+		<length>0.0</length>
+		<height>0.0</height>
+		<width>0.0</width>
+		<locazioneAttuale>Andria</locazioneAttuale>
+	</Truck>
+	
+	<Trailer id="tr1">
+		<plate>EEE</plate>
+		<mark>Scania</mark>
+		<model></model>
+		<trim></trim>
+		<allestimento>Frigo</allestimento>
+		<stato>NON_DISPONIBILE</stato>
+		<carryingCapacity>0.0</carryingCapacity>
+		<ptt>5</ptt>
+		<weight>0.0</weight>
+		<volume>0.0</volume>
+		<length>0.0</length>
+		<height>0.0</height>
+		<width>0.0</width>
+		<locazioneAttuale>Andria</locazioneAttuale>
+	</Trailer>
+	
+	<RoadTractor>
+		<plate>FFF</plate>
+		<mark>Scania</mark>
+		<model></model>
+		<trim></trim>
+		<allestimento>Frigo</allestimento>
+		<stato>NON_DISPONIBILE</stato>
+		<carryingCapacity>0.0</carryingCapacity>
+		<ptt>5</ptt>
+		<weight>0.0</weight>
+		<volume>0.0</volume>
+		<length>0.0</length>
+		<height>0.0</height>
+		<width>0.0</width>
+		<locazioneAttuale>Andria</locazioneAttuale>
+	</RoadTractor>
+	
+	<SemiTrailer>
+		<plate>GGG</plate>
+		<mark>Scania</mark>
+		<model></model>
+		<trim></trim>
+		<allestimento>Frigo</allestimento>
+		<stato>NON_DISPONIBILE</stato>
+		<carryingCapacity>0.0</carryingCapacity>
+		<ptt>5</ptt>
+		<weight>0.0</weight>
+		<volume>0.0</volume>
+		<length>0.0</length>
+		<height>0.0</height>
+		<width>0.0</width>
+		<locazioneAttuale>Andria</locazioneAttuale>
+	</SemiTrailer>
+	
+	
+	<TrailerTruck>
+		<Truck refid="t1"/>
+		<Trailer refid="tr1"/>
+	</TrailerTruck>
+	
+ 
+	<SemiTrailerTruck>
+		<RoadTractor>
+			<plate>STT1</plate>
+			<mark>Scania</mark>
+			<model></model>
+			<trim></trim>
+			<allestimento>Frigo</allestimento>
+			<stato>NON_DISPONIBILE</stato>
+			<carryingCapacity>0.0</carryingCapacity>
+			<ptt>5</ptt>
+			<weight>0.0</weight>
+			<volume>0.0</volume>
+			<length>0.0</length>
+			<height>0.0</height>
+			<width>0.0</width>
+			<locazioneAttuale>Andria</locazioneAttuale>
+		</RoadTractor>
+		<SemiTrailer>
+			<plate>ST2</plate>
+			<mark>Scania</mark>
+			<model></model>
+			<trim></trim>
+			<allestimento>Frigo</allestimento>
+			<stato>NON_DISPONIBILE</stato>
+			<carryingCapacity>0.0</carryingCapacity>
+			<ptt>5</ptt>
+			<weight>0.0</weight>
+			<volume>0.0</volume>
+			<length>0.0</length>
+			<height>0.0</height>
+			<width>0.0</width>
+			<locazioneAttuale>Andria</locazioneAttuale>
+		</SemiTrailer>
+	</SemiTrailerTruck>
+	
+	
+</Fleet>
