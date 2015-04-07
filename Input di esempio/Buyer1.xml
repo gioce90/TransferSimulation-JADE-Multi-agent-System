@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ROOT buyerName="Buyer1"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="GoodsXMLSchema.xsd"> 
+
+	<Goods>
+		<codice>M001</codice>
+		<descrizione>Sabbia</descrizione>
+		<necessità></necessità>
+		<dimensione>x*y*z</dimensione>
+		<quantità>100.0</quantità>
+		<volume>100.0</volume>
+		<tipo>solida</tipo>
+		<pericolosa>false</pericolosa>
+		<locationStart>Bari</locationStart>
+		<locationEnd>Lecce</locationEnd>
+		<dateStart>2015-04-28</dateStart>
+		<dateLimit>5</dateLimit>
+	</Goods>
+	
+	
+	<Goods>
+		<codice>M002</codice>
+		<descrizione>Petrolio</descrizione>
+		<necessità>Cisterna</necessità>
+		<dimensione>x*y*z</dimensione>
+		<quantità>200.0</quantità>
+		<volume>200.0</volume>
+		<tipo>liquida</tipo>
+		<pericolosa>true</pericolosa>
+		<locationStart>Lecce</locationStart>
+		<locationEnd>Bari</locationEnd>
+		<dateStart>2015-04-29</dateStart>
+		<dateLimit>4</dateLimit>
+	</Goods>
+	
+	
+	<Goods>
+		<codice>M003</codice>
+		<descrizione>Cibo refrigerato</descrizione>
+		<necessità>Frigo</necessità>
+		<dimensione>x*y*z</dimensione>
+		<quantità>200.0</quantità>
+		<volume>200.0</volume>
+		<tipo>solida</tipo>
+		<pericolosa>false</pericolosa>
+		<locationStart>Barletta</locationStart>
+		<locationEnd>Bari</locationEnd>
+		<dateStart>2015-04-29</dateStart>
+		<dateLimit>3</dateLimit>
+	</Goods>
+	
+	
+	<Goods>
+		<codice>M004</codice>
+		<descrizione>Ghiaccio</descrizione>
+		<necessità>Frigo, Cisterna</necessità>
+		<dimensione>x*y*z</dimensione>
+		<quantità>200.0</quantità>
+		<volume>200.0</volume>
+		<tipo>solida</tipo>
+		<pericolosa>false</pericolosa>
+		<locationStart>Barletta</locationStart>
+		<locationEnd>Bari</locationEnd>
+		<dateStart>2015-04-29</dateStart>
+		<dateLimit>3</dateLimit>
+	</Goods>
+	
+	
+	<Goods>
+		<codice>M005</codice>
+		<descrizione>Pietra</descrizione>
+		<necessità></necessità>
+		
+		<dimensione>x*y*z</dimensione>
+		<quantità>150.0</quantità>
+		<volume>200.0</volume>
+		<tipo>solida</tipo>
+		<pericolosa>false</pericolosa>
+		
+		<locationStart>Trani</locationStart>
+		<locationEnd>Bari</locationEnd>
+		
+		<dateStart>2015-04-30</dateStart>
+		<dateLimit>6</dateLimit>
+	</Goods>
+	
+	
+	<Goods>
+		<codice>M006</codice>
+		<descrizione>Olio</descrizione>
+		<necessità>Cisterna</necessità>
+		
+		<dimensione>x*y*z</dimensione>
+		<quantità>150.0</quantità>
+		<volume>200.0</volume>
+		<tipo>solida</tipo>
+		<pericolosa>false</pericolosa>
+		
+		<locationStart>Bisceglie</locationStart>
+		<locationEnd>Bari</locationEnd>
+		
+		<dateStart>2015-04-30</dateStart>
+		<dateLimit>6</dateLimit>
+	</Goods>
+	
+	
+	
+	
+</ROOT>
+

@@ -83,7 +83,7 @@ public class StartSystem extends JFrame {
 			final JButton shipperBtn = new JButton("Shipper");
 			agentBtnGroup.add(shipperBtn);
 			shipperBtn.setToolTipText("Avvia un agente Shipper, per le aziende di trasporto");
-			shipperBtn.setIcon(new ImageIcon(StartSystem.class.getResource("/images/truck-green-icon.png")));
+			shipperBtn.setIcon(new ImageIcon(getClass().getResource("/images/truck-green-icon.png")));
 			shipperBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
 			shipperBtn.setHorizontalTextPosition(SwingConstants.CENTER);
 			shipperBtn.addActionListener(new ActionListener() {
@@ -96,7 +96,7 @@ public class StartSystem extends JFrame {
 			final JButton buyerBtn = new JButton("Buyer");
 			agentBtnGroup.add(buyerBtn);
 			buyerBtn.setToolTipText("Avvia un agente buyer, per le aziende che hanno merci");
-			buyerBtn.setIcon(new ImageIcon(StartSystem.class.getResource("/images/boxes-brown-icon.png")));
+			buyerBtn.setIcon(new ImageIcon(getClass().getResource("/images/boxes-brown-icon.png")));
 			buyerBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
 			buyerBtn.setHorizontalTextPosition(SwingConstants.CENTER);
 			buyerBtn.addActionListener(new ActionListener() {
@@ -217,56 +217,67 @@ public class StartSystem extends JFrame {
 		runTime = Runtime.instance(); 	// Get a hold on JADE runtime
 		
 		if (!isPlatformActivated()){
+			showNews("Accensione piattaforma");
 			mainProfile = new ProfileImpl(true);
 			mainContainer = runTime.createMainContainer(mainProfile);
-			showNews("Accensione piattaforma");
+			
 		} else {
 			showNews("Piattaforma già online");
 			mainProfile = new ProfileImpl();
 			mainProfile.setParameter(Profile.DETECT_MAIN, "true");
 			mainProfile.setParameter(Profile.PLATFORM_ID, "*");
-	        mainContainer = runTime.createAgentContainer(mainProfile);
+			mainContainer = runTime.createAgentContainer(mainProfile);
 		}
 		
 		lblOnoff.setText("Online");
 		lblOnoff.setFont(new Font(null, Font.BOLD, 11));
 		lblOnoff.setForeground(Color.GREEN);
 		lblOnoff.setBackground(Color.BLACK);
-		
-		// TODO
+
 		try {
 			platform = mainContainer.getPlatformController();
-			platform.addPlatformListener(new Listener() {
-				
-				@Override
-				public void suspendedPlatform(PlatformEvent anEvent) {	}
-				
-				@Override
-				public void startedPlatform(PlatformEvent anEvent) {System.out.println("eeeeee");}
-				
-				@Override
-				public void resumedPlatform(PlatformEvent anEvent) {}
-				
-				@Override
-				public void killedPlatform(PlatformEvent anEvent) {
-					System.out.println("oooooohhhh");
-				}
-				
-				@Override
-				public void deadAgent(PlatformEvent anEvent) {}
-				
-				@Override
-				public void bornAgent(PlatformEvent anEvent) {}
-			});
-			
-			
-		} catch (ControllerException e) {}
+			platform.addPlatformListener(listener);
+		} catch (ControllerException e) {
+			System.out.println("getPlatformController non funziona");
+		}
+		
 	}
+	
+	
+	Listener listener = new Listener() {
+
+		@Override
+		public void startedPlatform(PlatformEvent anEvent) {
+			lblOnoff.setText("Online");
+			lblOnoff.setFont(new Font(null, Font.BOLD, 11));
+			lblOnoff.setForeground(Color.GREEN);
+			lblOnoff.setBackground(Color.BLACK);
+			System.out.println("AGAIN!!");
+		}
+		
+		@Override
+		public void killedPlatform(PlatformEvent anEvent) {
+			showNews("Spegnimento piattaforma");
+			lblOnoff.setText("Offline");
+			lblOnoff.setFont(new Font(null, Font.BOLD, 11));
+			lblOnoff.setBackground(Color.BLACK);
+			lblOnoff.setForeground(Color.RED);
+		}
+		
+		@Override
+		public void suspendedPlatform(PlatformEvent anEvent) {}
+		@Override
+		public void resumedPlatform(PlatformEvent anEvent) {}
+		@Override
+		public void deadAgent(PlatformEvent anEvent) {}
+		@Override
+		public void bornAgent(PlatformEvent anEvent) {}
+	};
+	
 	
 	
 	private void stopPlatform() {
 		if (isPlatformActivated()){
-			showNews("Spegnimento piattaforma");
 			Thread t = new Thread(new Runnable() {
 				public void run() {
 					try {
@@ -280,16 +291,13 @@ public class StartSystem extends JFrame {
 		} else {
 			showNews("Piattaforma già offline");
 		}
-		lblOnoff.setText("Offline");
-		lblOnoff.setFont(new Font(null, Font.BOLD, 11));
-		lblOnoff.setBackground(Color.BLACK);
-		lblOnoff.setForeground(Color.RED);
 	}
+	
 	
 	
 	private boolean isPlatformActivated() {
 		// mainProfile.getBootProperties() // verificare con questo
-		//props.setProperty(Profile.MAIN, "false");
+		//props.setProperty(Profile.MAIN, "true");
 		return MainContainerChecker.check(props);
 	}
 	
@@ -300,7 +308,7 @@ public class StartSystem extends JFrame {
 			public void run() {
 				newsLabel.setText(news);
 				
-				final Timer t = new Timer(300, new ActionListener() {
+				final Timer t = new Timer(0, new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						newsLabel.setText(" "+newsLabel.getText()+".");
@@ -363,7 +371,6 @@ public class StartSystem extends JFrame {
 	
 	
 	private void startAgent(final String typeAgent, final String nameAgent) {
-		// TODO Forse non c'è bisogno di nuovi Thread
 		Thread agentThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -495,32 +502,3 @@ public class StartSystem extends JFrame {
 
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-AMSSubscriber ams = new AMSSubscriber() {
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void installHandlers(Map handlersTable) {
-		handlersTable.put(IntrospectionVocabulary.SHUTDOWNPLATFORMREQUESTED, new EventHandler() { 
-			@Override
-			public void handle(Event ev) {
-				System.out.println(ev.toString());	
-			} 
-		}); 
-	}
-};
-*/
-

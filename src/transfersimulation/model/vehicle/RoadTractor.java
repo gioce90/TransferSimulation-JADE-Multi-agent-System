@@ -6,5 +6,9 @@ public class RoadTractor extends Vehicle {
 		super(plate);
 		//setTipoVeicolo(TypeVehicle.RoadTractor);
 	}
-
+	
+	@Override
+	public String toString() {
+	  return "ROADTRACTOR"; // assumes nombre is a string
+	}
 }

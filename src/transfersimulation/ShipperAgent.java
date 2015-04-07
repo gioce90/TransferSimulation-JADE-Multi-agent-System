@@ -1,13 +1,15 @@
 package transfersimulation;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
 
-import XmlParser.ShipperXmlParser;
+import org.jdom2.JDOMException;
+
+import XmlParser.ShipperXmlReader;
 import transfersimulation.model.vehicle.*;
-import transfersimulation.model.vehicle.Vehicle.Stato;
 import transfersimulation.protocols.SearchJobInitiator;
 import jade.core.AID;
 import jade.core.Agent;
@@ -28,110 +30,18 @@ public class ShipperAgent extends Agent implements ShipperInterface, Serializabl
 	@Override
 	protected void setup() {
 		
-		// TODO: li dovrà prendere da file xml
-		ShipperXmlParser shipperParser = new ShipperXmlParser(getAID().getLocalName());
-		vehicles = shipperParser.getVehicles();
+		ShipperXmlReader shipperParser;
 		
-		/*
-		Vehicle c1 = new Car("AAA1");
-		c1.setMark("Peugeot");
-		c1.setModel("206");
-		c1.setPtt(2);
-		c1.setStato(Stato.NON_DISPONIBILE);
-		c1.setLocazioneAttuale("Bari");
-		
-		Vehicle c2 = new Van("AAA2");
-		c2.setMark("Volvo");
-		c2.setModel("xxx");
-		c2.setPtt(3);
-		c2.setStato(Stato.DISPONIBILE);
-		c2.setLocazioneAttuale("Andria");
-		
-		Vehicle c3 = new Truck("AAA3");
-		c3.setMark("Scania");
-		c3.setModel("xxx");
-		c3.setPtt(3);
-		c3.setStato(Stato.DISPONIBILE);
-		c3.setAllestimento("Frigo");
-		c3.setLocazioneAttuale("Foggia");
-		
-		Vehicle c4 = new Truck("AAA4");
-		c4.setMark("Scania");
-		c4.setModel("xxx");
-		c4.setPtt(3);
-		c4.setStato(Stato.DISPONIBILE);
-		c4.setAllestimento("Cisterna");
-		c4.setLocazioneAttuale("Foggia");
-		*/
-		/*
-		Vehicle c5 = new SemiTrailerTruck("AAA5");
-		c5.setMark("DAF");
-		c5.setModel("yyy");
-		c5.setPtt(15);
-		c5.setStato(Stato.DISPONIBILE);
-		
-		Vehicle c6 = new SemiTrailer("AAA6");
-		c6.setMark("Menci");
-		c6.setModel("yyy");
-		c6.setPtt(15);
-		c6.setStato(Stato.DISPONIBILE);
-		
-		Vehicle c7 = new RoadTractor("AAA7");
-		c7.setMark("DAF");
-		c7.setModel("yyy");
-		c7.setPtt(15);
-		c7.setStato(Stato.DISPONIBILE);
-		*/
-		
-		////////////////////////////////////////////////
-		// Autotreno: car + trailer/
-		
-		/* ok
-			Vehicle t1 = new Trailer("TTT1");
-			t1.setMark("Menci");
-			t1.setModel("yyy");
-			t1.setPtt(15);
-			t1.setStato(Stato.DISPONIBILE);
-			t1.setLocazioneAttuale("Roma");
-			
-			
-			Vehicle tt1 = new TrailerTruck((Car) c1, (Trailer) t1);
-			tt1.setMark("Scania");
-			tt1.setModel("yyy");
-			tt1.setPtt(15);
-			tt1.setStato(Stato.DISPONIBILE);
-			tt1.setLocazioneAttuale("Bari");
-			
-		*/
-		////////////////////////////////////////////////
-		// Autotreno: van + trailer/
-		/* ok
-			Vehicle tt2 = new TrailerTruck((Van) c2, (Trailer) t1);
-			tt2.setMark("Scania");
-			tt2.setModel("yyy");
-			tt2.setPtt(15);
-			tt2.setStato(Stato.DISPONIBILE);
-			
-		////////////////////////////////////////////////
-		// Autotreno: truck + trailer/
-			Vehicle tt3 = new TrailerTruck((Truck) c3, (Trailer) t1);
-			tt3.setMark("Scania");
-			tt3.setModel("yyy");
-			tt3.setPtt(15);
-			tt3.setStato(Stato.DISPONIBILE);
-		
-		
-		vehicles.add(c1);
-		vehicles.add(c2);
-		vehicles.add(c3);
-		vehicles.add(c4);
-		
-		vehicles.add(t1);
-		
-		//vehicles.add(tt1);
-		//vehicles.add(tt2);
-		vehicles.add(tt3);
-		*/
+		try {
+			shipperParser = new ShipperXmlReader(getAID().getLocalName());
+			vehicles = shipperParser.getVehicles();
+		} catch (JDOMException | IOException e) {
+			try {
+				new File(getAID().getLocalName()+".xml").createNewFile();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
 		
 		///////////////////////////////////////////////////
 		
@@ -144,17 +54,6 @@ public class ShipperAgent extends Agent implements ShipperInterface, Serializabl
 		
 		// Pubblica sulle Pagine Gialle il proprio servizio
 		publishService();
-		
-		/*
-		MyTest m = new MyTest();
-		try {
-			Thread.sleep(9000);
-			System.out.println("GNEE");
-			m.load(this);
-		} catch (TestException | InterruptedException e) {
-			e.printStackTrace();
-		}
-		*/
 		
 	}
 	
@@ -228,7 +127,7 @@ public class ShipperAgent extends Agent implements ShipperInterface, Serializabl
 				if (!(i==result.length-1))
 					list+=", ";
 			}
-			myGUI.insertInfo("Trovati i seguenti clienti: "+list);//TODO probabilmente è da spostare
+			myGUI.insertInfo("Trovati i seguenti clienti: "+list);
 		}
 		catch (FIPAException fe) {
 			fe.printStackTrace();
@@ -260,59 +159,6 @@ public class ShipperAgent extends Agent implements ShipperInterface, Serializabl
 	
 	
 	
-	////////////////////////////
-
-	
-	/*
-	private String vehicle;
-	private String weight;
-	private void whichVehicle() {
-		Object[] args = getArguments();
-		if (args!=null && args.length==2){
-			vehicle = (String) getArguments()[0];
-			weight = (String) getArguments()[1];
-			
-			System.out.println("Tipo di automezzo: " + vehicle +
-					".\nPeso massimo trasportabile: "+weight+"tn");
-		} else
-			System.out.println("Tipo di automezzo non definito");
-	}
-	*/
-	
-	// Utility: lista dei concorrenti
-	/*
-	private void searchCompetitors() {
-		addBehaviour(new OneShotBehaviour() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public void action() {
-				ServiceDescription sd = new ServiceDescription();
-				sd.setName("JADE-trasporto-merci");
-				sd.setType("shipper");
-				DFAgentDescription template = new DFAgentDescription();
-				template.addServices(sd);
-				try {
-					DFAgentDescription[] result = DFService.search(myAgent, template);
-					System.out.println("Trovate le seguenti aziende: ");
-					
-					AID[] customerAgents;
-					customerAgents = new AID[result.length];
-					
-					for (int i = 0; i < result.length; ++i) {
-						customerAgents[i] = result[i].getName();
-						System.out.println(customerAgents[i].getName());
-					}
-					
-				}
-				catch (FIPAException fe) {
-					fe.printStackTrace();
-				}
-			}
-		});
-	}
-	*/
-	
-	
 	////////////////////////////////////////////////////////
 	// Metodi ereditati dall'interfaccia ShipperInterface:
 
@@ -338,7 +184,6 @@ public class ShipperAgent extends Agent implements ShipperInterface, Serializabl
 			@Override
 			public void action() {
 				myGUI.insertInfo("Nuovo veicolo targato '"+vehicle.getPlate()+"'");
-				//vehicles.add(vehicle);
 			}
 		});
 		
@@ -351,7 +196,6 @@ public class ShipperAgent extends Agent implements ShipperInterface, Serializabl
 			@Override
 			public void action() {
 				myGUI.insertInfo("Rimosso veicolo targato '"+vehicle.getPlate()+"'");
-				//vehicles.remove(vehicle);
 			}
 		});
 		
@@ -364,7 +208,6 @@ public class ShipperAgent extends Agent implements ShipperInterface, Serializabl
 			@Override
 			public void action() {
 				myGUI.insertInfo("Il veicolo targato '"+vehicle.getPlate()+"' è disponibile");
-				//vehicles.get(vehicles.indexOf(vehicle)).setStato(Stato.DISPONIBILE);
 			}
 		});
 	}
@@ -376,10 +219,65 @@ public class ShipperAgent extends Agent implements ShipperInterface, Serializabl
 			@Override
 			public void action() {
 				myGUI.insertInfo("Il veicolo targato '"+vehicle.getPlate()+"' non è più disponibile");
-				//vehicles.get(vehicles.indexOf(vehicle)).setStato(Stato.NON_DISPONIBILE);
 			}
 		});
 	}
 	
 
 }
+
+
+
+
+////////////////////////////
+
+
+/*
+private String vehicle;
+private String weight;
+private void whichVehicle() {
+	Object[] args = getArguments();
+	if (args!=null && args.length==2){
+		vehicle = (String) getArguments()[0];
+		weight = (String) getArguments()[1];
+		
+		System.out.println("Tipo di automezzo: " + vehicle +
+				".\nPeso massimo trasportabile: "+weight+"tn");
+	} else
+		System.out.println("Tipo di automezzo non definito");
+}
+*/
+
+// Utility: lista dei concorrenti
+/*
+private void searchCompetitors() {
+	addBehaviour(new OneShotBehaviour() {
+		private static final long serialVersionUID = 1L;
+		@Override
+		public void action() {
+			ServiceDescription sd = new ServiceDescription();
+			sd.setName("JADE-trasporto-merci");
+			sd.setType("shipper");
+			DFAgentDescription template = new DFAgentDescription();
+			template.addServices(sd);
+			try {
+				DFAgentDescription[] result = DFService.search(myAgent, template);
+				System.out.println("Trovate le seguenti aziende: ");
+				
+				AID[] customerAgents;
+				customerAgents = new AID[result.length];
+				
+				for (int i = 0; i < result.length; ++i) {
+					customerAgents[i] = result[i].getName();
+					System.out.println(customerAgents[i].getName());
+				}
+				
+			}
+			catch (FIPAException fe) {
+				fe.printStackTrace();
+			}
+		}
+	});
+}
+*/
+

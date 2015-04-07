@@ -41,12 +41,12 @@
 
 
 
-	<!-- Definizioni: SimpleVehicle e ComplexVehicle -->
+	<!-- SimpleVehicle e ComplexVehicle -->
 	
 	<xs:complexType name="SimpleVehicle">
 		<xs:complexContent>
 			<xs:extension base="VehicleType">
-				<xs:attribute name="id" type="xs:ID"/>
+				<xs:attribute name="id" type="xs:ID" use="required"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -54,7 +54,7 @@
 	<xs:complexType name="ComplexVehicle">
 		<xs:complexContent>
 			<xs:extension base="VehicleType">
-				<xs:attribute name="refid" type="xs:IDREF"/>
+				<xs:attribute name="refid" type="xs:IDREF" use="required"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -62,35 +62,23 @@
 	
 	
 	
-	<!-- Definizione tipi Car, Van, Truck, Trailer, RoadTractor, SemiTrailer -->
+	<!-- Car, Van, Truck, Trailer, RoadTractor, SemiTrailer -->
 	
-	<xs:element name="Car" type="SimpleVehicle" >
-		<xs:key name="idd" id="idC">
-			<xs:selector xpath="."></xs:selector>
-			<xs:field xpath="plate"></xs:field>
-		</xs:key>
-	</xs:element>
-	
+	<xs:element name="Car" type="SimpleVehicle" />
 	<xs:element name="Van" type="SimpleVehicle"/>
-	
 	<xs:element name="Truck" type="SimpleVehicle"/>
-	
 	<xs:element name="Trailer" type="SimpleVehicle"/>
-	
 	<xs:element name="RoadTractor" type="SimpleVehicle"/>
-	
 	<xs:element name="SemiTrailer" type="SimpleVehicle"/>
 	
 	
 	
 	
-	<!-- Definizione tipo TrailerTruck (autotreno) -->
+	<!-- TrailerTruck (autotreno) -->
 
 	<xs:group name="DrivingPart">
 		<xs:choice>
-			<xs:element name="Car" type="ComplexVehicle">
-				<xs:keyref name="ke" refer="idd" id="d"> <xs:selector xpath="." > </xs:selector><xs:field xpath="."></xs:field></xs:keyref>
-			</xs:element>
+			<xs:element name="Car" type="ComplexVehicle"/>
 			<xs:element name="Van" type="ComplexVehicle"/>
 			<xs:element name="Truck" type="ComplexVehicle"/>
 		</xs:choice>
@@ -102,14 +90,14 @@
 				<xs:group ref="DrivingPart" minOccurs="1" maxOccurs="1"/>
 				<xs:element name="Trailer" type="ComplexVehicle" minOccurs="1" maxOccurs="1"/>
 			</xs:sequence>
-			<xs:attribute name="id" type="xs:ID"/>
+			<xs:attribute name="id" type="xs:ID" use="required"/>
 		</xs:complexType>
 	</xs:element>
 
 
 
 
-	<!-- Definizione tipo SemiTrailerTruck (autoarticolato) -->
+	<!-- SemiTrailerTruck (autoarticolato) -->
 	
 	<xs:element name="SemiTrailerTruck">
 		<xs:complexType>
@@ -117,7 +105,7 @@
 				<xs:element name="RoadTractor" type="ComplexVehicle" minOccurs="1" maxOccurs="1"/>
 				<xs:element name="SemiTrailer" type="ComplexVehicle" minOccurs="1" maxOccurs="1"/>
 			</xs:sequence>
-			<xs:attribute name="id" type="xs:ID"/>
+			<xs:attribute name="id" type="xs:ID" use="required"/>
 		</xs:complexType>
 	</xs:element>
 

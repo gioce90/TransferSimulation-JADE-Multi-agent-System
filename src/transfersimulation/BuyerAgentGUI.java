@@ -24,8 +24,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
 import java.awt.ComponentOrientation;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.Serializable;
@@ -49,7 +49,6 @@ public class BuyerAgentGUI extends JFrame implements Serializable {
 	//////////////////////////////////////////////////////////////
 	// CONSTRUCTOR:
 	
-	public BuyerAgentGUI() {}
 	
 	public BuyerAgentGUI(BuyerAgent buyer) {
 		
@@ -132,7 +131,7 @@ public class BuyerAgentGUI extends JFrame implements Serializable {
 		goodsPanel.add(pnlTableGoodsPanel);
 		
 		goodsTable = new JTable(goodsModel);
-		goodsTable.setPreferredScrollableViewportSize(new Dimension(800, 100));
+		goodsTable.setPreferredScrollableViewportSize(new Dimension(700, 100));
 		goodsTable.setFillsViewportHeight(true);
 		JScrollPane goodsScrollPane = new JScrollPane(goodsTable);
 		pnlTableGoodsPanel.add(goodsScrollPane);
@@ -200,8 +199,9 @@ public class BuyerAgentGUI extends JFrame implements Serializable {
 		
 		
 		// Riempimento dati
-		for (Goods g: buyerAgent.getGoods())
-			goodsModel.addRow(g);
+		if (buyerAgent.getGoods()!=null)
+			for (Goods g: buyerAgent.getGoods())
+				goodsModel.addRow(g);
 		
 		showGui();
 		
@@ -219,14 +219,17 @@ public class BuyerAgentGUI extends JFrame implements Serializable {
 	
 	
 	public void showGui() {
-		setLocationRelativeTo(null);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		int centerX = (int) screenSize.getWidth() / 2;
+		int centerY = (int) screenSize.getHeight() / 2;
+		setLocation(centerX - getWidth() / 2, centerY - getHeight() / 2);
 		pack();
 		super.setVisible(true);
 	}
 	
 	// on dispose, delete the agent
 	public void dispose() {
-		if (isActive())
+		//if (isActive())
 			super.dispose();
 		buyerAgent.doDelete();
 	}
@@ -340,7 +343,7 @@ public class BuyerAgentGUI extends JFrame implements Serializable {
 							if (!txtQtà.getText().isEmpty())
 								g.setQuantità(Integer.valueOf(txtQtà.getText()));
 							if (!txtVolume.getText().isEmpty())
-								g.setVolume(Double.valueOf(txtVolume.getText()));
+								g.setVolume(Float.valueOf(txtVolume.getText()));
 							if (!txtEntro.getText().isEmpty())
 								g.setDateLimit(Integer.valueOf(txtEntro.getText()));
 						} catch (NumberFormatException e1) {}

@@ -10,4 +10,9 @@ public class Truck extends Vehicle implements DrivingPart {
 	public String getPlate() {
 		return super.getPlate();
 	}
+	
+	@Override
+	public String toString() {
+	  return "TRUCK"; // assumes nombre is a string
+	}
 }

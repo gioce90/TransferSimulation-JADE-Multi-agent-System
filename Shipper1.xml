@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Fleet shipperName="Shipper1"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="VehicleXMLSchema.xsd"> 
+
+	<Car id="car1">
+		<plate>AAA</plate>
+		<mark>Peugeot</mark>
+		<model>206</model>
+		<trim>HDI</trim>
+		<allestimento></allestimento>
+		<stato>DISPONIBILE</stato>
+		<carryingCapacity>1.0</carryingCapacity>
+		<ptt>2</ptt>
+		<weight>1.0</weight>
+		<volume>2.0</volume>
+		<length>3.0</length>
+		<height>4.0</height>
+		<width>5.0</width>
+		<locazioneAttuale>Bari</locazioneAttuale>
+	</Car>
+	
+	
+	<Car id="car2">
+		<plate>BBB</plate>
+		<mark>Volkwagen</mark>
+		<model>M1</model>
+		<trim></trim>
+		<allestimento></allestimento>
+		<stato>NON_DISPONIBILE</stato>
+		<carryingCapacity>0.0</carryingCapacity>
+		<ptt>2</ptt>
+		<weight>0.0</weight>
+		<volume>0.0</volume>
+		<length>0.0</length>
+		<height>0.0</height>
+		<width>0.0</width>
+		<locazioneAttuale>Bari</locazioneAttuale>
+	</Car>
+	
+	
+	<Van id="van1">
+		<plate>CCC</plate>
+		<mark>Volvo</mark>
+		<model>V1</model>
+		<trim></trim>
+		<allestimento>Frigo</allestimento>
+		<stato>DISPONIBILE</stato>
+		<carryingCapacity>1.0</carryingCapacity>
+		<ptt>3</ptt>
+		<weight>1.0</weight>
+		<volume>2.0</volume>
+		<length>3.0</length>
+		<height>4.0</height>
+		<width>5.0</width>
+		<locazioneAttuale>Barletta</locazioneAttuale>
+	</Van>
+	
+	
+	<Truck id="truck1">
+		<plate>DDD</plate>
+		<mark>Scania</mark>
+		<model>M3</model>
+		<trim></trim>
+		<allestimento>Cisterna</allestimento>
+		<stato>DISPONIBILE</stato>
+		<carryingCapacity>1.0</carryingCapacity>
+		<ptt>5</ptt>
+		<weight>2.0</weight>
+		<volume>3.0</volume>
+		<length>4.0</length>
+		<height>5.0</height>
+		<width>6.0</width>
+		<locazioneAttuale>Andria</locazioneAttuale>
+	</Truck>
+	
+	
+	<Trailer id="trailer1">
+		<plate>EEE</plate>
+		<mark>Scania</mark>
+		<model></model>
+		<trim></trim>
+		<allestimento>Frigo</allestimento>
+		<stato>NON_DISPONIBILE</stato>
+		<carryingCapacity>6.0</carryingCapacity>
+		<ptt>5</ptt>
+		<weight>7.0</weight>
+		<volume>8.0</volume>
+		<length>9.0</length>
+		<height>1.0</height>
+		<width>2.0</width>
+		<locazioneAttuale>Andria</locazioneAttuale>
+	</Trailer>
+	
+	
+	<RoadTractor id="roadtractor1">
+		<plate>FFF</plate>
+		<mark>Scania</mark>
+		<model></model>
+		<trim></trim>
+		<allestimento></allestimento>
+		<stato>DISPONIBILE</stato>
+		<carryingCapacity>0.0</carryingCapacity>
+		<ptt>5</ptt>
+		<weight>0.0</weight>
+		<volume>0.0</volume>
+		<length>0.0</length>
+		<height>0.0</height>
+		<width>0.0</width>
+		<locazioneAttuale>Andria</locazioneAttuale>
+	</RoadTractor>
+	
+	
+	<SemiTrailer id="semitrailer1">
+		<plate>GGG</plate>
+		<mark>Scania</mark>
+		<model></model>
+		<trim></trim>
+		<allestimento>Frigo</allestimento>
+		<stato>DISPONIBILE</stato>
+		<carryingCapacity>0.0</carryingCapacity>
+		<ptt>5</ptt>
+		<weight>0.0</weight>
+		<volume>0.0</volume>
+		<length>0.0</length>
+		<height>0.0</height>
+		<width>0.0</width>
+		<locazioneAttuale>Andria</locazioneAttuale>
+	</SemiTrailer>
+	
+	
+	<TrailerTruck id="trailerTruck1">
+		<Car refid="car1"/>
+		<Trailer refid="trailer1"/>
+	</TrailerTruck>
+	
+	
+	<TrailerTruck id="trailerTruck2">
+		<Truck refid="truck1"/>
+		<Trailer refid="trailer1"/>
+	</TrailerTruck>
+	
+	
+	<SemiTrailerTruck id="semiTrailerTruck1">
+		<RoadTractor refid="roadtractor1"/>
+		<SemiTrailer refid="semitrailer1"/>
+	</SemiTrailerTruck>
+	
+	
+</Fleet>

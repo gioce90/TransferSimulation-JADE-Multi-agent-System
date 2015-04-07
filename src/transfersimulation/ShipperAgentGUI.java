@@ -244,7 +244,6 @@ public class ShipperAgentGUI extends JFrame implements ActionListener, Serializa
 			goodsPanel.add(goodsScrollPane);
 		}
 		
-		// TODO prende le merci prenotate dal DB
 		
 		
 		// TabbedPane
@@ -361,8 +360,12 @@ public class ShipperAgentGUI extends JFrame implements ActionListener, Serializa
 			@Override
 			void init() {
 				for (Vehicle v: shipperAgent.getVehicles())
-					if (v.getState().equals(Stato.DISPONIBILE))
-						availablesModel.addRow(v);
+					if (v!=null){
+						if (v.getState()!= null){
+							if (v.getState().equals(Stato.DISPONIBILE))
+								availablesModel.addRow(v);
+						} else v.setStato(Stato.NON_DISPONIBILE);
+					}
 			}
 			
 			@Override
@@ -385,7 +388,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener, Serializa
 			public void notifyAndDeleteRow(final int rowIndex) {
 				Vehicle vehicle = availablesModel.getVehicleAt(rowIndex);
 				if (vehicle!=null){
-					vehicle.setStato(Stato.NON_DISPONIBILE); // TODO attenzione
+					vehicle.setStato(Stato.NON_DISPONIBILE);
 					shipperAgent.deactivateTruck(vehicle);
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
@@ -429,7 +432,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener, Serializa
 		
 	// on dispose, delete the agent
 	public void dispose() {
-		if (isActive())
+		//if (isActive())
 			super.dispose();
 		shipperAgent.doDelete();
 	}
@@ -537,7 +540,7 @@ public class ShipperAgentGUI extends JFrame implements ActionListener, Serializa
 			return tableModel.indexOf(v);
 		}
 		
-		// TODO attenzione forse c'è un dupplicato in un'altra classe
+		
 		// inoltre non effettua alcun controllo sulle targhe
 		protected boolean vehicleExists(Vehicle vehicle){
 			if (indexOf(vehicle)==-1)

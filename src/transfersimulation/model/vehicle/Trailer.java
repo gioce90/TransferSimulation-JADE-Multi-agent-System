@@ -7,6 +7,10 @@ public class Trailer extends Vehicle {
 		//setTipoVeicolo(TypeVehicle.Trailer);
 	}
 	
-	
+
+	@Override
+	public String toString() {
+	  return "TRAILER"; // assumes nombre is a string
+	}
 	
 }

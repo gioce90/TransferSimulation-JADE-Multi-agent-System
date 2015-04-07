@@ -1,97 +1,167 @@
 package XmlParser;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.List;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Vector;
 
-import org.jdom2.Content;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
-import transfersimulation.model.vehicle.Vehicle;
+import transfersimulation.model.vehicle.*;
+import transfersimulation.model.vehicle.Vehicle.Stato;
+
 
 public class ShipperXmlReader {
 	
-	public ShipperXmlReader(String file) {
-		try { 
+	HashMap<String, Vehicle> map = new HashMap<String, Vehicle>();
+	Vector<Vehicle> vehicles = new Vector<Vehicle>();
+	
+	
+	public ShipperXmlReader(String file) throws JDOMException, IOException {
+	
+			
 			// Creo un SAXBuilder e con esco costruisco un document 
 			SAXBuilder builder = new SAXBuilder(); 
-			Document document = builder.build(new File("src/XmlParser/"+file+".xml")); 
+			Document document = builder.build(new File(file+".xml")); 
 			
 			// Prendo la radice 
-			Element root = document.getRootElement(); 
-			System.out.println("ROOT: "+document.getRootElement());
+			Element root = document.getRootElement();
 			
-			// Estraggo i figli dalla radice 
-			List vehicles = root.getChildren(); 
-			System.out.println("LISTA VEICOLI: "+vehicles);
-			
-			List carList = root.getChildren("Car");
-			List vanList = root.getChildren("Van");
-			List truckList = root.getChildren("Truck");
-			List trailerList = root.getChildren("Trailer");
-			List roadTractorList = root.getChildren("RoadTractor");
-			List semiTrailerList = root.getChildren("SemiTrailer");
-			List trailerTruckList = root.getChildren("TrailerTruck");
-			List SemiTrailerTruckList = root.getChildren("SemiTrailerTruck");
-			
-			
-			System.out.println(
-					"Car: "				+carList+"\n"+
-					"Van: "				+vanList+"\n"+
-					"Truck: "			+truckList+"\n"+
-					"Trailer: "			+trailerList+"\n"+
-					"RoadTractor: "		+roadTractorList+"\n"+
-					"SemiTrailer: "		+semiTrailerList+"\n"+
-					"TrailerTruck: "	+trailerTruckList+"\n"+
-					"SemiTrailerTruck: "+SemiTrailerTruckList
-				);
-			
-			// Veicolo uno per uno
-			Iterator iterator = vehicles.iterator(); 
-			
-			while(iterator.hasNext()){ 
-				Element v = (Element)iterator.next();
-				System.out.println(v.getName());
-				
-				carList = v.getChildren("Car");
-				vanList = v.getChildren("Van");
-				
-				
-				List<Content> list = v.getContent();
-				
-			}
-			
-
-			/*
-			//Per ogni figlio 
-			while(iterator.hasNext()){ 
-				//Mostro il valore dell'elemento figlio "DESCR" e degli 
-				//attributi "importanza", "perc_completamento", e "completata" 
-				//sullo standard output 
-				Element item = (Element)iterator.next(); 
-				
-				//System.out.println("*" + item.getTextNormalize()); 
-				
-				Element description = item.getChild("Car"); 
-				System.out.println("*" + description.getTextNormalize()); 
-				
-				System.out.println("\tImportanza: " + item.getAttributeValue("importanza")); 
-				System.out.println("\tCompletamento: " + item.getAttributeValue("perc_completamento") + "%");
-				System.out.println("\tItem copmletata: " + item.getAttributeValue("completata")+"\n"); 
-			}
-			*/
-		}
-		catch (Exception e) { 
-			System.err.println("Errore durante la lettura dal file"); 
-			e.printStackTrace(); 
-		}
+			simpleVehicles(root);
+			complexVehicles(root);
 	}
 	
 	
-	public static void main(String[] args) { 
+	
+	private void simpleVehicles (Element fleet){
+		for (Element vehicleElem : fleet.getChildren()) {
+			String kindVehicle = vehicleElem.getName();
+			String plate = vehicleElem.getChildText("plate");
+			Vehicle v = null;
+			switch (kindVehicle){
+				case "Car":
+					v = new Car(plate);
+					break;
+				case "Van":
+					v = new Van(plate);
+					break;
+				case "Truck":
+					v = new Truck(plate);
+					break;
+				case "Trailer":
+					v = new Trailer(plate);
+					break;
+				case "RoadTractor":
+					v = new RoadTractor(plate);
+					break;
+				case "SemiTrailer":
+					v = new SemiTrailer(plate);
+					break;
+			} // chiusura switch
+			if (v!=null){
+				String id = vehicleElem.getAttributeValue("id");
+				settingVehicle(vehicleElem, v);
+				map.put(id, v);
+				vehicles.add(v);
+			}
+		} // chiusura ciclo for
+	}
+	
+	
+	
+	private void complexVehicles(Element fleet){
+		
+		// TrailerTruck
+		for (Element trailerTruckElement : fleet.getChildren("TrailerTruck")) {
+			Element drivingElement = trailerTruckElement.getChildren().get(0);
+			Vehicle drivingVehicle = null;
+			
+			switch (drivingElement.getName()){
+				case "Car":
+					drivingVehicle = (Car) map.get(drivingElement.getAttributeValue("refid"));
+					break;
+				case "Van":
+					drivingVehicle = (Van) map.get(drivingElement.getAttributeValue("refid"));
+					break;
+				case "Truck":
+					drivingVehicle = (Truck) map.get(drivingElement.getAttributeValue("refid"));
+					break;
+			}
+			
+			Element drivenElement = trailerTruckElement.getChildren().get(1);
+			Trailer drivenVehicle = (Trailer) map.get(drivenElement.getAttributeValue("refid"));
+			
+			if (drivingVehicle!=null&&drivenVehicle!=null){
+				String id = trailerTruckElement.getAttributeValue("id");
+				TrailerTruck trailerTruckVehicle = new TrailerTruck((DrivingPart) drivingVehicle, drivenVehicle);
+				map.put(id, trailerTruckVehicle);
+				vehicles.add(trailerTruckVehicle);
+			}
+		}
+		
+		
+		// SemiTrailerTruck
+		for (Element semiTrailerTruckElement : fleet.getChildren("SemiTrailerTruck")) {
+			Element drivingElement = semiTrailerTruckElement.getChild("RoadTractor");
+			RoadTractor drivingVehicle = (RoadTractor) map.get(drivingElement.getAttributeValue("refid"));
+			Element drivenElement = semiTrailerTruckElement.getChild("SemiTrailer");
+			SemiTrailer drivenVehicle = (SemiTrailer) map.get(drivenElement.getAttributeValue("refid"));
+			
+			if (drivingVehicle!=null&&drivenVehicle!=null){
+				String id = semiTrailerTruckElement.getAttributeValue("id");
+				SemiTrailerTruck semiTrailerTruckVehicle = new SemiTrailerTruck(drivingVehicle, drivenVehicle);
+				map.put(id, semiTrailerTruckVehicle);
+				vehicles.add(semiTrailerTruckVehicle);
+			}
+		}
+		
+	}
+	
+	
+	
+	private void settingVehicle(Element element, Vehicle vehicle){
+		vehicle.setPlate(element.getChildText("plate"));
+		vehicle.setMark(element.getChildText("mark"));
+		vehicle.setModel(element.getChildText("model"));
+		vehicle.setTrim(element.getChildText("trim"));
+		vehicle.setLocazioneAttuale(element.getChildText("locazioneAttuale"));
+		vehicle.setAllestimento(element.getChildText("allestimento"));
+		
+		if (element.getChildText("stato").equals("DISPONIBILE"))
+			vehicle.setStato(Stato.DISPONIBILE);
+		else vehicle.setStato(Stato.NON_DISPONIBILE);
+
+		vehicle.setCarryingCapacity(Float.valueOf(
+				element.getChildText("carryingCapacity")));
+		vehicle.setPtt(Float.valueOf(
+				element.getChildText("ptt")));
+		vehicle.setWeight(Float.valueOf(
+				element.getChildText("weight")));
+		vehicle.setVolume(Float.valueOf(
+				element.getChildText("volume")));
+		vehicle.setLength(Float.valueOf(
+				element.getChildText("length")));
+		vehicle.setHeight(Float.valueOf(
+				element.getChildText("height")));
+		vehicle.setWidth(Float.valueOf(
+				element.getChildText("width")));
+	}
+	
+	
+	
+	public Vector<Vehicle> getVehicles() {
+		return vehicles;
+	}
+	
+	
+	
+	public static void main(String[] args) throws JDOMException, IOException { 
 		ShipperXmlReader reader = new ShipperXmlReader("Shipper1");
 	}
+	
+	
 	
 }

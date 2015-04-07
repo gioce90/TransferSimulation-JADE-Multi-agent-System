@@ -11,4 +11,9 @@ public class Van extends Vehicle implements DrivingPart {
 		return super.getPlate();
 	}
 	
+	
+	@Override
+	public String toString() {
+	  return "VAN"; // assumes nombre is a string
+	}
 }

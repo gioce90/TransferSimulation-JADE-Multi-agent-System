@@ -10,8 +10,8 @@ public class Goods implements Serializable {
 	private String descrizione;
 	private String tipo;
 	private String dimensione;
-	private double quantità;
-	private double volume;
+	private float quantità;
+	private float volume;
 	private boolean pericolosa;
 	
 	private String locationStart, locationEnd;
@@ -24,8 +24,8 @@ public class Goods implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "Cod: "+codice
-				+" Descrizione: "+descrizione+", "
+		return "Cod: "+codice+", "
+				+"Descrizione: "+descrizione+", "
 				+"Dimensione: "+dimensione+", "
 				+"Tipo: "+tipo+", "
 				+"Q.tà: "+quantità+", "
@@ -35,7 +35,7 @@ public class Goods implements Serializable {
 				+"Destinazione: "+locationEnd+", "
 				+"Da: "+dateStart+", "
 				+"Limiti di consegna: "+dateLimit+" gg, "
-				+"Allestimenti necessari: ";
+				+"Allestimenti necessari: "+necessità;
 		
 	}
 	
@@ -67,7 +67,7 @@ public class Goods implements Serializable {
 		return quantità;
 	}
 
-	public void setQuantità(int quantità) {
+	public void setQuantità(float quantità) {
 		this.quantità = quantità;
 	}
 	
@@ -75,7 +75,7 @@ public class Goods implements Serializable {
 		return volume;
 	}
 	
-	public void setVolume(double volume) {
+	public void setVolume(float volume) {
 		this.volume = volume;
 	}
 
