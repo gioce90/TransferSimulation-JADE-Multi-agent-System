@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="ROOT">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Goods" type="GoodsType" maxOccurs="unbounded"/>
+			</xs:sequence>
+	  		<xs:attribute name="buyerName" type="xs:string"/> 
+		</xs:complexType>
+	</xs:element>
+	
+	
+	<xs:complexType name="GoodsType">
+	  <xs:all>
+	    <xs:element name="codice" type="xs:string" minOccurs="1">
+			<!--<xs:key name="codice">
+	    		<xs:selector xpath="."></xs:selector>
+	    		<xs:field xpath="."></xs:field>
+	    	</xs:key> -->
+	    </xs:element>
+	    <xs:element name="descrizione" type="xs:string" minOccurs="0"/>
+	    <xs:element name="dimensione" type="xs:string" minOccurs="0"/>
+	    <xs:element name="quantità" type="xs:float"/>
+	    <xs:element name="volume" type="xs:double"/>
+	    <xs:element name="tipo" type="xs:string" minOccurs="0"/>
+	    <xs:element name="pericolosa" type="xs:boolean"/>
+	    <xs:element name="locationStart" type="xs:string" minOccurs="0"/>
+	    <xs:element name="locationEnd" type="xs:string" minOccurs="0"/>
+	    <xs:element name="dateStart" type="xs:date" minOccurs="0"/>
+	    <xs:element name="dateLimit" type="xs:int"/>
+	    <xs:element name="necessità" type="xs:string" minOccurs="0"/>
+	  </xs:all>
+	</xs:complexType>
+	
+</xs:schema>
+
